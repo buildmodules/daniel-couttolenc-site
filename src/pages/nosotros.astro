@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="About">
+  <section class="about">
+    <h1>About</h1>
+    <p>
+      Daniel Couttolenc is a Mexican designer whose work begins with curiosity.
+      Drawn to design from an early age, he was also interested in questions of
+      spirituality, meaning, and inner balance. The study of sacred geometry
+      eventually revealed a connection between them.
+    </p>
+    <p>
+      Each piece begins as an impression—something observed, experienced, or felt.
+      Guided by intuition and refined through proportion, geometry, and material
+      exploration, these impressions gradually take shape as objects. Created as
+      pieces of harmony, they invite a sense of presence and connection.
+    </p>
+
+    <h2>Exhibitions</h2>
+    <!-- TODO: mover este listado a una colección de Tina si el cliente lo va a
+         actualizar seguido. Por ahora está hardcoded porque no se definió
+         schema para "exhibiciones" en esta fase. -->
+    <ul>
+      <li>2026 — Furlong. Casa Rosa Polanco, Mexico City, MX.</li>
+      <li>2025 — Territorio Fair. Mexican Design, Art-Object. Mexico City, MX.</li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .about {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+</style>

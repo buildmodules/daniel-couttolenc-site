@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "titulo": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "portada": {
+      "type": "string"
+    },
+    "galeria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dimensiones": {
+      "type": "string"
+    },
+    "variantes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string"
+          },
+          "imagen": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "nombre"
+        ]
+      }
+    },
+    "leadTime": {
+      "type": "string"
+    },
+    "orden": {
+      "type": "number"
+    },
+    "destacado": {
+      "default": true,
+      "type": "boolean"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "titulo",
+    "slug"
+  ]
+}

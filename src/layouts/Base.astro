@@ -1,0 +1,31 @@
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} · Daniel Couttolenc</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a href="/">Daniel Couttolenc</a>
+      <nav>
+        <a href="/">Work</a>
+        <a href="/nosotros">About</a>
+        <a href="/contacto">Contact</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <a href="/terminos">Terms and Conditions</a>
+      <a href="mailto:danielcouttolenc@gmail.com">danielcouttolenc@gmail.com</a>
+    </footer>
+  </body>
+</html>

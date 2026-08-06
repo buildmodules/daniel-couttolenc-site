@@ -1,0 +1,85 @@
+---
+import Base from "../layouts/Base.astro";
+
+// Reemplaza esto por tu endpoint real de Formspree, ej: https://formspree.io/f/xxxxxxx
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/TU_ID_AQUI";
+---
+<Base title="Contact">
+  <section class="contacto">
+    <h1>Contact</h1>
+    <p>Daniel Couttolenc welcomes collaborations, custom commissions and media requests.</p>
+
+    <form action={FORMSPREE_ENDPOINT} method="POST" id="contact-form">
+      <label>
+        Name
+        <input type="text" name="name" required />
+      </label>
+      <label>
+        Surname
+        <input type="text" name="surname" />
+      </label>
+      <label>
+        Email*
+        <input type="email" name="email" required />
+      </label>
+      <label>
+        Subject
+        <input type="text" name="subject" id="subject-field" />
+      </label>
+      <label>
+        Message
+        <textarea name="message" rows="5"></textarea>
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+</Base>
+
+<script>
+  // Pre-llena el campo "Subject" si viene un query param ?asunto= desde
+  // el botón "Inquire" de una pieza o colección.
+  const params = new URLSearchParams(window.location.search);
+  const asunto = params.get("asunto");
+  if (asunto) {
+    const field = document.getElementById("subject-field") as HTMLInputElement | null;
+    if (field) field.value = asunto;
+  }
+</script>
+
+<style>
+  .contacto {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+  }
+  input,
+  textarea {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    padding: 0.4rem 0;
+    font-size: 1rem;
+    background: transparent;
+  }
+  button {
+    align-self: flex-start;
+    margin-top: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: none;
+    border: 1px solid currentColor;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+  }
+</style>

@@ -1,0 +1,92 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const piezas = await getCollection("piezas");
+  return piezas.map((pieza) => ({
+    params: { slug: pieza.data.slug },
+    props: { pieza },
+  }));
+}
+
+const { pieza } = Astro.props as any;
+const { Content } = await render(pieza);
+const { titulo, galeria, portada, dimensiones, variantes, leadTime } = pieza.data;
+---
+<Base title={titulo}>
+  <article class="pieza">
+    <div class="pieza__galeria">
+      {(galeria ?? (portada ? [portada] : [])).map((img: string) => (
+        <img src={img} alt={titulo} loading="lazy" />
+      ))}
+    </div>
+
+    <div class="pieza__info">
+      <h1>{titulo}</h1>
+      <div class="pieza__descripcion"><Content /></div>
+
+      {dimensiones && (
+        <p><strong>Dimensions (W × D × H):</strong> {dimensiones}</p>
+      )}
+
+      {variantes && variantes.length > 0 && (
+        <div class="pieza__variantes">
+          <strong>Material:</strong>
+          <ul>
+            {variantes.map((v: any) => (
+              <li>
+                {v.imagen && <img src={v.imagen} alt={v.nombre} class="swatch" />}
+                <span>{v.nombre}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {leadTime && <p><strong>Lead time:</strong> {leadTime}</p>}
+
+      <a
+        class="inquire"
+        href={`/contacto?asunto=${encodeURIComponent(`I'd like to request a quote for ${titulo}.`)}`}
+      >
+        Inquire
+      </a>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .pieza {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    padding: 1.5rem;
+  }
+  .pieza__galeria img {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+  }
+  .pieza__variantes ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+  }
+  .swatch {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .inquire {
+    display: inline-block;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .pieza {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,60 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const colecciones = await getCollection("colecciones");
+  return colecciones.map((coleccion) => ({
+    params: { slug: coleccion.data.slug },
+    props: { coleccion },
+  }));
+}
+
+const { coleccion } = Astro.props as any;
+const { Content } = await render(coleccion);
+const { titulo, galeria, portada } = coleccion.data;
+---
+<Base title={titulo}>
+  <article class="coleccion">
+    <div class="coleccion__galeria">
+      {(galeria ?? (portada ? [portada] : [])).map((img: string) => (
+        <img src={img} alt={titulo} loading="lazy" />
+      ))}
+    </div>
+
+    <div class="coleccion__info">
+      <h1>{titulo}</h1>
+      <div class="coleccion__descripcion"><Content /></div>
+
+      <a
+        class="inquire"
+        href={`/contacto?asunto=${encodeURIComponent(`I'd like to know more about ${titulo}.`)}`}
+      >
+        Inquire
+      </a>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .coleccion {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    padding: 1.5rem;
+  }
+  .coleccion__galeria img {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+  }
+  .inquire {
+    display: inline-block;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .coleccion {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

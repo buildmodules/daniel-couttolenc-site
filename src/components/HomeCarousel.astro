@@ -1,0 +1,210 @@
+---
+interface Item {
+  titulo: string;
+  slug: string;
+  portada?: string;
+  type: "piezas" | "colecciones";
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+{items.length > 0 && (
+  <div class="carousel" id="home-carousel">
+    <div class="carousel__viewport">
+      <div class="carousel__track" id="carousel-track">
+        {items.map((item) => (
+          <a class="carousel__slide" href={`/${item.type}/${item.slug}`}>
+            <span class="carousel__frame">
+              {item.portada && <img src={item.portada} alt={item.titulo} loading="lazy" />}
+            </span>
+          </a>
+        ))}
+      </div>
+
+      {items.length > 1 && (
+        <>
+          <button type="button" class="carousel__arrow carousel__arrow--prev" id="carousel-prev" aria-label="Pieza anterior">
+            <span></span>
+          </button>
+          <button type="button" class="carousel__arrow carousel__arrow--next" id="carousel-next" aria-label="Siguiente pieza">
+            <span></span>
+          </button>
+
+          <div class="carousel__dots" id="carousel-dots">
+            {items.map((_, i) => (
+              <button type="button" class="carousel__dot" data-index={i} aria-label={`Ir a la pieza ${i + 1}`}></button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+)}
+
+<script>
+  const carousel = document.getElementById("home-carousel");
+  if (carousel) {
+    const track = document.getElementById("carousel-track") as HTMLElement;
+    const prevBtn = document.getElementById("carousel-prev");
+    const nextBtn = document.getElementById("carousel-next");
+    const dotsWrap = document.getElementById("carousel-dots");
+    const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll<HTMLButtonElement>(".carousel__dot")) : [];
+    const slideCount = track.children.length;
+    let index = 0;
+
+    const render = () => {
+      track.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
+    };
+
+    const go = (next: number) => {
+      index = (next + slideCount) % slideCount;
+      render();
+    };
+
+    prevBtn?.addEventListener("click", () => go(index - 1));
+    nextBtn?.addEventListener("click", () => go(index + 1));
+    dots.forEach((dot, i) => dot.addEventListener("click", () => go(i)));
+
+    carousel.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") go(index - 1);
+      if (e.key === "ArrowRight") go(index + 1);
+    });
+
+    let touchStartX = 0;
+    track.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    track.addEventListener("touchend", (e) => {
+      const delta = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(delta) > 40) go(delta > 0 ? index - 1 : index + 1);
+    }, { passive: true });
+
+    render();
+  }
+</script>
+
+<style>
+  .carousel {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 40px var(--gutter) 0;
+  }
+
+  .carousel__viewport {
+    /* El hero mide 6 columnas de la grilla de 8 columnas que usa Work (mismo
+       --gutter/--grid-gap), no el ancho completo del contenedor. */
+    --grid-content-w: min(calc(100vw - 2 * var(--gutter)), calc(var(--max-width) - 2 * var(--gutter)));
+    max-width: calc(0.75 * var(--grid-content-w) - 0.25 * var(--grid-gap));
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-placeholder);
+  }
+
+  .carousel__track {
+    display: flex;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .carousel__slide {
+    flex: 0 0 100%;
+    display: block;
+  }
+
+  .carousel__frame {
+    display: block;
+    aspect-ratio: 1039 / 705;
+  }
+
+  .carousel__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .carousel__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  .carousel__arrow--prev {
+    left: 24px;
+  }
+  .carousel__arrow--next {
+    right: 24px;
+  }
+  .carousel__arrow span {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-top: 1px solid var(--color-text);
+    border-right: 1px solid var(--color-text);
+  }
+  .carousel__arrow--prev span {
+    transform: rotate(-135deg);
+    margin-left: 3px;
+  }
+  .carousel__arrow--next span {
+    transform: rotate(45deg);
+    margin-right: 3px;
+  }
+
+  .carousel__dots {
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 1;
+  }
+  .carousel__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .carousel__dot.is-active {
+    background: #fff;
+    transform: scale(1.4);
+  }
+
+  @media (max-width: 900px) {
+    .carousel {
+      padding: 24px 20px 0;
+    }
+    .carousel__viewport {
+      max-width: none;
+    }
+    .carousel__arrow {
+      width: 26px;
+      height: 26px;
+    }
+    .carousel__arrow--prev {
+      left: 8px;
+    }
+    .carousel__arrow--next {
+      right: 8px;
+    }
+  }
+</style>

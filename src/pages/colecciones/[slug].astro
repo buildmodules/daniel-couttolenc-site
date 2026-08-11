@@ -13,48 +13,303 @@ export async function getStaticPaths() {
 const { coleccion } = Astro.props as any;
 const { Content } = await render(coleccion);
 const { titulo, galeria, portada } = coleccion.data;
+const imagenes: string[] = galeria ?? (portada ? [portada] : []);
 ---
 <Base title={titulo}>
   <article class="coleccion">
+    <a class="coleccion__close" href="/work" aria-label="Cerrar">
+      <span></span>
+      <span></span>
+    </a>
+
     <div class="coleccion__galeria">
-      {(galeria ?? (portada ? [portada] : [])).map((img: string) => (
-        <img src={img} alt={titulo} loading="lazy" />
+      {imagenes.map((img: string, i: number) => (
+        <button type="button" class="coleccion__foto" data-index={i}>
+          <img src={img} alt={titulo} loading="lazy" />
+        </button>
       ))}
     </div>
 
-    <div class="coleccion__info">
-      <h1>{titulo}</h1>
-      <div class="coleccion__descripcion"><Content /></div>
+    <div class="coleccion__info-sticky">
+      <div class="coleccion__info">
+        <h1 class="type-heading">{titulo}</h1>
+        <div class="coleccion__descripcion"><Content /></div>
 
-      <a
-        class="inquire"
-        href={`/contacto?asunto=${encodeURIComponent(`I'd like to know more about ${titulo}.`)}`}
-      >
-        Inquire
-      </a>
+        <a
+          class="inquire type-cta"
+          href={`/contacto?asunto=${encodeURIComponent(`I'd like to know more about ${titulo}.`)}`}
+        >
+          Inquire
+        </a>
+      </div>
     </div>
   </article>
+
+  <!-- Lightbox de galería -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button type="button" class="lightbox__close" id="lightbox-close" aria-label="Cerrar">
+      <span></span>
+      <span></span>
+    </button>
+    <button type="button" class="lightbox__arrow lightbox__arrow--prev" id="lightbox-prev" aria-label="Foto anterior">
+      <span></span>
+    </button>
+    <div class="lightbox__stage">
+      <img id="lightbox-img" src="" alt={titulo} />
+    </div>
+    <button type="button" class="lightbox__arrow lightbox__arrow--next" id="lightbox-next" aria-label="Foto siguiente">
+      <span></span>
+    </button>
+  </div>
 </Base>
+
+<script>
+  // --- Lightbox de galería ---
+  const photos = Array.from(document.querySelectorAll<HTMLButtonElement>(".coleccion__foto"));
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img") as HTMLImageElement | null;
+  const lightboxClose = document.getElementById("lightbox-close");
+  const lightboxPrev = document.getElementById("lightbox-prev");
+  const lightboxNext = document.getElementById("lightbox-next");
+  const sources = photos.map((btn) => btn.querySelector("img")?.getAttribute("src") ?? "");
+  let lightboxIndex = 0;
+
+  const openLightbox = (index: number) => {
+    if (!lightbox || !lightboxImg || sources.length === 0) return;
+    lightboxIndex = (index + sources.length) % sources.length;
+    lightboxImg.src = sources[lightboxIndex];
+    lightbox.classList.add("is-visible");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.classList.add("no-scroll");
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox) return;
+    lightbox.classList.remove("is-visible");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("no-scroll");
+  };
+
+  const showLightbox = (delta: number) => openLightbox(lightboxIndex + delta);
+
+  photos.forEach((btn) => {
+    btn.addEventListener("click", () => openLightbox(Number(btn.dataset.index)));
+  });
+  lightboxClose?.addEventListener("click", closeLightbox);
+  lightboxPrev?.addEventListener("click", () => showLightbox(-1));
+  lightboxNext?.addEventListener("click", () => showLightbox(1));
+  lightbox?.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeLightbox();
+    if (lightbox?.classList.contains("is-visible")) {
+      if (e.key === "ArrowLeft") showLightbox(-1);
+      if (e.key === "ArrowRight") showLightbox(1);
+    }
+  });
+</script>
 
 <style>
   .coleccion {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    padding: 1.5rem;
+    grid-template-columns: 45% 1fr;
+    align-items: start;
+    gap: 3.5rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 40px var(--gutter) 4rem;
   }
-  .coleccion__galeria img {
+  .coleccion__close {
+    position: fixed;
+    top: calc(var(--header-h) + 40px);
+    right: var(--gutter);
+    width: 18px;
+    height: 18px;
+    z-index: 20;
+  }
+  .coleccion__close span {
+    position: absolute;
+    top: 50%;
+    left: 0;
     width: 100%;
-    margin-bottom: 1rem;
-    border-radius: 4px;
+    height: 1px;
+    background: var(--color-text);
   }
+  .coleccion__close span:first-child {
+    transform: rotate(45deg);
+  }
+  .coleccion__close span:last-child {
+    transform: rotate(-45deg);
+  }
+
+  .coleccion__foto {
+    display: block;
+    width: 100%;
+    margin-bottom: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+    appearance: none;
+    outline: none;
+  }
+  .coleccion__foto:focus-visible {
+    outline: 1px solid var(--color-hairline);
+    outline-offset: 4px;
+  }
+  .coleccion__foto img {
+    width: 100%;
+    display: block;
+  }
+
+  .coleccion__info-sticky {
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 15vh;
+  }
+  .coleccion__info {
+    max-width: 510px;
+  }
+  .coleccion__info h1 {
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .coleccion__descripcion {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+  }
+  .coleccion__descripcion :global(p + p) {
+    margin-top: 1em;
+  }
+
   .inquire {
-    display: inline-block;
-    margin-top: 1.5rem;
+    margin-top: 24px;
   }
+
   @media (max-width: 900px) {
     .coleccion {
       grid-template-columns: 1fr;
+      padding-top: 72px;
     }
+    .coleccion__info-sticky {
+      position: static;
+      height: auto;
+      display: block;
+      padding-bottom: 0;
+    }
+    .coleccion__info {
+      max-width: none;
+    }
+  }
+</style>
+
+<style is:global>
+  body.no-scroll {
+    overflow: hidden;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(247, 247, 247, 0.85);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .lightbox.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .lightbox__stage {
+    max-width: min(70vw, 900px);
+    max-height: 82vh;
+  }
+  .lightbox__stage img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 82vh;
+    object-fit: contain;
+  }
+  .lightbox__close {
+    position: absolute;
+    top: 32px;
+    right: var(--gutter);
+    width: 20px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    outline: none;
+  }
+  .lightbox__close:focus-visible {
+    outline: 1px solid var(--color-hairline);
+    outline-offset: 4px;
+  }
+  .lightbox__close span {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-text);
+  }
+  .lightbox__close span:first-child {
+    transform: rotate(45deg);
+  }
+  .lightbox__close span:last-child {
+    transform: rotate(-45deg);
+  }
+  .lightbox__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    outline: none;
+  }
+  .lightbox__arrow:focus-visible {
+    outline: 1px solid var(--color-hairline);
+    outline-offset: 4px;
+  }
+  .lightbox__arrow--prev {
+    left: 24px;
+  }
+  .lightbox__arrow--next {
+    right: 24px;
+  }
+  .lightbox__arrow span {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-top: 1px solid var(--color-text);
+    border-right: 1px solid var(--color-text);
+  }
+  .lightbox__arrow--prev span {
+    transform: rotate(-135deg);
+    margin-left: 3px;
+  }
+  .lightbox__arrow--next span {
+    transform: rotate(45deg);
+    margin-right: 3px;
   }
 </style>

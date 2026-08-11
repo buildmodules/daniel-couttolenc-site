@@ -1,0 +1,46 @@
+---
+import Base from "../../layouts/Base.astro";
+import WorkGrid from "../../components/WorkGrid.astro";
+import { getCollection } from "astro:content";
+
+const PAGE_SIZE = 24;
+
+// Work es el catálogo completo: a diferencia del carrusel del home, aquí no
+// se filtra por "destacado".
+const piezas = (await getCollection("piezas")).map((p) => ({
+  ...p.data,
+  type: "piezas" as const,
+  _order: p.data.orden ?? 999,
+}));
+
+const colecciones = (await getCollection("colecciones")).map((c) => ({
+  ...c.data,
+  type: "colecciones" as const,
+  _order: c.data.orden ?? 999,
+}));
+
+const items = [...piezas, ...colecciones].sort((a, b) => a._order - b._order);
+const page1 = items.slice(0, PAGE_SIZE);
+const hasMore = items.length > PAGE_SIZE;
+---
+<Base title="Work">
+  <WorkGrid items={page1} />
+
+  {hasMore && (
+    <div class="load-more-wrap">
+      <a href="/work/pagina/2" id="load-more">Load more</a>
+    </div>
+  )}
+</Base>
+
+<style>
+  .load-more-wrap {
+    text-align: center;
+    padding: 3rem var(--gutter);
+  }
+  .load-more-wrap a {
+    font-size: var(--fs-body);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

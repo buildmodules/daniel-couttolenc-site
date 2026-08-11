@@ -31,15 +31,11 @@ export default defineConfig({
         label: "Piezas",
         path: "src/content/piezas",
         format: "md",
-        ui: {
-          router: ({ document }) => `/piezas/${document._sys.filename}`,
-        },
         fields: [
           {
             type: "string",
             name: "titulo",
             label: "Título",
-            isTitle: true,
             required: true,
           },
           {
@@ -101,19 +97,50 @@ export default defineConfig({
         ],
       },
       {
+        name: "exhibiciones",
+        label: "Exhibitions",
+        path: "src/content/exhibiciones",
+        format: "md",
+        ui: {
+          itemProps: (item) => ({
+            label: [item?.anio, item?.nombre].filter(Boolean).join(" — ") || "Nueva exhibición",
+          }),
+        },
+        fields: [
+          {
+            type: "string",
+            name: "anio",
+            label: "Año",
+            required: true,
+          },
+          {
+            type: "string",
+            name: "nombre",
+            label: "Nombre / lugar",
+            required: true,
+          },
+          {
+            type: "image",
+            name: "foto",
+            label: "Foto representativa",
+          },
+          {
+            type: "number",
+            name: "orden",
+            label: "Orden en la lista (menor = primero)",
+          },
+        ],
+      },
+      {
         name: "colecciones",
         label: "Colecciones",
         path: "src/content/colecciones",
         format: "md",
-        ui: {
-          router: ({ document }) => `/colecciones/${document._sys.filename}`,
-        },
         fields: [
           {
             type: "string",
             name: "titulo",
             label: "Título",
-            isTitle: true,
             required: true,
           },
           {

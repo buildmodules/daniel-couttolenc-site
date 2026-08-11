@@ -1,24 +1,26 @@
 ---
-titulo: "ASTER table"
-slug: "aster-table"
-portada: "/images/piezas/aster-1.jpg"
+titulo: ASTER table
+slug: aster-table
+portada: /images/Aster table/1.jpg
 galeria:
-  - "/images/piezas/aster-1.jpg"
-  - "/images/piezas/aster-2.jpg"
-  - "/images/piezas/aster-3.jpg"
-dimensiones: "39.5 × 39.5 × 56cm (assembled)"
+  - /images/Aster table/2.jpg
+  - /images/Aster table/3.jpg
+  - /images/Aster table/4.jpg
+  - /images/Aster table/6.jpg
+  - /images/Aster table/7.jpg
+dimensiones: 39.5 x 39.5 x 56cm (assembled)
 variantes:
-  - nombre: "Red oak Cream wash finish"
-    imagen: "/images/variantes/cream-wash.jpg"
-  - nombre: "Red oak Cinnamon finish"
-    imagen: "/images/variantes/cinnamon.jpg"
-  - nombre: "Red oak Black finish"
-    imagen: "/images/variantes/black.jpg"
-  - nombre: "Tzalam"
-    imagen: "/images/variantes/tzalam.jpg"
-  - nombre: "Mexican oak (Rosamorada)"
-    imagen: "/images/variantes/rosamorada.jpg"
-leadTime: "8-10 weeks"
+  - nombre: Red oak Cream wash finish
+    imagen: /images/Materials/Red-Oak_-Cream-Wash.png
+  - nombre: Red oak Cinnamon finish
+    imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png
+  - nombre: Red oak Black finish
+    imagen: /images/Materials/Red-Oak_Black-Finish.png
+  - nombre: Tzalam
+    imagen: /images/Materials/Tzalam.png
+  - nombre: Mexican oak (Rosamorada)
+    imagen: /images/Materials/Rosamorada.png
+leadTime: 8-10 weeks
 orden: 1
 destacado: true
 ---

@@ -1,11 +1,13 @@
 ---
-titulo: "BLEO collection"
-slug: "bleo"
-portada: "/images/colecciones/bleo-1.jpg"
+titulo: BLEO collection
+slug: bleo
+portada: /images/collections/bleo/1.jpg
 galeria:
-  - "/images/colecciones/bleo-1.jpg"
-  - "/images/colecciones/bleo-2.jpg"
-  - "/images/colecciones/bleo-3.jpg"
+  - /images/collections/bleo/1.jpg
+  - /images/collections/bleo/2.jpg
+  - /images/collections/bleo/3.jpg
+  - /images/collections/bleo/4.jpg
+  - /images/collections/bleo/bleo5.jpg
 orden: 2
 destacado: true
 ---

@@ -33,4 +33,14 @@ const colecciones = defineCollection({
   }),
 });
 
-export const collections = { piezas, colecciones };
+const exhibiciones = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/exhibiciones" }),
+  schema: z.object({
+    anio: z.string(),
+    nombre: z.string(),
+    foto: z.string().optional(),
+    orden: z.number().optional(),
+  }),
+});
+
+export const collections = { piezas, colecciones, exhibiciones };

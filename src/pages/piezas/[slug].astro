@@ -13,66 +13,332 @@ export async function getStaticPaths() {
 const { pieza } = Astro.props as any;
 const { Content } = await render(pieza);
 const { titulo, galeria, portada, dimensiones, variantes, leadTime } = pieza.data;
+const imagenes: string[] = galeria ?? (portada ? [portada] : []);
+const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
 ---
 <Base title={titulo}>
   <article class="pieza">
+    <a class="pieza__close" href="/work" aria-label="Cerrar">
+      <span></span>
+      <span></span>
+    </a>
+
     <div class="pieza__galeria">
-      {(galeria ?? (portada ? [portada] : [])).map((img: string) => (
-        <img src={img} alt={titulo} loading="lazy" />
+      {imagenes.map((img: string, i: number) => (
+        <button type="button" class="pieza__foto" data-index={i}>
+          <img src={img} alt={titulo} loading="lazy" />
+        </button>
       ))}
     </div>
 
-    <div class="pieza__info">
-      <h1>{titulo}</h1>
-      <div class="pieza__descripcion"><Content /></div>
+    <div class="pieza__info-sticky">
+      <div class="pieza__info">
+        <h1 class="type-heading">{titulo}</h1>
+        <div class="pieza__descripcion"><Content /></div>
 
-      {dimensiones && (
-        <p><strong>Dimensions (W × D × H):</strong> {dimensiones}</p>
-      )}
+        {dimensiones && (
+          <>
+            <hr />
+            <p class="pieza__label type-label">Dimensions (W × D × H):</p>
+            <p>{dimensiones}</p>
+          </>
+        )}
 
-      {variantes && variantes.length > 0 && (
-        <div class="pieza__variantes">
-          <strong>Material:</strong>
-          <ul>
-            {variantes.map((v: any) => (
-              <li>
-                {v.imagen && <img src={v.imagen} alt={v.nombre} class="swatch" />}
-                <span>{v.nombre}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        {variantes && variantes.length > 0 && (
+          <>
+            <hr />
+            <p class="pieza__label type-label">Material: <span class="pieza__label-value">Solid Wood</span></p>
+            <ul class="pieza__variantes">
+              {variantes.map((v: any) => (
+                <li>
+                  {v.imagen && <img src={v.imagen} alt={v.nombre} class="swatch" />}
+                  <span>{v.nombre}</span>
+                </li>
+              ))}
+            </ul>
+            <hr />
+            <p class="pieza__disclaimer">Dimensions &amp; material customizable upon request.</p>
+          </>
+        )}
 
-      {leadTime && <p><strong>Lead time:</strong> {leadTime}</p>}
+        {leadTime && (
+          <p class="pieza__leadtime"><strong class="pieza__label-inline type-label">Lead time {leadTime}</strong></p>
+        )}
 
-      <a
-        class="inquire"
-        href={`/contacto?asunto=${encodeURIComponent(`I'd like to request a quote for ${titulo}.`)}`}
-      >
-        Inquire
-      </a>
+        <button type="button" class="inquire type-cta" id="inquire-open">
+          Inquire
+        </button>
+      </div>
     </div>
   </article>
+
+  <!-- Lightbox de galería -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button type="button" class="lightbox__close" id="lightbox-close" aria-label="Cerrar">
+      <span></span>
+      <span></span>
+    </button>
+    <button type="button" class="lightbox__arrow lightbox__arrow--prev" id="lightbox-prev" aria-label="Foto anterior">
+      <span></span>
+    </button>
+    <div class="lightbox__stage">
+      <img id="lightbox-img" src="" alt={titulo} />
+    </div>
+    <button type="button" class="lightbox__arrow lightbox__arrow--next" id="lightbox-next" aria-label="Foto siguiente">
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Modal de Inquire -->
+  <div class="inquire-modal" id="inquire-modal" aria-hidden="true">
+    <div class="inquire-modal__panel">
+      <button type="button" class="inquire-modal__close" id="inquire-close" aria-label="Cerrar">
+        <span></span>
+        <span></span>
+      </button>
+
+      <form id="inquire-form" name="inquire" method="POST" data-netlify="true" netlify-honeypot="inquire-bot-field">
+        <input type="hidden" name="form-name" value="inquire" />
+        <p class="sr-only"><label>Don't fill this out: <input name="inquire-bot-field" /></label></p>
+        <input type="hidden" name="subject" value={`Inquiry: ${titulo}`} />
+        <label class="sr-only" for="inquire-email">Email</label>
+        <input type="email" name="email" id="inquire-email" placeholder="Email*" required />
+        <label class="sr-only" for="inquire-message">Message</label>
+        <textarea name="message" id="inquire-message" class="is-prefilled" rows="4">{mensajeInquire}</textarea>
+        <button type="submit" class="type-cta" id="inquire-submit">Submit</button>
+        <p class="inquire-modal__status" id="inquire-status" role="status"></p>
+      </form>
+    </div>
+  </div>
 </Base>
+
+<script>
+  // --- Lightbox de galería ---
+  const photos = Array.from(document.querySelectorAll<HTMLButtonElement>(".pieza__foto"));
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img") as HTMLImageElement | null;
+  const lightboxClose = document.getElementById("lightbox-close");
+  const lightboxPrev = document.getElementById("lightbox-prev");
+  const lightboxNext = document.getElementById("lightbox-next");
+  const sources = photos.map((btn) => btn.querySelector("img")?.getAttribute("src") ?? "");
+  let lightboxIndex = 0;
+
+  const openLightbox = (index: number) => {
+    if (!lightbox || !lightboxImg || sources.length === 0) return;
+    lightboxIndex = (index + sources.length) % sources.length;
+    lightboxImg.src = sources[lightboxIndex];
+    lightbox.classList.add("is-visible");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.classList.add("no-scroll");
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox) return;
+    lightbox.classList.remove("is-visible");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("no-scroll");
+  };
+
+  const showLightbox = (delta: number) => openLightbox(lightboxIndex + delta);
+
+  photos.forEach((btn) => {
+    btn.addEventListener("click", () => openLightbox(Number(btn.dataset.index)));
+  });
+  lightboxClose?.addEventListener("click", closeLightbox);
+  lightboxPrev?.addEventListener("click", () => showLightbox(-1));
+  lightboxNext?.addEventListener("click", () => showLightbox(1));
+  lightbox?.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // --- Modal de Inquire ---
+  const inquireOpenBtn = document.getElementById("inquire-open");
+  const inquireModal = document.getElementById("inquire-modal");
+  const inquireClose = document.getElementById("inquire-close");
+  const inquireForm = document.getElementById("inquire-form") as HTMLFormElement | null;
+  const inquireStatus = document.getElementById("inquire-status");
+  const inquireSubmit = document.getElementById("inquire-submit") as HTMLButtonElement | null;
+
+  const openInquire = () => {
+    if (!inquireModal) return;
+    inquireModal.classList.add("is-visible");
+    inquireModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("no-scroll");
+  };
+
+  const closeInquire = () => {
+    if (!inquireModal) return;
+    inquireModal.classList.remove("is-visible");
+    inquireModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("no-scroll");
+  };
+
+  inquireOpenBtn?.addEventListener("click", openInquire);
+  inquireClose?.addEventListener("click", closeInquire);
+  inquireModal?.addEventListener("click", (e) => {
+    if (e.target === inquireModal) closeInquire();
+  });
+
+  // El mensaje viene pre-llenado pero se ve gris, como un placeholder, hasta
+  // que el usuario empieza a editarlo.
+  const inquireMessage = document.getElementById("inquire-message");
+  inquireMessage?.addEventListener("focus", () => {
+    inquireMessage.classList.remove("is-prefilled");
+  });
+
+  inquireForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!inquireForm || !inquireStatus || !inquireSubmit) return;
+    inquireSubmit.disabled = true;
+    inquireStatus.textContent = "Sending…";
+    try {
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(new FormData(inquireForm) as any).toString(),
+      });
+      if (res.ok) {
+        inquireStatus.textContent = "Thank you — we'll be in touch soon.";
+        inquireForm.reset();
+      } else {
+        inquireStatus.textContent = "Something went wrong. Please try again.";
+        inquireSubmit.disabled = false;
+      }
+    } catch {
+      inquireStatus.textContent = "Something went wrong. Please try again.";
+      inquireSubmit.disabled = false;
+    }
+  });
+
+  // --- Cerrar con Escape ---
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    closeLightbox();
+    closeInquire();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (lightbox?.classList.contains("is-visible")) {
+      if (e.key === "ArrowLeft") showLightbox(-1);
+      if (e.key === "ArrowRight") showLightbox(1);
+    }
+  });
+
+</script>
 
 <style>
   .pieza {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    padding: 1.5rem;
+    grid-template-columns: 45% 1fr;
+    align-items: start;
+    gap: 3.5rem;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 40px var(--gutter) 4rem;
   }
-  .pieza__galeria img {
+  .pieza__close {
+    position: fixed;
+    top: calc(var(--header-h) + 40px);
+    right: var(--gutter);
+    width: 18px;
+    height: 18px;
+    z-index: 20;
+  }
+  .pieza__close span {
+    position: absolute;
+    top: 50%;
+    left: 0;
     width: 100%;
-    margin-bottom: 1rem;
-    border-radius: 4px;
+    height: 1px;
+    background: var(--color-text);
   }
-  .pieza__variantes ul {
+  .pieza__close span:first-child {
+    transform: rotate(45deg);
+  }
+  .pieza__close span:last-child {
+    transform: rotate(-45deg);
+  }
+
+  .pieza__foto {
+    display: block;
+    width: 100%;
+    margin-bottom: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+    appearance: none;
+    outline: none;
+  }
+  .pieza__foto:focus-visible {
+    outline: 1px solid var(--color-hairline);
+    outline-offset: 4px;
+  }
+  .pieza__foto img {
+    width: 100%;
+    display: block;
+  }
+
+  .pieza__info-sticky {
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100vh - var(--header-h));
     display: flex;
-    gap: 1rem;
+    align-items: flex-end;
+    padding-bottom: 15vh;
+  }
+  .pieza__info {
+    max-width: 510px;
+  }
+  .pieza__info h1 {
+    margin-bottom: 24px;
+  }
+  .pieza__descripcion {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+  }
+  .pieza__descripcion :global(p + p) {
+    margin-top: 1em;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-hairline);
+    margin: 32px 0 20px;
+  }
+
+  .pieza__label {
+    margin-bottom: 4px;
+  }
+  .pieza__label-value {
+    text-transform: none;
+    font-weight: var(--fw-regular);
+  }
+
+  .pieza__variantes {
+    display: flex;
+    gap: 24px;
     list-style: none;
     padding: 0;
+    margin: 8px 0 0;
+  }
+  .pieza__disclaimer {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--color-text-muted);
+  }
+  .pieza__leadtime {
+    margin-top: 32px;
+  }
+  .pieza__variantes li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    font-size: var(--fs-caption);
+    line-height: var(--lh-caption);
+    width: 70px;
   }
   .swatch {
     width: 48px;
@@ -80,13 +346,249 @@ const { titulo, galeria, portada, dimensiones, variantes, leadTime } = pieza.dat
     border-radius: 50%;
     object-fit: cover;
   }
+
   .inquire {
-    display: inline-block;
-    margin-top: 1.5rem;
+    margin-top: 24px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    appearance: none;
+    outline: none;
   }
+  .inquire:focus-visible {
+    outline: 1px solid var(--color-hairline);
+    outline-offset: 4px;
+  }
+
   @media (max-width: 900px) {
     .pieza {
       grid-template-columns: 1fr;
+      padding-top: 72px;
     }
+    .pieza__info-sticky {
+      position: static;
+      height: auto;
+      display: block;
+      padding-bottom: 0;
+    }
+    .pieza__info {
+      max-width: none;
+    }
+    .pieza__variantes {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+
+<style is:global>
+  body.no-scroll {
+    overflow: hidden;
+  }
+
+  .lightbox__close,
+  .lightbox__arrow,
+  .inquire-modal__close,
+  .inquire-modal button[type="submit"] {
+    appearance: none;
+    outline: none;
+  }
+  .lightbox__close:focus-visible,
+  .lightbox__arrow:focus-visible,
+  .inquire-modal__close:focus-visible,
+  .inquire-modal button[type="submit"]:focus-visible {
+    outline: 1px solid var(--color-hairline);
+    outline-offset: 4px;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(247, 247, 247, 0.85);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .lightbox.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .lightbox__stage {
+    max-width: min(70vw, 900px);
+    max-height: 82vh;
+  }
+  .lightbox__stage img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 82vh;
+    object-fit: contain;
+  }
+  .lightbox__close {
+    position: absolute;
+    top: 32px;
+    right: var(--gutter);
+    width: 20px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .lightbox__close span {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-text);
+  }
+  .lightbox__close span:first-child {
+    transform: rotate(45deg);
+  }
+  .lightbox__close span:last-child {
+    transform: rotate(-45deg);
+  }
+  .lightbox__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .lightbox__arrow--prev {
+    left: 24px;
+  }
+  .lightbox__arrow--next {
+    right: 24px;
+  }
+  .lightbox__arrow span {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-top: 1px solid var(--color-text);
+    border-right: 1px solid var(--color-text);
+  }
+  .lightbox__arrow--prev span {
+    transform: rotate(-135deg);
+    margin-left: 3px;
+  }
+  .lightbox__arrow--next span {
+    transform: rotate(45deg);
+    margin-right: 3px;
+  }
+
+  /* Modal de Inquire */
+  .inquire-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(247, 247, 247, 0.85);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .inquire-modal.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .inquire-modal__panel {
+    position: relative;
+    width: min(90vw, 420px);
+    background: var(--color-placeholder);
+    padding: 32px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  }
+  .inquire-modal__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 16px;
+    height: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .inquire-modal__close span {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-text);
+  }
+  .inquire-modal__close span:first-child {
+    transform: rotate(45deg);
+  }
+  .inquire-modal__close span:last-child {
+    transform: rotate(-45deg);
+  }
+  .inquire-modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 8px;
+  }
+  .inquire-modal input {
+    border: none;
+    border-bottom: 1px solid var(--color-hairline);
+    padding: 0.4rem 0;
+    font-size: var(--fs-body);
+    font-family: var(--font-sans);
+    background: transparent;
+    color: var(--color-text);
+  }
+  .inquire-modal textarea {
+    border: none;
+    padding: 12px;
+    font-size: var(--fs-body);
+    font-family: var(--font-sans);
+    background: #fff;
+    color: var(--color-text);
+    resize: none;
+  }
+  .inquire-modal input::placeholder,
+  .inquire-modal textarea::placeholder {
+    color: var(--color-text-soft);
+    opacity: 1;
+  }
+  .inquire-modal textarea.is-prefilled {
+    color: var(--color-text-soft);
+  }
+  .inquire-modal input:focus {
+    outline: none;
+    border-bottom-color: var(--color-text);
+  }
+  .inquire-modal textarea:focus {
+    outline: none;
+  }
+  .inquire-modal button[type="submit"] {
+    align-self: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--color-text);
+  }
+  .inquire-modal__status {
+    font-size: var(--fs-meta);
+    color: var(--color-text-muted);
+    min-height: 1em;
+    margin: 0;
   }
 </style>

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+.DS_Store
+.astro/
+
+# Se regeneran solos con `tinacms build` (parte del build de Netlify) —
+# no hace falta versionarlos.
+tina/__generated__/
+public/admin/

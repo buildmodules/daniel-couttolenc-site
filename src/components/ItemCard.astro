@@ -9,7 +9,9 @@ const { titulo, slug, portada, type } = Astro.props;
 const href = `/${type}/${slug}`;
 ---
 <a class="item-card" href={href}>
-  {portada && <img src={portada} alt={titulo} loading="lazy" />}
+  <span class="item-card__frame">
+    {portada && <img src={portada} alt={titulo} loading="lazy" />}
+  </span>
   <span class="item-card__title">{titulo}</span>
 </a>
 
@@ -19,15 +21,27 @@ const href = `/${type}/${slug}`;
     text-decoration: none;
     color: inherit;
   }
+  .item-card__frame {
+    display: block;
+    aspect-ratio: 333 / 401;
+    background: var(--color-placeholder);
+    overflow: hidden;
+  }
   .item-card img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    border-radius: 4px;
+    object-fit: cover;
+    transition: opacity 0.3s ease, transform 0.4s ease;
+  }
+  .item-card:hover img {
+    opacity: 0.85;
+    transform: scale(1.02);
   }
   .item-card__title {
     display: block;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
+    margin-top: 20px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
   }
 </style>

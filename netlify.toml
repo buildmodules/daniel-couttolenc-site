@@ -1,6 +1,16 @@
 [build]
-  command = "npm run build"
+  # TEMPORAL: se salta "tinacms build" (genera el panel /admin) porque el
+  # chequeo de rama contra TinaCloud está atorado (ver ERR_CLOUD_CHECK_FAILED).
+  # El sitio público no depende de esto — lee el contenido directo de los
+  # archivos markdown. Restaurar a "npm run build" en cuanto TinaCloud
+  # confirme la rama 'main' como indexada.
+  command = "npx astro build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22.12.0"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

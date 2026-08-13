@@ -9,13 +9,13 @@ const PAGE_SIZE = 24;
 // se filtra por "destacado".
 const piezas = (await getCollection("piezas")).map((p) => ({
   ...p.data,
-  type: "piezas" as const,
+  type: "pieces" as const,
   _order: p.data.orden ?? 999,
 }));
 
 const colecciones = (await getCollection("colecciones")).map((c) => ({
   ...c.data,
-  type: "colecciones" as const,
+  type: "collections" as const,
   _order: c.data.orden ?? 999,
 }));
 
@@ -23,12 +23,15 @@ const items = [...piezas, ...colecciones].sort((a, b) => a._order - b._order);
 const page1 = items.slice(0, PAGE_SIZE);
 const hasMore = items.length > PAGE_SIZE;
 ---
-<Base title="Work">
+<Base
+  title="Work"
+  description="Browse the full catalog of furniture and objects by Daniel Couttolenc — solid wood and cast bronze pieces and collections."
+>
   <WorkGrid items={page1} />
 
   {hasMore && (
     <div class="load-more-wrap">
-      <a href="/work/pagina/2" id="load-more">Load more</a>
+      <a href="/work/page/2" id="load-more">Load more</a>
     </div>
   )}
 </Base>

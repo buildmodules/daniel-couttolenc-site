@@ -3,7 +3,7 @@ interface Props {
   titulo: string;
   slug: string;
   portada?: string;
-  type: "piezas" | "colecciones";
+  type: "pieces" | "collections";
 }
 const { titulo, slug, portada, type } = Astro.props;
 const href = `/${type}/${slug}`;

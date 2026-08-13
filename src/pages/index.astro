@@ -7,14 +7,17 @@ import { getCollection } from "astro:content";
 // en este carrusel — Work (/work) sí muestra el catálogo completo.
 const piezas = (await getCollection("piezas"))
   .filter((p) => p.data.destacado !== false)
-  .map((p) => ({ ...p.data, type: "piezas" as const, _order: p.data.orden ?? 999 }));
+  .map((p) => ({ ...p.data, type: "pieces" as const, _order: p.data.orden ?? 999 }));
 
 const colecciones = (await getCollection("colecciones"))
   .filter((c) => c.data.destacado !== false)
-  .map((c) => ({ ...c.data, type: "colecciones" as const, _order: c.data.orden ?? 999 }));
+  .map((c) => ({ ...c.data, type: "collections" as const, _order: c.data.orden ?? 999 }));
 
 const items = [...piezas, ...colecciones].sort((a, b) => a._order - b._order);
 ---
-<Base title="Home">
+<Base
+  title="Daniel Couttolenc"
+  description="Daniel Couttolenc is a Mexican designer creating solid wood and cast bronze furniture and objects guided by proportion, geometry, and material exploration."
+>
   <HomeCarousel items={items} />
 </Base>

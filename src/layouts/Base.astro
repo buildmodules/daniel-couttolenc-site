@@ -1,18 +1,45 @@
 ---
 interface Props {
   title: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article";
 }
-const { title } = Astro.props;
+
+const SITE_NAME = "Daniel Couttolenc";
+const DEFAULT_DESCRIPTION =
+  "Daniel Couttolenc is a Mexican designer creating solid wood and cast bronze furniture and objects guided by proportion, geometry, and material exploration.";
+const DEFAULT_IMAGE = "/images/Aster table/1.jpg";
+
+const { title, description = DEFAULT_DESCRIPTION, image = DEFAULT_IMAGE, type = "website" } = Astro.props;
+const pageTitle =
+  title === SITE_NAME || title.includes(SITE_NAME) ? title : `${title} · ${SITE_NAME}`;
 const path = Astro.url.pathname;
 const isActive = (href: string) => path.startsWith(href);
+const canonicalUrl = new URL(path, Astro.site ?? Astro.url.origin).toString();
+const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 ---
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title} · Daniel Couttolenc</title>
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" />
+
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={absoluteImage} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={absoluteImage} />
   </head>
   <body>
     <header class="site-header">
@@ -22,8 +49,8 @@ const isActive = (href: string) => path.startsWith(href);
       </a>
       <nav class="site-header__nav">
         <a href="/work" aria-current={isActive("/work") ? "page" : undefined}>Work</a>
-        <a href="/nosotros" aria-current={isActive("/nosotros") ? "page" : undefined}>About</a>
-        <a href="/contacto" aria-current={isActive("/contacto") ? "page" : undefined}>Contact</a>
+        <a href="/about" aria-current={isActive("/about") ? "page" : undefined}>About</a>
+        <a href="/contact" aria-current={isActive("/contact") ? "page" : undefined}>Contact</a>
         <a
           class="site-header__social"
           href="https://instagram.com"
@@ -40,7 +67,7 @@ const isActive = (href: string) => path.startsWith(href);
     </main>
     <footer class="site-footer">
       <a href="mailto:danielcouttolenc@gmail.com">danielcouttolenc@gmail.com</a>
-      <a href="/terminos" class="site-footer__terms">Terms and Conditions</a>
+      <a href="/terms" class="site-footer__terms">Terms and Conditions</a>
     </footer>
   </body>
 </html>

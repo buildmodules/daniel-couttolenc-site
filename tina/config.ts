@@ -67,6 +67,11 @@ export default defineConfig({
             label: "Dimensiones (W × D × H)",
           },
           {
+            type: "string",
+            name: "materialTipo",
+            label: "Tipo de material (ej. Solid Wood, Cast Bronze) — default: Solid Wood",
+          },
+          {
             type: "object",
             name: "variantes",
             label: "Variantes de material / acabado",
@@ -85,6 +90,11 @@ export default defineConfig({
             label: "Tiempo de entrega",
           },
           {
+            type: "string",
+            name: "badge",
+            label: "Badge / nota especial (edición limitada, colaboración, etc.)",
+          },
+          {
             type: "number",
             name: "orden",
             label: "Orden en el grid (menor = primero)",
@@ -93,6 +103,25 @@ export default defineConfig({
             type: "boolean",
             name: "destacado",
             label: "Mostrar en el home",
+          },
+          {
+            type: "string",
+            name: "metaTitle",
+            label: "SEO — Meta title",
+            description: "Título para buscadores y redes (tag <title> / og:title). Si se deja vacío, se usa el Título.",
+          },
+          {
+            type: "string",
+            name: "metaDescription",
+            label: "SEO — Meta description",
+            description: "Descripción para buscadores y redes (meta description / og:description). 150–160 caracteres recomendado.",
+            ui: { component: "textarea" },
+          },
+          {
+            type: "image",
+            name: "ogImage",
+            label: "SEO — Open Graph image",
+            description: "Imagen para compartir en redes sociales (Facebook, WhatsApp, X, iMessage). Si se deja vacía, se usa la imagen de portada.",
           },
         ],
       },
@@ -167,6 +196,11 @@ export default defineConfig({
             isBody: true,
           },
           {
+            type: "string",
+            name: "badge",
+            label: "Badge / nota especial (edición limitada, colaboración, etc.)",
+          },
+          {
             type: "number",
             name: "orden",
             label: "Orden en el grid (menor = primero)",
@@ -175,6 +209,25 @@ export default defineConfig({
             type: "boolean",
             name: "destacado",
             label: "Mostrar en el home",
+          },
+          {
+            type: "string",
+            name: "metaTitle",
+            label: "SEO — Meta title",
+            description: "Título para buscadores y redes (tag <title> / og:title). Si se deja vacío, se usa el Título.",
+          },
+          {
+            type: "string",
+            name: "metaDescription",
+            label: "SEO — Meta description",
+            description: "Descripción para buscadores y redes (meta description / og:description). 150–160 caracteres recomendado.",
+            ui: { component: "textarea" },
+          },
+          {
+            type: "image",
+            name: "ogImage",
+            label: "SEO — Open Graph image",
+            description: "Imagen para compartir en redes sociales (Facebook, WhatsApp, X, iMessage). Si se deja vacía, se usa la imagen de portada.",
           },
         ],
       },

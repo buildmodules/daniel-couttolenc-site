@@ -1,0 +1,52 @@
+---
+import Base from "../../../layouts/Base.astro";
+import WorkGrid from "../../../components/WorkGrid.astro";
+import { getCollection } from "astro:content";
+import type { GetStaticPathsOptions } from "astro";
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const piezas = (await getCollection("piezas")).map((p) => ({
+    ...p.data,
+    type: "pieces" as const,
+    _order: p.data.orden ?? 999,
+  }));
+
+  const colecciones = (await getCollection("colecciones")).map((c) => ({
+    ...c.data,
+    type: "collections" as const,
+    _order: c.data.orden ?? 999,
+  }));
+
+  const items = [...piezas, ...colecciones].sort((a, b) => a._order - b._order);
+
+  return paginate(items, { pageSize: 24 });
+}
+
+const { page } = Astro.props as any;
+---
+<Base
+  title={`Work — page ${page.currentPage}`}
+  description="Browse the full catalog of furniture and objects by Daniel Couttolenc — solid wood and cast bronze pieces and collections."
+>
+  <WorkGrid items={page.data} />
+
+  <nav class="pager">
+    {page.url.prev && <a href={page.url.prev}>← Previous</a>}
+    {page.url.next && <a href={page.url.next}>Load more →</a>}
+  </nav>
+</Base>
+
+<style>
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 3rem var(--gutter);
+    font-size: var(--fs-body);
+  }
+  .pager a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

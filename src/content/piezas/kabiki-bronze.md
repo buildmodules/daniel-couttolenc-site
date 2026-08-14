@@ -25,11 +25,11 @@ variantes:
   - nombre: Cast Bronze
     imagen: /images/Materials/Cast-Bronze.png
 leadTime: 8-10 weeks
-badge: LIMITED EDITION – 15 PIECES · Conceived in collaboration with Design Week Mexico
+badge: 'LIMITED EDITION – 15 PIECES · Conceived in collaboration with Design Week Mexico. '
 orden: 14
 destacado: false
 metaTitle: KABIKI bronze | Daniel Couttolenc
-metaDescription: An extension of the KABIKI family, these bronze objects reinterpret the collection's geometric language at a smaller scale, exploring balance, rhythm, and…
+metaDescription: 'An extension of the KABIKI family, these bronze objects reinterpret the collection''s geometric language at a smaller scale, exploring balance, rhythm, and…'
 ogImage: /images/Kabiki bronze/1.jpg
 ---
 

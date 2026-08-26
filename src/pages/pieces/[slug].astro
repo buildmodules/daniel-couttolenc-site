@@ -47,7 +47,7 @@ const materialNote =
     <div class="pieza__galeria">
       {imagenes.map((img: string, i: number) => (
         <button type="button" class="pieza__foto" data-index={i}>
-          <img src={img} alt={titulo} loading="lazy" />
+          <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
         </button>
       ))}
     </div>
@@ -248,13 +248,95 @@ const materialNote =
     }
   });
 
+  // --- Ajuste de la primera foto (siempre vertical) ---
+  // Si al ancho normal de la columna la primera foto no cabría completa en
+  // lo visible (viewport - top offset - el mismo padding-bottom del panel
+  // de info), reducimos el ancho de la columna (--photo-col) lo justo para
+  // que sí quepa. Como todas las fotos comparten esa columna, todas heredan
+  // el nuevo ancho — se ven consistentes entre sí.
+  const pieza = document.querySelector<HTMLElement>(".pieza");
+  const galeria = document.querySelector<HTMLElement>(".pieza__galeria");
+  const firstPhotoImg = galeria?.querySelector("img") ?? null;
+  const inquireBtn = document.getElementById("inquire-open");
+  // El requisito de los diseñadores (que la foto siempre se vea completa,
+  // sin cortarse) es la regla dura — tiene prioridad sobre no verse angosta.
+  // Este mínimo es solo un salvavidas para casos extremos, deliberadamente
+  // bajo para no forzar un ancho más grande del que la foto realmente
+  // necesita para llegar justo hasta abajo (altura del botón Inquire).
+  const MIN_COL = 24;
+
+  const fitFirstPhoto = () => {
+    if (!pieza || !galeria || !firstPhotoImg || !firstPhotoImg.naturalWidth || !inquireBtn) return;
+    if (window.matchMedia("(max-width: 900px)").matches) return; // en mobile el layout ya es 1 columna
+
+    const aspect = firstPhotoImg.naturalWidth / firstPhotoImg.naturalHeight;
+
+    const measure = () => {
+      const top = galeria.getBoundingClientRect().top;
+      return {
+        photoHeight: galeria.getBoundingClientRect().width / aspect,
+        // El objetivo real es "la foto llega hasta donde termina Inquire" —
+        // se mide directo en vez de asumir un padding fijo, para que quede exacto.
+        available: inquireBtn.getBoundingClientRect().bottom - top,
+      };
+    };
+
+    const applyPercentFor = (available: number) => {
+      // grid-template-columns resuelve % contra el content-box (sin padding)
+      // — clientWidth incluye el padding horizontal, hay que restarlo.
+      const piezaStyle = getComputedStyle(pieza);
+      const paddingX = parseFloat(piezaStyle.paddingLeft || "0") + parseFloat(piezaStyle.paddingRight || "0");
+      const totalWidth = pieza.clientWidth - paddingX;
+      // Los % de grid-template-columns se resuelven contra el content-box
+      // completo — el gap NO se resta antes de repartir (verificado empíricamente).
+      const trackSpace = totalWidth;
+      const neededColWidth = available * aspect;
+      const percent = Math.max(MIN_COL, Math.min(45, (neededColWidth / trackSpace) * 100));
+      pieza.style.setProperty("--photo-col", `${percent}%`);
+    };
+
+    // 1ª pasada: a ancho normal (45%), ¿haría falta encoger?
+    pieza.style.setProperty("--photo-col", "45%");
+    const first = measure();
+
+    if (first.photoHeight <= first.available || first.available <= 0) {
+      galeria.classList.remove("pieza__galeria--fit");
+      return;
+    }
+
+    applyPercentFor(first.available);
+    galeria.classList.add("pieza__galeria--fit");
+
+    // 2ª pasada: al angostar la columna de info (1fr) su texto puede haber
+    // reajustado líneas y movido Inquire — remedimos en el nuevo estado y
+    // afinamos una vez más para que la foto llegue justo hasta ahí.
+    const second = measure();
+    if (second.available > 0) {
+      applyPercentFor(second.available);
+    }
+  };
+
+  // Poll en vez de escuchar "load": la imagen puede terminar de cargar antes
+  // de que este script llegue a registrar el listener (carrera de eventos),
+  // sobre todo con la imagen ya cacheada por el navegador.
+  const waitForFirstPhoto = () => {
+    if (firstPhotoImg && firstPhotoImg.naturalWidth) {
+      fitFirstPhoto();
+    } else {
+      requestAnimationFrame(waitForFirstPhoto);
+    }
+  };
+  waitForFirstPhoto();
+  window.addEventListener("resize", fitFirstPhoto);
+
 </script>
 
 <style>
   .pieza {
+    --photo-col: 45%;
     position: relative;
     display: grid;
-    grid-template-columns: 45% 1fr;
+    grid-template-columns: var(--photo-col) 1fr;
     align-items: start;
     gap: 3.5rem;
     max-width: var(--max-width);
@@ -282,6 +364,15 @@ const materialNote =
   }
   .pieza__close span:last-child {
     transform: rotate(-45deg);
+  }
+
+  /* Cuando la primera foto (siempre vertical) no cabría completa en la
+     altura visible, el script de abajo reduce --photo-col para que sí
+     quepa — y como todas las fotos comparten esa columna, todas heredan
+     el mismo ancho. En ese caso especial, igualamos el padding inferior
+     al del panel de info (58px) para que ambas columnas terminen alineadas. */
+  .pieza__galeria--fit {
+    padding-bottom: 58px;
   }
 
   .pieza__foto {

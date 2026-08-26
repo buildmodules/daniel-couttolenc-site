@@ -132,6 +132,10 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     box-sizing: border-box;
   }
 
+  html {
+    cursor: url("/site/cursor-isotipo.png") 10 10, auto;
+  }
+
   html,
   body {
     margin: 0;

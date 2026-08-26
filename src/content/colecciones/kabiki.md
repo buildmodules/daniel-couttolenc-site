@@ -9,8 +9,7 @@ galeria:
   - /images/collections/kabiki/4.jpg
   - /images/collections/kabiki/5.jpg
 badge: LIMITED EDITION – 20 PIECES · Conceived in collaboration with Design Week Mexico
-orden: 3
-destacado: true
+orden: 5
 metaTitle: KABIKI collection | Daniel Couttolenc
 metaDescription: KABIKI is a family of pieces inspired by the vesica piscis, a symbol associated with creation and connection. Through repeated geometric forms, the…
 ogImage: /images/collections/kabiki/1.jpg

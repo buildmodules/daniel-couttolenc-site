@@ -43,30 +43,38 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   </head>
   <body>
     <header class="site-header">
-      <a class="site-header__brand" href="/">
-        <img src="/site/header-avatar.png" alt="" class="site-header__avatar" />
-        <span>Daniel Couttolenc</span>
-      </a>
-      <nav class="site-header__nav">
-        <a href="/work" aria-current={isActive("/work") ? "page" : undefined}>Work</a>
-        <a href="/about" aria-current={isActive("/about") ? "page" : undefined}>About</a>
-        <a href="/contact" aria-current={isActive("/contact") ? "page" : undefined}>Contact</a>
-        <a
-          class="site-header__social"
-          href="https://instagram.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Instagram"
-        >
-          <img src="/site/instagram.svg" alt="" width="14" height="14" />
+      <div class="site-header__inner">
+        <a class="site-header__brand" href="/">
+          <img src="/site/logo-full.svg" alt="Daniel Couttolenc" class="site-header__logo" />
         </a>
-      </nav>
+        <nav class="site-header__nav">
+          <a href="/work" aria-current={isActive("/work") ? "page" : undefined}>Work</a>
+          <a href="/about" aria-current={isActive("/about") ? "page" : undefined}>About</a>
+          <a href="/contact" aria-current={isActive("/contact") ? "page" : undefined}>Contact</a>
+          <a
+            class="site-header__social"
+            href="https://www.instagram.com/danielcouttolenc/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram"
+          >
+            <img src="/site/instagram.svg" alt="" width="14" height="14" />
+          </a>
+        </nav>
+      </div>
     </header>
     <main>
       <slot />
     </main>
     <footer class="site-footer">
-      <a href="mailto:danielcouttolenc@gmail.com">danielcouttolenc@gmail.com</a>
+      {isActive("/contact") ? (
+        <>
+          <a href="mailto:danielcouttolenc@gmail.com">danielcouttolenc@gmail.com</a>
+          <a href="mailto:studio@danielcouttolenc.com">studio@danielcouttolenc.com</a>
+        </>
+      ) : (
+        <a href="mailto:danielcouttolenc@gmail.com">danielcouttolenc@gmail.com</a>
+      )}
       <a href="/terms" class="site-footer__terms">Terms and Conditions</a>
     </footer>
   </body>
@@ -98,7 +106,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     --font-sans: "Season Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
     --font-wordmark: "Styrene A", var(--font-sans);
     --header-h: 60px;
-    --gutter: 60px;
+    --gutter: 58px;
     --grid-gap: 20px;
     --max-width: 1512px;
 
@@ -216,31 +224,31 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     inset: 0 0 auto 0;
     height: var(--header-h);
     z-index: 50;
+    backdrop-filter: blur(3.9px);
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .site-header__inner {
+    max-width: var(--max-width);
+    height: 100%;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 var(--gutter);
-    backdrop-filter: blur(3.9px);
-    background: rgba(255, 255, 255, 0.3);
   }
 
   .site-header__brand {
     display: flex;
     align-items: center;
-    gap: 10px;
     text-decoration: none;
-    font-family: var(--font-wordmark);
-    font-size: 14.5px;
-    letter-spacing: 0.02em;
     color: var(--color-text);
   }
 
-  .site-header__avatar {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    object-fit: cover;
+  .site-header__logo {
     display: block;
+    height: 28px;
+    width: auto;
   }
 
   .site-header__nav {
@@ -284,14 +292,29 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   }
 
   @media (max-width: 640px) {
-    .site-header {
-      padding: 0 20px;
+    .site-header__inner {
+      padding: 0 16px;
     }
-    .site-header__brand span {
-      display: none;
+    .site-header__logo {
+      height: 18px;
     }
     .site-header__nav {
-      gap: 18px;
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .site-header__inner {
+      padding: 0 12px;
+    }
+    .site-header__logo {
+      height: 15px;
+    }
+    .site-header__nav {
+      gap: 6px;
+    }
+    .site-header__nav a {
+      font-size: 12px;
     }
   }
 

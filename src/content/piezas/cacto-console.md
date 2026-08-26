@@ -3,6 +3,7 @@ titulo: CACTO console
 slug: cacto-console
 portada: /images/Cacto console/1.jpg
 galeria:
+  - /images/Cacto console/1.jpg
   - /images/Cacto console/2.jpg
   - /images/Cacto console/3.jpg
   - /images/Cacto console/4.jpg
@@ -30,13 +31,10 @@ variantes:
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 badge: Conceived in collaboration with Territorio Gallery
-orden: 4
-destacado: false
+orden: 11
 metaTitle: CACTO console | Daniel Couttolenc
 metaDescription: CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
 ogImage: /images/Cacto console/1.jpg
 ---
 
 CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

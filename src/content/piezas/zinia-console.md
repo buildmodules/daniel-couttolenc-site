@@ -3,6 +3,7 @@ titulo: ZINIA console
 slug: zinia-console
 portada: /images/Zinia console/1.jpg
 galeria:
+  - /images/Zinia console/1.jpg
   - /images/Zinia console/2.jpg
   - /images/Zinia console/3.jpg
   - /images/Zinia console/4.jpg
@@ -18,13 +19,10 @@ variantes:
   - nombre: Mexican Oak (Rosamorada)
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 13
-destacado: false
+orden: 22
 metaTitle: ZINIA console | Daniel Couttolenc
 metaDescription: ZINIA is a study in balance and restraint. Pure volumes and softened edges create an architectural presence where proportion and material become the focus.
 ogImage: /images/Zinia console/1.jpg
 ---
 
 ZINIA is a study in balance and restraint. Pure volumes and softened edges create an architectural presence where proportion and material become the focus.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

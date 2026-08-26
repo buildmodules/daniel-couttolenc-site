@@ -19,7 +19,6 @@ const piezas = defineCollection({
     leadTime: z.string().optional(),
     badge: z.string().optional(),
     orden: z.number().optional(),
-    destacado: z.boolean().optional().default(true),
     metaTitle: z.string().optional(),
     metaDescription: z.string().optional(),
     ogImage: z.string().optional(),
@@ -35,7 +34,6 @@ const colecciones = defineCollection({
     galeria: z.array(z.string()).optional(),
     badge: z.string().optional(),
     orden: z.number().optional(),
-    destacado: z.boolean().optional().default(true),
     metaTitle: z.string().optional(),
     metaDescription: z.string().optional(),
     ogImage: z.string().optional(),
@@ -52,4 +50,14 @@ const exhibiciones = defineCollection({
   }),
 });
 
-export const collections = { piezas, colecciones, exhibiciones };
+const homeSlider = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/home-slider" }),
+  schema: z.object({
+    imagen: z.string(),
+    piezaRelacionada: z.string().optional(),
+    coleccionRelacionada: z.string().optional(),
+    orden: z.number(),
+  }),
+});
+
+export const collections = { piezas, colecciones, exhibiciones, homeSlider };

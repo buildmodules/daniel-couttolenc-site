@@ -3,6 +3,7 @@ titulo: BLEO stool II
 slug: bleo-stool-ii
 portada: /images/Bleo stool II/1.jpg
 galeria:
+  - /images/Bleo stool II/1.jpg
   - /images/Bleo stool II/2.jpg
   - /images/Bleo stool II/3.jpg
   - /images/Bleo stool II/4.jpg
@@ -26,13 +27,10 @@ variantes:
   - nombre: Mexican Oak (Rosamorada)
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 19
-destacado: false
+orden: 16
 metaTitle: BLEO stool II | Daniel Couttolenc
 metaDescription: BLEO explores the possibilities of the circle. Not as a flat shape, but as a form capable of generating volume, structure, and relationships between…
 ogImage: /images/Bleo stool II/1.jpg
 ---
 
 BLEO explores the possibilities of the circle. Not as a flat shape, but as a form capable of generating volume, structure, and relationships between objects. Repeated, transformed, and recomposed, it becomes the foundation of a family of functional pieces united by proportion, rhythm, and a shared visual language.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

@@ -100,11 +100,6 @@ export default defineConfig({
             label: "Orden en el grid (menor = primero)",
           },
           {
-            type: "boolean",
-            name: "destacado",
-            label: "Mostrar en el home",
-          },
-          {
             type: "string",
             name: "metaTitle",
             label: "SEO — Meta title",
@@ -206,11 +201,6 @@ export default defineConfig({
             label: "Orden en el grid (menor = primero)",
           },
           {
-            type: "boolean",
-            name: "destacado",
-            label: "Mostrar en el home",
-          },
-          {
             type: "string",
             name: "metaTitle",
             label: "SEO — Meta title",
@@ -228,6 +218,50 @@ export default defineConfig({
             name: "ogImage",
             label: "SEO — Open Graph image",
             description: "Imagen para compartir en redes sociales (Facebook, WhatsApp, X, iMessage). Si se deja vacía, se usa la imagen de portada.",
+          },
+        ],
+      },
+      {
+        name: "homeSlider",
+        label: "Home Slider",
+        path: "src/content/home-slider",
+        format: "md",
+        ui: {
+          itemProps: (item) => ({
+            label:
+              `#${item?.orden ?? "?"} — ` +
+              (item?.piezaRelacionada
+                ? item.piezaRelacionada.split("/").pop()?.replace(/\.md$/, "")
+                : item?.coleccionRelacionada
+                  ? item.coleccionRelacionada.split("/").pop()?.replace(/\.md$/, "")
+                  : "Sin relación"),
+          }),
+          defaultItem: () => ({ orden: 1 }),
+        },
+        fields: [
+          {
+            type: "image",
+            name: "imagen",
+            label: "Foto del slide",
+            required: true,
+          },
+          {
+            type: "reference",
+            name: "piezaRelacionada",
+            label: "Pieza relacionada",
+            collections: ["piezas"],
+          },
+          {
+            type: "reference",
+            name: "coleccionRelacionada",
+            label: "Colección relacionada",
+            collections: ["colecciones"],
+          },
+          {
+            type: "number",
+            name: "orden",
+            label: "Orden en el slider (menor = primero)",
+            required: true,
           },
         ],
       },

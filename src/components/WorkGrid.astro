@@ -46,7 +46,9 @@ const DENSE_AT = 7;
 </div>
 
 <script>
-  const STORAGE_KEY = "work-grid-cols";
+  // Deliberately not persisted (localStorage/sessionStorage) — the slider
+  // should always start at the default column count on a fresh page load,
+  // even if the user changed it, navigated away, and came back to /work.
   const slider = document.getElementById("grid-cols-slider") as HTMLInputElement | null;
   const grid = document.getElementById("grid");
 
@@ -58,15 +60,8 @@ const DENSE_AT = 7;
       grid.classList.toggle("grid--dense", Number(value) >= denseAt);
     };
 
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      slider.value = stored;
-      applyCols(stored);
-    }
-
     slider.addEventListener("input", () => {
       applyCols(slider.value);
-      localStorage.setItem(STORAGE_KEY, slider.value);
     });
   }
 </script>

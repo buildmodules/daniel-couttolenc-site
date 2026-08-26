@@ -27,6 +27,11 @@ const {
 } = pieza.data;
 const imagenes: string[] = galeria ?? (portada ? [portada] : []);
 const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
+
+const materialNote =
+  materialTipo === "Cast Bronze"
+    ? "Cast in bronze using the traditional lost-wax process, each piece carries subtle variations in texture and surface. These characteristics are not imperfections, but expressions of its handcrafted nature."
+    : "Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.";
 ---
 <Base
   title={metaTitle || titulo}
@@ -55,16 +60,17 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
 
         {dimensiones && (
           <>
-            <hr />
             <p class="pieza__label type-label">Dimensions (W × D × H):</p>
+            <hr />
             <p class="pieza__dimensiones">{dimensiones}</p>
+            <hr />
           </>
         )}
 
         {variantes && variantes.length > 0 && (
           <>
-            <hr />
             <p class="pieza__label type-label">Material: <span class="pieza__label-value">{materialTipo ?? "Solid Wood"}</span></p>
+            <hr />
             <ul class="pieza__variantes">
               {variantes.map((v: any) => (
                 <li>
@@ -81,6 +87,8 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
         {leadTime && (
           <p class="pieza__leadtime"><strong class="pieza__label-inline type-label">Lead time {leadTime}</strong></p>
         )}
+
+        <p class="pieza__material-note">{materialNote}</p>
 
         <button type="button" class="inquire type-cta" id="inquire-open">
           Inquire
@@ -302,13 +310,13 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
     height: calc(100vh - var(--header-h));
     display: flex;
     align-items: flex-end;
-    padding-bottom: 15vh;
+    padding-bottom: 58px;
   }
   .pieza__info {
     max-width: 510px;
   }
   .pieza__info h1 {
-    margin-bottom: 8px;
+    margin-bottom: 32px;
   }
   .pieza__badge {
     color: var(--color-text-muted);
@@ -316,6 +324,7 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
   }
   .pieza__dimensiones {
     white-space: pre-line;
+    margin: 5px 0 0;
   }
   .pieza__descripcion {
     font-size: var(--fs-body);
@@ -325,34 +334,53 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
     margin-top: 1em;
   }
 
+  /* Espaciado del bloque de info: cada gap se define una sola vez, como
+     margin-top del elemento que sigue, para que no haya colapso de márgenes
+     entre hermanos y cada transición quede con el valor exacto que se quiere. */
   hr {
     border: none;
     border-top: 1px solid var(--color-hairline);
-    margin: 32px 0 20px;
+    margin: 0;
   }
 
   .pieza__label {
-    margin-bottom: 4px;
+    margin: 40px 0 0;
   }
   .pieza__label-value {
     text-transform: none;
     font-weight: var(--fw-regular);
   }
+  .pieza__label + hr {
+    margin-top: 5px;
+  }
+  .pieza__dimensiones + hr {
+    margin-top: 5px;
+  }
 
   .pieza__variantes {
-    display: flex;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px 16px;
     list-style: none;
     padding: 0;
-    margin: 8px 0 0;
+    margin: 16px 0 0;
+  }
+  .pieza__variantes + hr {
+    margin-top: 16px;
   }
   .pieza__disclaimer {
     font-size: var(--fs-body);
     line-height: var(--lh-body);
-    color: var(--color-text-muted);
+    color: var(--color-text);
+    margin: 16px 0 0;
   }
   .pieza__leadtime {
-    margin-top: 32px;
+    margin-top: 48px;
+  }
+  .pieza__material-note {
+    margin-top: 20px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
   }
   .pieza__variantes li {
     display: flex;
@@ -362,7 +390,6 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
     text-align: center;
     font-size: var(--fs-caption);
     line-height: var(--lh-caption);
-    width: 70px;
   }
   .swatch {
     width: 48px;
@@ -372,7 +399,7 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
   }
 
   .inquire {
-    margin-top: 24px;
+    margin-top: 20px;
     background: none;
     border: none;
     padding: 0;
@@ -398,9 +425,6 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
     }
     .pieza__info {
       max-width: none;
-    }
-    .pieza__variantes {
-      flex-wrap: wrap;
     }
   }
 </style>

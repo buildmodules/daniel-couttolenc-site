@@ -3,10 +3,9 @@ import Base from "../../layouts/Base.astro";
 import WorkGrid from "../../components/WorkGrid.astro";
 import { getCollection } from "astro:content";
 
-const PAGE_SIZE = 24;
-
-// Work es el catálogo completo: a diferencia del carrusel del home, aquí no
-// se filtra por "destacado".
+// Work es el catálogo completo: a diferencia del home slider (curado a mano
+// en su propia colección), aquí se listan todas las piezas y colecciones,
+// sin paginación — todo se renderiza de una sola vez.
 const piezas = (await getCollection("piezas")).map((p) => ({
   ...p.data,
   type: "pieces" as const,
@@ -20,30 +19,10 @@ const colecciones = (await getCollection("colecciones")).map((c) => ({
 }));
 
 const items = [...piezas, ...colecciones].sort((a, b) => a._order - b._order);
-const page1 = items.slice(0, PAGE_SIZE);
-const hasMore = items.length > PAGE_SIZE;
 ---
 <Base
   title="Work"
   description="Browse the full catalog of furniture and objects by Daniel Couttolenc — solid wood and cast bronze pieces and collections."
 >
-  <WorkGrid items={page1} />
-
-  {hasMore && (
-    <div class="load-more-wrap">
-      <a href="/work/page/2" id="load-more">Load more</a>
-    </div>
-  )}
+  <WorkGrid items={items} />
 </Base>
-
-<style>
-  .load-more-wrap {
-    text-align: center;
-    padding: 3rem var(--gutter);
-  }
-  .load-more-wrap a {
-    font-size: var(--fs-body);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-</style>

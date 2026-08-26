@@ -3,6 +3,7 @@ titulo: TORO stool
 slug: toro-stool
 portada: /images/Toro stool/1.jpg
 galeria:
+  - /images/Toro stool/1.jpg
   - /images/Toro stool/2.jpg
   - /images/Toro stool/3.jpg
   - /images/Toro stool/4.jpg
@@ -21,13 +22,10 @@ variantes:
   - nombre: Mexican Oak (Rosamorada)
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 11
-destacado: true
+orden: 4
 metaTitle: TORO stool | Daniel Couttolenc
 metaDescription: TORO explores the relationship between mass and continuity. Defined by a single uninterrupted curve, each piece transforms a simple geometric gesture into…
 ogImage: /images/Toro stool/1.jpg
 ---
 
 TORO explores the relationship between mass and continuity. Defined by a single uninterrupted curve, each piece transforms a simple geometric gesture into a sculptural volume. The result is a stool that feels both monolithic and fluid, balancing visual weight with quiet softness.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

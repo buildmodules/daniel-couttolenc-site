@@ -3,6 +3,7 @@ titulo: CAS chair
 slug: cas-chair
 portada: /images/Cas chair/1.jpg
 galeria:
+  - /images/Cas chair/1.jpg
   - /images/Cas chair/2.jpg
   - /images/Cas chair/3.jpg
   - /images/Cas chair/4.jpg
@@ -30,13 +31,10 @@ variantes:
   - nombre: Mexican Oak (Rosamorada)
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 6
-destacado: false
+orden: 2
 metaTitle: CAS chair | Daniel Couttolenc
 metaDescription: CAS explores the balance between sculpture and function. A single gesture—the armrest—defines the character of the chair, becoming both its visual focal…
 ogImage: /images/Cas chair/1.jpg
 ---
 
 CAS explores the balance between sculpture and function. A single gesture—the armrest—defines the character of the chair, becoming both its visual focal point and its primary point of interaction.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

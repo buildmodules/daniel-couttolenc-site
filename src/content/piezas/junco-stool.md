@@ -3,6 +3,7 @@ titulo: JUNCO stool
 slug: junco-stool
 portada: /images/Junco stool/1.jpg
 galeria:
+  - /images/Junco stool/1.jpg
   - /images/Junco stool/2.jpg
   - /images/Junco stool/3.jpg
   - /images/Junco stool/4.jpg
@@ -24,13 +25,10 @@ variantes:
   - nombre: Mexican Oak (Rosamorada)
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 9
-destacado: false
+orden: 20
 metaTitle: JUNCO stool | Daniel Couttolenc
 metaDescription: JUNCO explores how repetition and structure can become a visual language. Built from a rhythmic arrangement of interlocking wooden elements, the base…
 ogImage: /images/Junco stool/1.jpg
 ---
 
 JUNCO explores how repetition and structure can become a visual language. Built from a rhythmic arrangement of interlocking wooden elements, the base becomes both the structural foundation and the defining character of the piece.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

@@ -8,8 +8,7 @@ galeria:
   - /images/collections/bleo/3.jpg
   - /images/collections/bleo/4.jpg
   - /images/collections/bleo/bleo5.jpg
-orden: 2
-destacado: true
+orden: 13
 metaTitle: BLEO collection | Daniel Couttolenc
 metaDescription: BLEO explores the possibilities of the circle. Not as a flat shape, but as a form capable of generating volume, structure, and relationships between…
 ogImage: /images/collections/bleo/1.jpg

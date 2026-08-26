@@ -3,6 +3,7 @@ titulo: CACTO bench
 slug: cacto-bench
 portada: /images/Cacto bench/1.jpg
 galeria:
+  - /images/Cacto bench/1.jpg
   - /images/Cacto bench/2.jpg
   - /images/Cacto bench/3.jpg
   - /images/Cacto bench/4.jpg
@@ -24,13 +25,10 @@ variantes:
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 badge: Conceived in collaboration with Territorio Gallery
-orden: 3
-destacado: true
+orden: 12
 metaTitle: CACTO bench | Daniel Couttolenc
 metaDescription: CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
 ogImage: /images/Cacto bench/1.jpg
 ---
 
 CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

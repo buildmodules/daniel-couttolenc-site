@@ -19,7 +19,7 @@ import Base from "../layouts/Base.astro";
 
         <div class="row">
           <label class="sr-only" for="field-name">Name</label>
-          <input type="text" name="name" id="field-name" placeholder="Name" required />
+          <input type="text" name="name" id="field-name" placeholder="Name*" required />
           <label class="sr-only" for="field-surname">Surname</label>
           <input type="text" name="surname" id="field-surname" placeholder="Surname" />
         </div>
@@ -110,11 +110,16 @@ import Base from "../layouts/Base.astro";
     display: flex;
     flex-direction: column;
     gap: 22px;
+    position: relative;
   }
   .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .row input {
+    border-bottom: none;
   }
   input {
     border: none;
@@ -144,10 +149,12 @@ import Base from "../layouts/Base.astro";
     color: var(--color-text);
   }
   .contacto__status {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin: 8px 0 0;
     font-size: var(--fs-meta);
     color: var(--color-text-muted);
-    min-height: 1em;
-    margin: 0;
   }
 
   @media (max-width: 900px) {
@@ -166,6 +173,11 @@ import Base from "../layouts/Base.astro";
     }
     .row {
       grid-template-columns: 1fr;
+      gap: 22px;
+      border-bottom: none;
+    }
+    .row input {
+      border-bottom: 1px solid var(--color-hairline);
     }
   }
 </style>

@@ -3,6 +3,7 @@ titulo: ASTER table
 slug: aster-table
 portada: /images/Aster table/1.jpg
 galeria:
+  - /images/Aster table/1.jpg
   - /images/Aster table/2.jpg
   - /images/Aster table/3.jpg
   - /images/Aster table/4.jpg
@@ -21,13 +22,10 @@ variantes:
   - nombre: Mexican oak (Rosamorada)
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 1
-destacado: true
+orden: 25
 metaTitle: ASTER table | Daniel Couttolenc
 metaDescription: ASTER is based on the geometry of the hexagram, a symbol of balance. Designed as a single object, it can be separated into two smaller tables and a tray…
 ogImage: /images/Aster table/1.jpg
 ---
 
 ASTER is based on the geometry of the hexagram, a symbol of balance. Designed as a single object, it can be separated into two smaller tables and a tray, allowing one geometry to unfold into multiple configurations.
-
-Crafted from solid wood, each piece reveals its natural grain, tonal variation, and organic markings. These characteristics are not imperfections, but expressions of the material itself.

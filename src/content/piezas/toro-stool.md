@@ -11,11 +11,16 @@ galeria:
   - /images/Toro stool/6.jpg
   - /images/Toro stool/7.jpg
   - /images/Toro stool/8.jpg
+creditosFotos:
+  - imagen: /images/Toro stool/4.jpg
+    texto: photo courtesy of Casa Quieta
+  - imagen: /images/Toro stool/5.jpg
+    texto: photo courtesy of Casa Dragones
 dimensiones: 50 x 50 x 47cm
 variantes:
-  - nombre: Red Oak – Cream wash finish
+  - nombre: Red Oak|Cream wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
-  - nombre: Red Oak – Black finish
+  - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png

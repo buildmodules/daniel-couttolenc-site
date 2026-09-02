@@ -14,9 +14,9 @@ galeria:
   - /images/Junco stool/9.jpg
 dimensiones: 34 x 34 x 42cm
 variantes:
-  - nombre: Red Oak – Cinnamon finish
+  - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png
-  - nombre: Red Oak – Black finish
+  - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png

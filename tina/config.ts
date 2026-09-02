@@ -56,6 +56,30 @@ export default defineConfig({
             list: true,
           },
           {
+            type: "object",
+            name: "creditosFotos",
+            label: "Créditos de foto (opcional)",
+            list: true,
+            ui: {
+              itemProps: (item) => ({ label: item?.texto ?? "Nuevo crédito" }),
+            },
+            fields: [
+              {
+                type: "image",
+                name: "imagen",
+                label: "Foto (elige la misma imagen ya usada en Galería arriba)",
+                required: true,
+              },
+              {
+                type: "string",
+                name: "texto",
+                label: "Texto del crédito",
+                description: 'Ej. "Photo courtesy of Hiperlocalidad". Se muestra solo al pasar el mouse sobre esa foto, abajo a la izquierda.',
+                required: true,
+              },
+            ],
+          },
+          {
             type: "rich-text",
             name: "body",
             label: "Descripción",
@@ -80,7 +104,14 @@ export default defineConfig({
               itemProps: (item) => ({ label: item?.nombre ?? "Nueva variante" }),
             },
             fields: [
-              { type: "string", name: "nombre", label: "Nombre del acabado", required: true },
+              {
+                type: "string",
+                name: "nombre",
+                label: "Nombre del acabado",
+                description:
+                  'Usa "|" para partir el nombre en 2 líneas (ej. "Red Oak|Black finish" se muestra como "Red Oak" y, debajo, "Black finish"). Sin "|" se muestra en una sola línea.',
+                required: true,
+              },
               { type: "image", name: "imagen", label: "Imagen del acabado" },
             ],
           },
@@ -93,6 +124,12 @@ export default defineConfig({
             type: "string",
             name: "badge",
             label: "Badge / nota especial (edición limitada, colaboración, etc.)",
+          },
+          {
+            type: "boolean",
+            name: "mostrarDisclaimer",
+            label: "Mostrar \"Dimensions & material customizable upon request\"",
+            description: "Desactívalo en piezas de edición limitada / spec fija (como KABIKI), donde no aplica personalización.",
           },
           {
             type: "number",
@@ -183,6 +220,30 @@ export default defineConfig({
             name: "galeria",
             label: "Galería de imágenes",
             list: true,
+          },
+          {
+            type: "object",
+            name: "creditosFotos",
+            label: "Créditos de foto (opcional)",
+            list: true,
+            ui: {
+              itemProps: (item) => ({ label: item?.texto ?? "Nuevo crédito" }),
+            },
+            fields: [
+              {
+                type: "image",
+                name: "imagen",
+                label: "Foto (elige la misma imagen ya usada en Galería arriba)",
+                required: true,
+              },
+              {
+                type: "string",
+                name: "texto",
+                label: "Texto del crédito",
+                description: 'Ej. "Photo courtesy of Hiperlocalidad". Se muestra solo al pasar el mouse sobre esa foto, abajo a la izquierda.',
+                required: true,
+              },
+            ],
           },
           {
             type: "rich-text",

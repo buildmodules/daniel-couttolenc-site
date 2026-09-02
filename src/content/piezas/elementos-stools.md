@@ -18,7 +18,7 @@ dimensiones: |
   Fire: 38 x 38 x 42cm
   Air: 42 x 41 x 42cm
 variantes:
-  - nombre: Sandblasted Pine – Beige wash finish
+  - nombre: Sandblasted Pine|Beige wash finish
     imagen: /images/Materials/Sandblasted-Pine-Beige-Wash.png
 leadTime: 8-10 weeks
 orden: 1

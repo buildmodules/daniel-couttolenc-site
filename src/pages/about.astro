@@ -135,16 +135,24 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
 
   .about {
     display: grid;
-    grid-template-columns: 502px 1fr;
+    /* La columna de la foto ocupa el 45% del container. */
+    grid-template-columns: 45% 1fr;
     align-items: start;
-    gap: 3.5rem;
+    gap: var(--grid-gap);
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 40px var(--gutter) 4rem;
   }
   .about__portrait {
+    /* Pedido de Juanjo: la foto llena el alto del viewport (como en
+       piezas/colecciones) para que al entrar solo se vea la foto + el
+       intro — Exhibitions queda abajo, fuera de la vista inicial. El -3rem
+       deja una línea de fondo gris visible debajo de la foto antes de
+       pasar a Exhibitions, en vez de llegar a ras del borde del viewport.
+       Con el ancho ahora fijo a la columna (50%), object-fit: cover
+       recorta lo que sobre en vez de distorsionar. */
     width: 100%;
-    aspect-ratio: 502 / 584;
+    height: calc(100vh - var(--header-h) - 40px - 3rem);
     object-fit: cover;
     display: block;
     position: sticky;
@@ -174,7 +182,7 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
   }
   .about__exhibitions li {
     display: flex;
-    gap: 40px;
+    gap: var(--grid-gap);
     padding: 9px 0;
     border-top: 1px solid var(--color-hairline);
     font-size: var(--fs-meta);
@@ -220,6 +228,12 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
     }
     .about__portrait {
       position: static;
+      /* En mobile el layout ya es 1 columna apilada — un alto 100vh aquí
+         empujaría todo el texto fuera de la vista. width: 100% + height:
+         auto = ancho completo, alto natural según el ratio real del
+         archivo — tampoco se recorta aquí. */
+      width: 100%;
+      height: auto;
     }
     .about__float {
       display: none;

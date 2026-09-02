@@ -9,9 +9,9 @@ galeria:
   - /images/Ixia desk/4.jpg
 dimensiones: 152 x 76 x 76cm
 variantes:
-  - nombre: Red Oak – Black finish
+  - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
-  - nombre: Red Oak – Gray finish
+  - nombre: Red Oak|Gray finish
 leadTime: 8-10 weeks
 orden: 23
 metaTitle: IXIA desk | Daniel Couttolenc

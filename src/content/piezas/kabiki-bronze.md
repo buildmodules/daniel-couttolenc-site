@@ -16,6 +16,9 @@ galeria:
   - /images/Kabiki bronze/11.jpg
   - /images/Kabiki bronze/12.jpg
   - /images/Kabiki bronze/13.jpg
+creditosFotos:
+  - imagen: /images/Kabiki bronze/13.jpg
+    texto: photo courtesy of Territorio Gallery
 dimensiones: |
   Box I: 27 x 27 x 27cm
   Box II: 19 x 19 x 19cm
@@ -27,6 +30,7 @@ variantes:
     imagen: /images/Materials/Cast-Bronze.png
 leadTime: 8-10 weeks
 badge: 'LIMITED EDITION – 15 PIECES · Conceived in collaboration with Design Week Mexico.'
+mostrarDisclaimer: false
 orden: 10
 metaTitle: KABIKI bronze | Daniel Couttolenc
 metaDescription: 'An extension of the KABIKI family, these bronze objects reinterpret the collection''s geometric language at a smaller scale, exploring balance, rhythm, and…'

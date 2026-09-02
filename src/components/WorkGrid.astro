@@ -14,9 +14,12 @@ interface Props {
 }
 
 const { items, defaultCols = 4 } = Astro.props;
-const MIN_COLS = 2;
-const MAX_COLS = 8;
-const DENSE_AT = 7;
+// Solo 3 tamaños fijos en el track: izquierda = pequeño (8 columnas),
+// centro = normal (4), derecha = grande (2). El slider mueve un índice
+// (0, 1, 2) que se traduce a columnas via SIZES, no un valor continuo.
+const SIZES = [8, 4, 2];
+const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) : 1;
+const DENSE_COLS = 8;
 ---
 <div class="work-grid">
   <div class="work-grid__toolbar">
@@ -25,18 +28,18 @@ const DENSE_AT = 7;
       type="range"
       id="grid-cols-slider"
       class="work-grid__slider"
-      min={MIN_COLS}
-      max={MAX_COLS}
+      min="0"
+      max="2"
       step="1"
-      value={defaultCols}
-      aria-label="Columnas del grid"
+      value={DEFAULT_INDEX}
+      data-sizes={SIZES.join(",")}
+      aria-label="Tamaño del grid"
     />
   </div>
 
   <section
-    class:list={["grid", { "grid--dense": defaultCols >= DENSE_AT }]}
+    class:list={["grid", { "grid--dense": defaultCols >= DENSE_COLS }]}
     id="grid"
-    data-dense-at={DENSE_AT}
     style={`--cols: ${defaultCols};`}
   >
     {items.map((item) => (
@@ -53,15 +56,75 @@ const DENSE_AT = 7;
   const grid = document.getElementById("grid");
 
   if (slider && grid) {
-    const denseAt = Number(grid.dataset.denseAt ?? "7");
+    const sizes = (slider.dataset.sizes ?? "8,4,2").split(",").map(Number);
+    const denseCols = Math.max(...sizes);
 
-    const applyCols = (value: string) => {
-      grid.style.setProperty("--cols", value);
-      grid.classList.toggle("grid--dense", Number(value) >= denseAt);
+    // Animating `flex-basis` directly makes the browser recompute line-wrapping
+    // at every intermediate value, so cards snap between rows mid-transition —
+    // that's the "salto raro". Instead we jump flex-basis instantly and use a
+    // FLIP animation (capture position/size before, then animate a compensating
+    // transform back to identity) so the reflow itself reads as one smooth move.
+    const applyIndex = (index: string) => {
+      const cols = sizes[Number(index)] ?? sizes[1];
+      const cardEls = Array.from(grid.querySelectorAll<HTMLElement>(".item-card"));
+      const frameEls = cardEls.map((c) => c.querySelector<HTMLElement>(".item-card__frame"));
+      const titleEls = cardEls.map((c) => c.querySelector<HTMLElement>(".item-card__title"));
+
+      // FIRST: record current geometry before the layout change.
+      const firstFrame = frameEls.map((el) => el?.getBoundingClientRect() ?? null);
+      const firstTitle = titleEls.map((el) => el?.getBoundingClientRect() ?? null);
+
+      grid.style.setProperty("--cols", String(cols));
+      grid.classList.toggle("grid--dense", cols >= denseCols);
+
+      // LAST + INVERT: jump each element back to where it used to be, with no
+      // transition, so the instant reflow above is invisible to the user.
+      // The frame gets translate+scale (its size changes between stages); the
+      // title only gets translate (its text must never stretch).
+      frameEls.forEach((el, i) => {
+        const first = firstFrame[i];
+        if (!el || !first) return;
+        const last = el.getBoundingClientRect();
+        if (!last.width || !last.height) return;
+        const dx = first.left - last.left;
+        const dy = first.top - last.top;
+        const sx = first.width / last.width;
+        const sy = first.height / last.height;
+        el.style.transformOrigin = "top left";
+        el.style.transition = "none";
+        el.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+      });
+      titleEls.forEach((el, i) => {
+        const first = firstTitle[i];
+        if (!el || !first) return;
+        const last = el.getBoundingClientRect();
+        const dx = first.left - last.left;
+        const dy = first.top - last.top;
+        el.style.transition = "none";
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+
+      // Force the browser to paint the inverted state above before re-enabling
+      // the transition — otherwise it collapses straight to the end state.
+      grid.getBoundingClientRect();
+
+      // PLAY: animate back to the real (identity) transform.
+      requestAnimationFrame(() => {
+        frameEls.forEach((el) => {
+          if (!el) return;
+          el.style.transition = "transform 0.4s ease";
+          el.style.transform = "";
+        });
+        titleEls.forEach((el) => {
+          if (!el) return;
+          el.style.transition = "transform 0.4s ease";
+          el.style.transform = "";
+        });
+      });
     };
 
     slider.addEventListener("input", () => {
-      applyCols(slider.value);
+      applyIndex(slider.value);
     });
   }
 </script>
@@ -131,13 +194,13 @@ const DENSE_AT = 7;
   .grid {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--grid-gap);
+    column-gap: var(--grid-gap);
+    row-gap: 64px;
     padding: 16px var(--gutter) 0;
   }
 
   .grid :global(.item-card) {
     flex: 0 0 calc((100% - (var(--cols) - 1) * var(--grid-gap)) / var(--cols));
-    transition: flex-basis 0.35s ease;
   }
 
   .grid.grid--dense :global(.item-card__title) {

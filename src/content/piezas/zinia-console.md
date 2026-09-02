@@ -12,7 +12,7 @@ galeria:
   - /images/Zinia console/7.jpg
 dimensiones: 288 x 34 x 42cm
 variantes:
-  - nombre: Red Oak – Cream wash finish
+  - nombre: Red Oak|Cream wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png

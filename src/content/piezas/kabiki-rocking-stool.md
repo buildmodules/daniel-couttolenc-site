@@ -13,10 +13,11 @@ galeria:
   - /images/Kabiki rocking stool/8.jpg
 dimensiones: 90 x 45 x 56cm
 variantes:
-  - nombre: Red Oak – Black finish
+  - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
 leadTime: 8-10 weeks
 badge: LIMITED EDITION – 20 PIECES · Conceived in collaboration with Design Week Mexico
+mostrarDisclaimer: false
 orden: 8
 metaTitle: KABIKI rocking stool | Daniel Couttolenc
 metaDescription: KABIKI is a family of pieces inspired by the vesica piscis, a symbol associated with creation and connection. Through repeated geometric forms, the…

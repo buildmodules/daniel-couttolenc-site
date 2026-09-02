@@ -12,8 +12,10 @@ export async function getStaticPaths() {
 
 const { coleccion } = Astro.props as any;
 const { Content } = await render(coleccion);
-const { titulo, galeria, portada, badge, metaTitle, metaDescription, ogImage } = coleccion.data;
+const { titulo, galeria, portada, badge, creditosFotos, metaTitle, metaDescription, ogImage } = coleccion.data;
 const imagenes: string[] = galeria ?? (portada ? [portada] : []);
+// Ver el comentario equivalente en pieces/[slug].astro.
+const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen, c.texto]));
 ---
 <Base
   title={metaTitle || titulo}
@@ -28,8 +30,15 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
 
     <div class="coleccion__galeria">
       {imagenes.map((img: string, i: number) => (
-        <button type="button" class="coleccion__foto" data-index={i}>
+        <button
+          type="button"
+          class:list={["coleccion__foto", creditosPorFoto.has(img) && "coleccion__foto--con-credito"]}
+          data-index={i}
+        >
           <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
+          {creditosPorFoto.has(img) && (
+            <span class="coleccion__foto-credito">{creditosPorFoto.get(img)}</span>
+          )}
         </button>
       ))}
     </div>
@@ -116,18 +125,21 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
   });
 
   // --- Ajuste de la primera foto (siempre vertical) — ver el comentario
-  // equivalente en pieces/[slug].astro para el detalle completo. ---
+  // equivalente en pieces/[slug].astro para el detalle completo. La caja
+  // usa el mismo aspect ratio fijo que las portadas del grid, no el ratio
+  // real de la imagen subida. ---
   const coleccion = document.querySelector<HTMLElement>(".coleccion");
   const coleccionGaleria = document.querySelector<HTMLElement>(".coleccion__galeria");
-  const firstColeccionImg = coleccionGaleria?.querySelector("img") ?? null;
   const coleccionInquireLink = document.querySelector<HTMLElement>(".coleccion .inquire");
+  // Debe coincidir con --cols / aspect-ratio de .item-card__frame en ItemCard.astro.
+  const FIRST_PHOTO_ASPECT = 333 / 401;
   const COLECCION_MIN_COL = 24; // ver comentario equivalente en pieces/[slug].astro
 
   const fitFirstColeccionPhoto = () => {
-    if (!coleccion || !coleccionGaleria || !firstColeccionImg || !firstColeccionImg.naturalWidth || !coleccionInquireLink) return;
+    if (!coleccion || !coleccionGaleria || !coleccionInquireLink) return;
     if (window.matchMedia("(max-width: 900px)").matches) return;
 
-    const aspect = firstColeccionImg.naturalWidth / firstColeccionImg.naturalHeight;
+    const aspect = FIRST_PHOTO_ASPECT;
 
     const measure = () => {
       const top = coleccionGaleria.getBoundingClientRect().top;
@@ -169,16 +181,9 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
     }
   };
 
-  // Poll en vez de escuchar "load" — ver el comentario equivalente en
-  // pieces/[slug].astro.
-  const waitForFirstColeccionPhoto = () => {
-    if (firstColeccionImg && firstColeccionImg.naturalWidth) {
-      fitFirstColeccionPhoto();
-    } else {
-      requestAnimationFrame(waitForFirstColeccionPhoto);
-    }
-  };
-  waitForFirstColeccionPhoto();
+  // Ver el comentario equivalente en pieces/[slug].astro.
+  fitFirstColeccionPhoto();
+  document.fonts?.ready.then(fitFirstColeccionPhoto);
   window.addEventListener("resize", fitFirstColeccionPhoto);
 </script>
 
@@ -189,7 +194,7 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
     display: grid;
     grid-template-columns: var(--photo-col) 1fr;
     align-items: start;
-    gap: 3.5rem;
+    gap: var(--grid-gap);
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 40px var(--gutter) 4rem;
@@ -225,6 +230,7 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
   }
 
   .coleccion__foto {
+    position: relative;
     display: block;
     width: 100%;
     margin-bottom: 24px;
@@ -242,6 +248,44 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
   .coleccion__foto img {
     width: 100%;
     display: block;
+  }
+
+  /* Ver el comentario equivalente en pieces/[slug].astro. */
+  .coleccion__foto--con-credito::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .coleccion__foto-credito {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    color: #fff;
+    font-size: var(--fs-caption);
+    line-height: var(--lh-caption);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .coleccion__foto--con-credito:hover::before,
+  .coleccion__foto--con-credito:focus-visible::before,
+  .coleccion__foto:hover .coleccion__foto-credito,
+  .coleccion__foto:focus-visible .coleccion__foto-credito {
+    opacity: 1;
+  }
+
+  /* Ver el comentario equivalente en pieces/[slug].astro. */
+  .coleccion__foto:first-child {
+    aspect-ratio: 333 / 401;
+  }
+  .coleccion__foto:first-child img {
+    height: 100%;
+    object-fit: cover;
   }
 
   .coleccion__info-sticky {
@@ -297,6 +341,7 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
     overflow: hidden;
   }
 
+  /* Ver el comentario equivalente en pieces/[slug].astro. */
   .lightbox {
     position: fixed;
     inset: 0;
@@ -304,8 +349,8 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(247, 247, 247, 0.85);
-    backdrop-filter: blur(16px);
+    background: rgba(160, 160, 160, 0.2);
+    backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
@@ -315,14 +360,16 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
     pointer-events: auto;
   }
   .lightbox__stage {
-    max-width: min(70vw, 900px);
-    max-height: 82vh;
+    /* Ver el comentario equivalente en pieces/[slug].astro. */
+    position: relative;
+    max-width: min(88vw, 1300px);
+    max-height: 96vh;
   }
   .lightbox__stage img {
     display: block;
     width: 100%;
     height: 100%;
-    max-height: 82vh;
+    max-height: 96vh;
     object-fit: contain;
   }
   .lightbox__close {

@@ -12,12 +12,13 @@ galeria:
   - /images/Mora tables/7.jpg
   - /images/Mora tables/8.jpg
   - /images/Mora tables/9.jpg
+  - /images/Mora tables/10.jpg
 dimensiones: |
   Auxiliary Table: 35 x 35 x 59cm
   Side Table: 45 x 45 x 43cm
   Coffee Table: 120 x 75 x 35cm
 variantes:
-  - nombre: Tzalam – Maple – Oak – American Walnut
+  - nombre: Tzalam, Maple, Oak, American Walnut
 leadTime: 8-10 weeks
 orden: 3
 metaTitle: MORA tables | Daniel Couttolenc

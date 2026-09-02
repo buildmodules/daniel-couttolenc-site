@@ -81,15 +81,20 @@ import Base from "../layouts/Base.astro";
     display: flex;
     align-items: flex-end;
     min-height: calc(100vh - var(--header-h));
-    gap: 3.5rem;
+    gap: var(--grid-gap);
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 40px var(--gutter) 4rem;
+    padding: 40px var(--gutter) 3rem;
   }
   .contacto__photo {
+    /* Igual que about-portrait: la foto se adapta al alto disponible (deja
+       ~3rem de línea inferior antes del borde del viewport, vía el padding-
+       bottom del container) en vez de derivar su alto de un aspect-ratio
+       fijo. align-items: flex-end en .contacto ya alinea el texto a esa
+       misma base inferior, sea cual sea el alto real de la foto. */
     flex: 0 0 45%;
     width: 45%;
-    aspect-ratio: 686 / 778;
+    height: calc(100vh - var(--header-h) - 40px - 3rem);
     object-fit: cover;
     display: block;
   }
@@ -167,6 +172,9 @@ import Base from "../layouts/Base.astro";
     .contacto__photo {
       flex-basis: auto;
       width: 100%;
+      /* En mobile, alto natural en vez del calc() basado en viewport. */
+      height: auto;
+      aspect-ratio: 686 / 778;
     }
     .contacto__content {
       max-width: none;

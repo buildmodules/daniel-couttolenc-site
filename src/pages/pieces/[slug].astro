@@ -21,11 +21,16 @@ const {
   variantes,
   leadTime,
   badge,
+  mostrarDisclaimer,
+  creditosFotos,
   metaTitle,
   metaDescription,
   ogImage,
 } = pieza.data;
 const imagenes: string[] = galeria ?? (portada ? [portada] : []);
+// Créditos de foto: dispersos y opcionales — solo la foto puntual que lo
+// necesita (ver content.config.ts). Match por igualdad de string contra la ruta.
+const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen, c.texto]));
 const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
 
 const materialNote =
@@ -46,8 +51,15 @@ const materialNote =
 
     <div class="pieza__galeria">
       {imagenes.map((img: string, i: number) => (
-        <button type="button" class="pieza__foto" data-index={i}>
+        <button
+          type="button"
+          class:list={["pieza__foto", creditosPorFoto.has(img) && "pieza__foto--con-credito"]}
+          data-index={i}
+        >
           <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
+          {creditosPorFoto.has(img) && (
+            <span class="pieza__foto-credito">{creditosPorFoto.get(img)}</span>
+          )}
         </button>
       ))}
     </div>
@@ -55,8 +67,8 @@ const materialNote =
     <div class="pieza__info-sticky">
       <div class="pieza__info">
         <h1 class="type-heading">{titulo}</h1>
-        {badge && <p class="pieza__badge type-label">{badge}</p>}
         <div class="pieza__descripcion"><Content /></div>
+        {badge && <p class="pieza__badge type-label">{badge}</p>}
 
         {dimensiones && (
           <>
@@ -72,15 +84,31 @@ const materialNote =
             <p class="pieza__label type-label">Material: <span class="pieza__label-value">{materialTipo ?? "Solid Wood"}</span></p>
             <hr />
             <ul class="pieza__variantes">
-              {variantes.map((v: any) => (
-                <li>
-                  {v.imagen && <img src={v.imagen} alt={v.nombre} class="swatch" />}
-                  <span>{v.nombre}</span>
-                </li>
-              ))}
+              {variantes.map((v: any) => {
+                // "|" marca dónde parte a la segunda línea (ej. "Red Oak|Black
+                // finish" → "Red Oak" / "Black finish") — un renglón fijo por
+                // contenido, no por wrap del texto, que se rompe distinto según
+                // el ancho de columna. Sin "|" queda en una sola línea.
+                const lineas = v.nombre.split("|");
+                return (
+                  <li>
+                    {v.imagen && <img src={v.imagen} alt={lineas.join(" ")} class="swatch" />}
+                    <span>
+                      {lineas.map((linea: string, i: number) => (
+                        <>
+                          {i > 0 && <br />}
+                          {linea}
+                        </>
+                      ))}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
             <hr />
-            <p class="pieza__disclaimer">Dimensions &amp; material customizable upon request.</p>
+            {mostrarDisclaimer !== false && (
+              <p class="pieza__disclaimer">Dimensions &amp; material customizable upon request.</p>
+            )}
           </>
         )}
 
@@ -249,15 +277,20 @@ const materialNote =
   });
 
   // --- Ajuste de la primera foto (siempre vertical) ---
-  // Si al ancho normal de la columna la primera foto no cabría completa en
-  // lo visible (viewport - top offset - el mismo padding-bottom del panel
-  // de info), reducimos el ancho de la columna (--photo-col) lo justo para
-  // que sí quepa. Como todas las fotos comparten esa columna, todas heredan
-  // el nuevo ancho — se ven consistentes entre sí.
+  // La caja de la primera foto usa el MISMO aspect ratio que las portadas
+  // del grid (.item-card__frame en ItemCard.astro) — no el ratio real de la
+  // imagen subida. Daniel recorta portada/primera foto a ese ratio antes de
+  // subirla; object-fit: cover (ver CSS) llena la caja borde a borde.
+  // Si al ancho normal de la columna esa caja no cabría completa en lo
+  // visible (viewport - top offset - el mismo padding-bottom del panel de
+  // info), reducimos el ancho de la columna (--photo-col) lo justo para que
+  // sí quepa. Como todas las fotos comparten esa columna, todas heredan el
+  // nuevo ancho — se ven consistentes entre sí.
   const pieza = document.querySelector<HTMLElement>(".pieza");
   const galeria = document.querySelector<HTMLElement>(".pieza__galeria");
-  const firstPhotoImg = galeria?.querySelector("img") ?? null;
   const inquireBtn = document.getElementById("inquire-open");
+  // Debe coincidir con --cols / aspect-ratio de .item-card__frame en ItemCard.astro.
+  const FIRST_PHOTO_ASPECT = 333 / 401;
   // El requisito de los diseñadores (que la foto siempre se vea completa,
   // sin cortarse) es la regla dura — tiene prioridad sobre no verse angosta.
   // Este mínimo es solo un salvavidas para casos extremos, deliberadamente
@@ -266,10 +299,10 @@ const materialNote =
   const MIN_COL = 24;
 
   const fitFirstPhoto = () => {
-    if (!pieza || !galeria || !firstPhotoImg || !firstPhotoImg.naturalWidth || !inquireBtn) return;
+    if (!pieza || !galeria || !inquireBtn) return;
     if (window.matchMedia("(max-width: 900px)").matches) return; // en mobile el layout ya es 1 columna
 
-    const aspect = firstPhotoImg.naturalWidth / firstPhotoImg.naturalHeight;
+    const aspect = FIRST_PHOTO_ASPECT;
 
     const measure = () => {
       const top = galeria.getBoundingClientRect().top;
@@ -316,17 +349,11 @@ const materialNote =
     }
   };
 
-  // Poll en vez de escuchar "load": la imagen puede terminar de cargar antes
-  // de que este script llegue a registrar el listener (carrera de eventos),
-  // sobre todo con la imagen ya cacheada por el navegador.
-  const waitForFirstPhoto = () => {
-    if (firstPhotoImg && firstPhotoImg.naturalWidth) {
-      fitFirstPhoto();
-    } else {
-      requestAnimationFrame(waitForFirstPhoto);
-    }
-  };
-  waitForFirstPhoto();
+  // El ratio ya no depende de que la imagen cargue (es fijo), pero el texto
+  // de la columna de info sí puede reflowear cuando el webfont termina de
+  // cargar y mueve el botón Inquire — remedimos una vez más en ese momento.
+  fitFirstPhoto();
+  document.fonts?.ready.then(fitFirstPhoto);
   window.addEventListener("resize", fitFirstPhoto);
 
 </script>
@@ -338,7 +365,7 @@ const materialNote =
     display: grid;
     grid-template-columns: var(--photo-col) 1fr;
     align-items: start;
-    gap: 3.5rem;
+    gap: var(--grid-gap);
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 40px var(--gutter) 4rem;
@@ -376,6 +403,7 @@ const materialNote =
   }
 
   .pieza__foto {
+    position: relative;
     display: block;
     width: 100%;
     margin-bottom: 24px;
@@ -395,6 +423,52 @@ const materialNote =
     display: block;
   }
 
+  /* Crédito de foto (ej. "Photo courtesy of X") — oculto por default, solo
+     aparece al hacer hover sobre esa foto puntual, abajo a la izquierda.
+     El degradado (::before) es lo que garantiza que el texto blanco quede
+     legible sin importar qué haya en esa esquina de la foto — text-shadow
+     solo no alcanza sobre fondos claros. */
+  .pieza__foto--con-credito::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .pieza__foto-credito {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    color: #fff;
+    font-size: var(--fs-caption);
+    line-height: var(--lh-caption);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .pieza__foto--con-credito:hover::before,
+  .pieza__foto--con-credito:focus-visible::before,
+  .pieza__foto:hover .pieza__foto-credito,
+  .pieza__foto:focus-visible .pieza__foto-credito {
+    opacity: 1;
+  }
+
+  /* Primera foto: misma caja (aspect ratio) que las portadas del grid —
+     ver .item-card__frame en ItemCard.astro. Daniel recorta el archivo a
+     este ratio antes de subirlo, así que va a cover (llena la caja borde a
+     borde); si algún día sube algo que no venga exacto, cover recorta el
+     sobrante en vez de dejar espacio en blanco. */
+  .pieza__foto:first-child {
+    aspect-ratio: 333 / 401;
+  }
+  .pieza__foto:first-child img {
+    height: 100%;
+    object-fit: cover;
+  }
+
   .pieza__info-sticky {
     position: sticky;
     top: var(--header-h);
@@ -411,7 +485,7 @@ const materialNote =
   }
   .pieza__badge {
     color: var(--color-text-muted);
-    margin-bottom: 24px;
+    margin-top: 24px;
   }
   .pieza__dimensiones {
     white-space: pre-line;
@@ -450,7 +524,7 @@ const materialNote =
 
   .pieza__variantes {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 24px 16px;
     list-style: none;
     padding: 0;
@@ -479,8 +553,9 @@ const materialNote =
     align-items: center;
     gap: 8px;
     text-align: center;
-    font-size: var(--fs-caption);
-    line-height: var(--lh-caption);
+    font-size: 11px;
+    line-height: 15px;
+    font-weight: var(--fw-medium);
   }
   .swatch {
     width: 48px;
@@ -540,7 +615,8 @@ const materialNote =
     outline-offset: 4px;
   }
 
-  /* Lightbox */
+  /* Lightbox — valores exactos de Figma (blureamos lo que hay detrás del
+     modal, la página, no la foto misma). */
   .lightbox {
     position: fixed;
     inset: 0;
@@ -548,8 +624,8 @@ const materialNote =
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(247, 247, 247, 0.85);
-    backdrop-filter: blur(16px);
+    background: rgba(160, 160, 160, 0.2);
+    backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
@@ -559,14 +635,18 @@ const materialNote =
     pointer-events: auto;
   }
   .lightbox__stage {
-    max-width: min(70vw, 900px);
-    max-height: 82vh;
+    /* Más grande que la columna de foto en la vista de pieza/colección
+       (--photo-col, ~45% del content-box) — el zoom debe sentirse como un
+       salto real de tamaño. */
+    position: relative;
+    max-width: min(88vw, 1300px);
+    max-height: 96vh;
   }
   .lightbox__stage img {
     display: block;
     width: 100%;
     height: 100%;
-    max-height: 82vh;
+    max-height: 96vh;
     object-fit: contain;
   }
   .lightbox__close {
@@ -629,6 +709,7 @@ const materialNote =
   }
 
   /* Modal de Inquire */
+  /* Mismo fondo que el lightbox de la galería (valores de Figma). */
   .inquire-modal {
     position: fixed;
     inset: 0;
@@ -636,8 +717,8 @@ const materialNote =
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(247, 247, 247, 0.85);
-    backdrop-filter: blur(16px);
+    background: rgba(160, 160, 160, 0.2);
+    backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;

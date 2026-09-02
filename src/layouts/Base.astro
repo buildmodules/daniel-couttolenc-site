@@ -77,8 +77,45 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
       )}
       <a href="/terms" class="site-footer__terms">Terms and Conditions</a>
     </footer>
+
+    <div id="custom-cursor" aria-hidden="true">
+      <img src="/site/cursor-isotipo.png" alt="" />
+    </div>
   </body>
 </html>
+
+<script>
+  // Cursor personalizado: solo en dispositivos con mouse real (pointer: fine).
+  // En touch se deja el comportamiento nativo — el CSS de abajo ya lo cubre.
+  const cursorEl = document.getElementById("custom-cursor");
+  const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
+
+  if (cursorEl && hasFinePointer) {
+    const INTERACTIVE = 'a, button, [role="button"], input, textarea, select, label';
+
+    window.addEventListener(
+      "mousemove",
+      (e) => {
+        cursorEl.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("mouseover", (e) => {
+      if ((e.target as HTMLElement)?.closest(INTERACTIVE)) {
+        cursorEl.classList.add("is-hover");
+      }
+    });
+    document.addEventListener("mouseout", (e) => {
+      if ((e.target as HTMLElement)?.closest(INTERACTIVE)) {
+        cursorEl.classList.remove("is-hover");
+      }
+    });
+
+    document.addEventListener("mouseleave", () => cursorEl.classList.add("is-idle"));
+    document.addEventListener("mouseenter", () => cursorEl.classList.remove("is-idle"));
+  }
+</script>
 
 <style is:global>
   @font-face {
@@ -132,8 +169,64 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     box-sizing: border-box;
   }
 
-  html {
-    cursor: url("/site/cursor-isotipo.png") 10 10, auto;
+  /* Cursor personalizado (ver #custom-cursor + script al final del layout):
+     ocultamos el cursor nativo en TODO el sitio, incluyendo la manita que los
+     componentes ponen en botones/links via "cursor: pointer" — de ahí el
+     !important, es la única forma de reclamar esa propiedad sin tener que
+     tocar cada componente que la declara. En touch (sin mouse real) no
+     aplica: ahí no hay concepto de cursor que ocultar. */
+  html,
+  a,
+  button,
+  [role="button"],
+  input,
+  textarea,
+  select {
+    cursor: none !important;
+  }
+
+  #custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 52px;
+    height: 52px;
+    margin: -26px 0 0 -26px;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  #custom-cursor img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+  #custom-cursor:not(.is-idle) {
+    opacity: 1;
+  }
+  #custom-cursor.is-hover img {
+    transform: rotate(90deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #custom-cursor img {
+      transition: none;
+    }
+  }
+  @media (pointer: coarse) {
+    html,
+    a,
+    button,
+    [role="button"],
+    input,
+    textarea,
+    select {
+      cursor: auto !important;
+    }
+    #custom-cursor {
+      display: none;
+    }
   }
 
   html,
@@ -265,6 +358,11 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     font-size: var(--fs-body);
     text-decoration: none;
     color: var(--color-text);
+    transition: opacity 0.2s ease;
+  }
+
+  .site-header__nav a:hover {
+    opacity: 0.6;
   }
 
   .site-header__nav a[aria-current="page"] {
@@ -281,7 +379,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 2px;
     padding: 3rem var(--gutter) 4rem;
     font-size: var(--fs-meta);
     text-align: center;

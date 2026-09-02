@@ -7,6 +7,9 @@ galeria:
   - /images/Calatea table/2.jpg
   - /images/Calatea table/3.jpg
   - /images/Calatea table/4.jpg
+creditosFotos:
+  - imagen: /images/Calatea table/3.jpg
+    texto: image courtesy of Artekura
 dimensiones: Ø152 x 76cm
 variantes:
   - nombre: Tzalam

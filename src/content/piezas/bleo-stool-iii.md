@@ -15,11 +15,11 @@ galeria:
   - /images/Bleo stool III/10.jpg
 dimensiones: 46 x 43 x 42cm
 variantes:
-  - nombre: Red Oak – Cream wash finish
+  - nombre: Red Oak|Cream wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
-  - nombre: Red Oak – Cinnamon finish
+  - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png
-  - nombre: Red Oak – Black finish
+  - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png

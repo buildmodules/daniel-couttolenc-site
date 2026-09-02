@@ -18,11 +18,16 @@ galeria:
   - /images/Cas chair/13.jpg
   - /images/Cas chair/14.jpg
   - /images/Cas chair/15.jpg
+creditosFotos:
+  - imagen: /images/Cas chair/7.jpg
+    texto: photo courtesy of DIFANE
+  - imagen: /images/Cas chair/8.jpg
+    texto: photo courtesy of DIFANE
 dimensiones: 61 x 57 x 82cm
 variantes:
-  - nombre: Red Oak – Cinnamon finish
+  - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png
-  - nombre: Red Oak – Black finish
+  - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png

@@ -8,6 +8,7 @@ galeria:
   - /images/Aster table/2.jpg
   - /images/Aster table/3.jpg
   - /images/Aster table/4.jpg
+  - /images/Aster table/5.jpg
   - /images/Aster table/6.jpg
   - /images/Aster table/7.jpg
 creditosFotos:

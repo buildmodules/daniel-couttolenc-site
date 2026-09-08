@@ -1,8 +1,10 @@
 ---
 titulo: CACTO bench
 slug: cacto-bench
-portada: /images/Cacto bench/1.jpg
+portada: /images/Cacto bench/portada.jpg
+portadaHover: /images/Cacto bench/portada-hover.jpg
 galeria:
+  - /images/Cacto bench/portada.jpg
   - /images/Cacto bench/1.jpg
   - /images/Cacto bench/2.jpg
   - /images/Cacto bench/3.jpg
@@ -21,14 +23,13 @@ variantes:
     imagen: /images/Materials/Oak.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-badge: Conceived in collaboration with Territorio Gallery
 orden: 12
 metaTitle: CACTO bench | Daniel Couttolenc
 metaDescription: CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
 ogImage: /images/Cacto bench/1.jpg
 ---
 
-CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
+CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast. Conceived in collaboration with Territorio Gallery.

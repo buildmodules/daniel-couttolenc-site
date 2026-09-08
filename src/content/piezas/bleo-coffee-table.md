@@ -1,8 +1,10 @@
 ---
 titulo: BLEO coffee table
 slug: bleo-coffee-table
-portada: /images/Bleo coffee table/1.jpg
+portada: /images/Bleo coffee table/portada.jpg
+portadaHover: /images/Bleo coffee table/portada-hover.jpg
 galeria:
+  - /images/Bleo coffee table/portada.jpg
   - /images/Bleo coffee table/1.jpg
   - /images/Bleo coffee table/2.jpg
   - /images/Bleo coffee table/3.jpg
@@ -32,7 +34,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 14

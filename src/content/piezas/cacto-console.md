@@ -1,8 +1,10 @@
 ---
 titulo: CACTO console
 slug: cacto-console
-portada: /images/Cacto console/1.jpg
+portada: /images/Cacto console/portada.jpg
+portadaHover: /images/Cacto console/portada-hover.jpg
 galeria:
+  - /images/Cacto console/portada.jpg
   - /images/Cacto console/1.jpg
   - /images/Cacto console/2.jpg
   - /images/Cacto console/3.jpg
@@ -27,14 +29,13 @@ variantes:
     imagen: /images/Materials/Oak.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-badge: Conceived in collaboration with Territorio Gallery
 orden: 11
 metaTitle: CACTO console | Daniel Couttolenc
 metaDescription: CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
 ogImage: /images/Cacto console/1.jpg
 ---
 
-CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast.
+CACTO is an exploration of balance. Through the dialogue between mass and lightness, curves and straight lines, the piece finds harmony in contrast. Conceived in collaboration with Territorio Gallery.

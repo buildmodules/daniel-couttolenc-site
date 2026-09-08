@@ -1,8 +1,10 @@
 ---
 titulo: YUCA stool
 slug: yuca-stool
-portada: /images/Yuca stool/1.jpg
+portada: /images/Yuca stool/portada.jpg
+portadaHover: /images/Yuca stool/portada-hover.jpg
 galeria:
+  - /images/Yuca stool/portada.jpg
   - /images/Yuca stool/1.jpg
   - /images/Yuca stool/2.jpg
   - /images/Yuca stool/3.jpg
@@ -14,7 +16,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 24

@@ -5,6 +5,7 @@ interface Item {
   titulo: string;
   slug: string;
   portada?: string;
+  portadaHover?: string;
   type: "pieces" | "collections";
 }
 
@@ -43,7 +44,13 @@ const DENSE_COLS = 8;
     style={`--cols: ${defaultCols};`}
   >
     {items.map((item) => (
-      <ItemCard titulo={item.titulo} slug={item.slug} portada={item.portada} type={item.type} />
+      <ItemCard
+        titulo={item.titulo}
+        slug={item.slug}
+        portada={item.portada}
+        portadaHover={item.portadaHover}
+        type={item.type}
+      />
     ))}
   </section>
 </div>
@@ -205,6 +212,14 @@ const DENSE_COLS = 8;
 
   .grid.grid--dense :global(.item-card__title) {
     display: none;
+  }
+
+  /* Vista de 8 columnas: sin título debajo de cada foto, así que el
+     espacio entre filas puede ser tan angosto como el de columnas —
+     solo aplica aquí, las vistas de 4 y 2 columnas mantienen el row-gap
+     grande de arriba. */
+  .grid.grid--dense {
+    row-gap: var(--grid-gap);
   }
 
   @media (max-width: 900px) {

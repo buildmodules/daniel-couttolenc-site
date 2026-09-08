@@ -74,9 +74,15 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
 
     items.forEach((item) => {
       const foto = item.dataset.foto;
-      if (!foto) return;
 
       item.addEventListener("mouseenter", (e) => {
+        if (!foto) {
+          // Sin foto asignada (falta el material) — ocultamos el preview en
+          // vez de dejar pegada la última foto real que se mostró, que se
+          // ve como si varias filas compartieran la misma imagen.
+          float.classList.remove("is-visible");
+          return;
+        }
         floatImg.src = foto;
         float.classList.add("is-visible");
         positionFloat((e as MouseEvent).clientX, (e as MouseEvent).clientY);
@@ -188,10 +194,9 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
     font-size: var(--fs-meta);
     letter-spacing: var(--ls-meta);
     text-transform: uppercase;
-    cursor: default;
-  }
-  .about__exhibitions li[data-foto]:not([data-foto=""]) {
-    cursor: pointer;
+    /* Sin cursor: default/pointer aquí — el sitio usa un cursor propio
+       (cursor: none global + elemento JS); un cursor explícito en este li
+       gana sobre esa herencia y muestra la flecha/manita nativa. */
   }
   .about__exhibitions li:last-child {
     border-bottom: 1px solid var(--color-hairline);

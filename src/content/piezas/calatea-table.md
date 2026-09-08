@@ -1,8 +1,10 @@
 ---
 titulo: CALATEA table
 slug: calatea-table
-portada: /images/Calatea table/1.jpg
+portada: /images/Calatea table/portada.jpg
+portadaHover: /images/Calatea table/portada-hover.jpg
 galeria:
+  - /images/Calatea table/portada.jpg
   - /images/Calatea table/1.jpg
   - /images/Calatea table/2.jpg
   - /images/Calatea table/3.jpg
@@ -14,7 +16,7 @@ dimensiones: Ø152 x 76cm
 variantes:
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 21

@@ -1,8 +1,10 @@
 ---
 titulo: BLEO collection
 slug: bleo
-portada: /images/collections/bleo/1.jpg
+portada: /images/collections/bleo/portada.jpg
+portadaHover: /images/collections/bleo/portada-hover.jpg
 galeria:
+  - /images/collections/bleo/portada.jpg
   - /images/collections/bleo/1.jpg
   - /images/collections/bleo/2.jpg
   - /images/collections/bleo/3.jpg

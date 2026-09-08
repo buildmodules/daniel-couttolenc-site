@@ -1,8 +1,10 @@
 ---
 titulo: ELEMENTOS stools
 slug: elementos-stools
-portada: /images/Elementos stools/1.jpg
+portada: /images/Elementos stools/portada.jpg
+portadaHover: /images/Elementos stools/portada-hover.jpg
 galeria:
+  - /images/Elementos stools/portada.jpg
   - /images/Elementos stools/1.jpg
   - /images/Elementos stools/2.jpg
   - /images/Elementos stools/3.jpg

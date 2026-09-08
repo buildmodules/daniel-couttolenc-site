@@ -139,12 +139,9 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
     if (!coleccion || !coleccionGaleria || !coleccionInquireLink) return;
     if (window.matchMedia("(max-width: 900px)").matches) return;
 
-    const aspect = FIRST_PHOTO_ASPECT;
-
     const measure = () => {
       const top = coleccionGaleria.getBoundingClientRect().top;
       return {
-        photoHeight: coleccionGaleria.getBoundingClientRect().width / aspect,
         available: coleccionInquireLink.getBoundingClientRect().bottom - top,
       };
     };
@@ -158,21 +155,31 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
       // Los % de grid-template-columns se resuelven contra el content-box
       // completo — el gap NO se resta antes de repartir (verificado empíricamente).
       const trackSpace = totalWidth;
-      const neededColWidth = available * aspect;
-      const percent = Math.max(COLECCION_MIN_COL, Math.min(45, (neededColWidth / trackSpace) * 100));
+      const neededColWidth = available * FIRST_PHOTO_ASPECT;
+      // El techo (antes 45, fijo — y 70 tampoco alcanzaba en pantallas más
+      // grandes) es ahora generoso: en pantallas grandes el viewport crece
+      // más en alto que el ancho de columna (topado por --max-width), así
+      // que a veces hace falta mucho más de 45% para alcanzar la misma
+      // línea base que el texto. La columna de info tiene su propio
+      // max-width (510px), así que no se "aprieta" aunque esta columna
+      // crezca mucho — 92 es solo para dejar un margen mínimo visible del
+      // lado del texto; en la mayoría de las pantallas el resultado natural
+      // ronda 40-50%.
+      const percent = Math.max(COLECCION_MIN_COL, Math.min(92, (neededColWidth / trackSpace) * 100));
       coleccion.style.setProperty("--photo-col", `${percent}%`);
     };
 
-    coleccion.style.setProperty("--photo-col", "45%");
-    const first = measure();
-
-    if (first.photoHeight <= first.available || first.available <= 0) {
-      coleccionGaleria.classList.remove("coleccion__galeria--fit");
-      return;
-    }
-
-    applyPercentFor(first.available);
+    // Siempre ajustamos al espacio disponible — para achicar la foto si a
+    // 45% se pasaría del Inquire, pero también para AGRANDARLA si a 45% se
+    // queda corta (pantallas grandes: el alto del viewport crece pero el
+    // ancho de columna no, porque está topado por --max-width). Antes solo
+    // se corregía el primer caso, así que en pantallas grandes la foto no
+    // llegaba a la misma línea base que el texto.
     coleccionGaleria.classList.add("coleccion__galeria--fit");
+
+    const first = measure();
+    if (first.available <= 0) return;
+    applyPercentFor(first.available);
 
     // 2ª pasada de ajuste fino — ver el comentario equivalente en pieces/[slug].astro.
     const second = measure();
@@ -244,6 +251,9 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
   .coleccion__foto:focus-visible {
     outline: 1px solid var(--color-hairline);
     outline-offset: 4px;
+  }
+  .coleccion__foto:last-child {
+    margin-bottom: 0;
   }
   .coleccion__foto img {
     width: 100%;

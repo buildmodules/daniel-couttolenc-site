@@ -1,8 +1,10 @@
 ---
 titulo: KABIKI chair
 slug: kabiki-chair
-portada: /images/Kabiki chair/1.jpg
+portada: /images/Kabiki chair/portada.jpg
+portadaHover: /images/Kabiki chair/portada-hover.jpg
 galeria:
+  - /images/Kabiki chair/portada.jpg
   - /images/Kabiki chair/1.jpg
   - /images/Kabiki chair/2.jpg
   - /images/Kabiki chair/3.jpg
@@ -16,7 +18,7 @@ variantes:
   - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
 leadTime: 8-10 weeks
-badge: LIMITED EDITION – 20 PIECES · Conceived in collaboration with Design Week Mexico
+badge: LIMITED EDITION – 20 PIECES
 mostrarDisclaimer: false
 orden: 7
 metaTitle: KABIKI chair | Daniel Couttolenc
@@ -24,4 +26,4 @@ metaDescription: KABIKI is a family of pieces inspired by the vesica piscis, a s
 ogImage: /images/Kabiki chair/1.jpg
 ---
 
-KABIKI is a family of pieces inspired by the vesica piscis, a symbol associated with creation and connection. Through repeated geometric forms, the collection explores balance, rhythm, and sculptural presence.
+KABIKI is a family of pieces inspired by the vesica piscis, a symbol associated with creation and connection. Through repeated geometric forms, the collection explores balance, rhythm, and sculptural presence. Conceived in collaboration with Design Week Mexico.

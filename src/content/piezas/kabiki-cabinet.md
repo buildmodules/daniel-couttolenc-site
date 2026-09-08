@@ -1,8 +1,10 @@
 ---
 titulo: KABIKI cabinet
 slug: kabiki-cabinet
-portada: /images/Kabiki cabinet/1.jpg
+portada: /images/Kabiki cabinet/portada.jpg
+portadaHover: /images/Kabiki cabinet/portada-hover.jpg
 galeria:
+  - /images/Kabiki cabinet/portada.jpg
   - /images/Kabiki cabinet/1.jpg
   - /images/Kabiki cabinet/2.jpg
   - /images/Kabiki cabinet/3.jpg
@@ -18,7 +20,7 @@ variantes:
   - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
 leadTime: 8-10 weeks
-badge: LIMITED EDITION – 20 PIECES · Conceived in collaboration with Design Week Mexico
+badge: LIMITED EDITION – 20 PIECES
 mostrarDisclaimer: false
 orden: 6
 metaTitle: KABIKI cabinet | Daniel Couttolenc
@@ -26,4 +28,4 @@ metaDescription: KABIKI is a family of pieces inspired by the vesica piscis, a s
 ogImage: /images/Kabiki cabinet/1.jpg
 ---
 
-KABIKI is a family of pieces inspired by the vesica piscis, a symbol associated with creation and connection. Through repeated geometric forms, the collection explores balance, rhythm, and sculptural presence.
+KABIKI is a family of pieces inspired by the vesica piscis, a symbol associated with creation and connection. Through repeated geometric forms, the collection explores balance, rhythm, and sculptural presence. Conceived in collaboration with Design Week Mexico.

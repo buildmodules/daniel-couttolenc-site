@@ -32,6 +32,11 @@ const imagenes: string[] = galeria ?? (portada ? [portada] : []);
 // necesita (ver content.config.ts). Match por igualdad de string contra la ruta.
 const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen, c.texto]));
 const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
+// Piezas redondas (ej. CALATEA) miden diámetro × alto, no W × D × H — el
+// dato "Ø152 x 76cm" no está incompleto, es la etiqueta la que no le
+// corresponde. Se detecta por el prefijo "Ø" en vez de un campo nuevo en
+// el CMS, así cualquier pieza redonda futura queda bien automáticamente.
+const dimensionesRedondas = dimensiones?.trim().startsWith("Ø") ?? false;
 
 const materialNote =
   materialTipo === "Cast Bronze"
@@ -67,12 +72,14 @@ const materialNote =
     <div class="pieza__info-sticky">
       <div class="pieza__info">
         <h1 class="type-heading">{titulo}</h1>
-        <div class="pieza__descripcion"><Content /></div>
         {badge && <p class="pieza__badge type-label">{badge}</p>}
+        <div class="pieza__descripcion"><Content /></div>
 
         {dimensiones && (
           <>
-            <p class="pieza__label type-label">Dimensions (W × D × H):</p>
+            <p class="pieza__label type-label">
+              Dimensions ({dimensionesRedondas ? "Ø × H" : "W × D × H"}):
+            </p>
             <hr />
             <p class="pieza__dimensiones">{dimensiones}</p>
             <hr />
@@ -302,12 +309,9 @@ const materialNote =
     if (!pieza || !galeria || !inquireBtn) return;
     if (window.matchMedia("(max-width: 900px)").matches) return; // en mobile el layout ya es 1 columna
 
-    const aspect = FIRST_PHOTO_ASPECT;
-
     const measure = () => {
       const top = galeria.getBoundingClientRect().top;
       return {
-        photoHeight: galeria.getBoundingClientRect().width / aspect,
         // El objetivo real es "la foto llega hasta donde termina Inquire" —
         // se mide directo en vez de asumir un padding fijo, para que quede exacto.
         available: inquireBtn.getBoundingClientRect().bottom - top,
@@ -323,22 +327,27 @@ const materialNote =
       // Los % de grid-template-columns se resuelven contra el content-box
       // completo — el gap NO se resta antes de repartir (verificado empíricamente).
       const trackSpace = totalWidth;
-      const neededColWidth = available * aspect;
-      const percent = Math.max(MIN_COL, Math.min(45, (neededColWidth / trackSpace) * 100));
+      const neededColWidth = available * FIRST_PHOTO_ASPECT;
+      // Ver el comentario equivalente en collections/[slug].astro sobre el
+      // techo (antes 45, fijo — y 70 tampoco alcanzaba en pantallas grandes).
+      // La columna de info tiene su propio max-width (510px), así que no se
+      // "aprieta" aunque esta columna crezca mucho — 92 es solo para dejar
+      // un margen mínimo visible del lado del texto.
+      const percent = Math.max(MIN_COL, Math.min(92, (neededColWidth / trackSpace) * 100));
       pieza.style.setProperty("--photo-col", `${percent}%`);
     };
 
-    // 1ª pasada: a ancho normal (45%), ¿haría falta encoger?
-    pieza.style.setProperty("--photo-col", "45%");
-    const first = measure();
-
-    if (first.photoHeight <= first.available || first.available <= 0) {
-      galeria.classList.remove("pieza__galeria--fit");
-      return;
-    }
-
-    applyPercentFor(first.available);
+    // Siempre ajustamos al espacio disponible — para achicar la foto si a
+    // 45% se pasaría del Inquire, pero también para AGRANDARLA si a 45% se
+    // queda corta (pantallas grandes: el alto del viewport crece pero el
+    // ancho de columna no, porque está topado por --max-width). Antes solo
+    // se corregía el primer caso, así que en pantallas grandes la foto no
+    // llegaba a la misma línea base que el texto.
     galeria.classList.add("pieza__galeria--fit");
+
+    const first = measure();
+    if (first.available <= 0) return;
+    applyPercentFor(first.available);
 
     // 2ª pasada: al angostar la columna de info (1fr) su texto puede haber
     // reajustado líneas y movido Inquire — remedimos en el nuevo estado y
@@ -418,6 +427,9 @@ const materialNote =
     outline: 1px solid var(--color-hairline);
     outline-offset: 4px;
   }
+  .pieza__foto:last-child {
+    margin-bottom: 0;
+  }
   .pieza__foto img {
     width: 100%;
     display: block;
@@ -483,9 +495,14 @@ const materialNote =
   .pieza__info h1 {
     margin-bottom: 32px;
   }
+  /* Cuando hay badge, va pegado al título (como en collections) — el h1
+     usa un margin chico en vez del que separa título de párrafo. */
+  .pieza__info h1:has(+ .pieza__badge) {
+    margin-bottom: 8px;
+  }
   .pieza__badge {
     color: var(--color-text-muted);
-    margin-top: 24px;
+    margin-bottom: 24px;
   }
   .pieza__dimensiones {
     white-space: pre-line;

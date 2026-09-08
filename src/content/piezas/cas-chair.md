@@ -1,8 +1,10 @@
 ---
 titulo: CAS chair
 slug: cas-chair
-portada: /images/Cas chair/1.jpg
+portada: /images/Cas chair/portada.jpg
+portadaHover: /images/Cas chair/portada-hover.jpg
 galeria:
+  - /images/Cas chair/portada.jpg
   - /images/Cas chair/1.jpg
   - /images/Cas chair/2.jpg
   - /images/Cas chair/3.jpg
@@ -33,7 +35,7 @@ variantes:
     imagen: /images/Materials/Tzalam.png
   - nombre: American Walnut
     imagen: /images/Materials/American-Walnut.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 2

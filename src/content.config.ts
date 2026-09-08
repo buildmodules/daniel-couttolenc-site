@@ -23,6 +23,9 @@ const piezas = defineCollection({
     titulo: z.string(),
     slug: z.string(),
     portada: z.string().optional(),
+    // Foto que reemplaza a `portada` en el grid de /work al pasar el mouse
+    // (antes era zoom sobre la misma imagen; ahora es un cambio de foto).
+    portadaHover: z.string().optional(),
     galeria: z.array(z.string()).optional(),
     creditosFotos: z.array(creditoFoto).optional(),
     dimensiones: z.string().optional(),
@@ -44,6 +47,8 @@ const colecciones = defineCollection({
     titulo: z.string(),
     slug: z.string(),
     portada: z.string().optional(),
+    // Ver el comentario equivalente en la colección `piezas`.
+    portadaHover: z.string().optional(),
     galeria: z.array(z.string()).optional(),
     creditosFotos: z.array(creditoFoto).optional(),
     badge: z.string().optional(),

@@ -1,8 +1,10 @@
 ---
 titulo: BLEO stool III
 slug: bleo-stool-iii
-portada: /images/Bleo stool III/1.jpg
+portada: /images/Bleo stool III/portada.jpg
+portadaHover: /images/Bleo stool III/portada-hover.jpg
 galeria:
+  - /images/Bleo stool III/portada.jpg
   - /images/Bleo stool III/1.jpg
   - /images/Bleo stool III/2.jpg
   - /images/Bleo stool III/3.jpg
@@ -23,7 +25,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 17

@@ -1,8 +1,10 @@
 ---
 titulo: MORA tables
 slug: mora-tables
-portada: /images/Mora tables/1.jpg
+portada: /images/Mora tables/portada.jpg
+portadaHover: /images/Mora tables/portada-hover.jpg
 galeria:
+  - /images/Mora tables/portada.jpg
   - /images/Mora tables/1.jpg
   - /images/Mora tables/2.jpg
   - /images/Mora tables/3.jpg

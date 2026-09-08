@@ -1,8 +1,10 @@
 ---
 titulo: BLEO pedestal
 slug: bleo-pedestal
-portada: /images/Bleo pedestal/1.jpg
+portada: /images/Bleo pedestal/portada.jpg
+portadaHover: /images/Bleo pedestal/portada-hover.jpg
 galeria:
+  - /images/Bleo pedestal/portada.jpg
   - /images/Bleo pedestal/1.jpg
   - /images/Bleo pedestal/2.jpg
   - /images/Bleo pedestal/3.jpg
@@ -20,7 +22,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 19

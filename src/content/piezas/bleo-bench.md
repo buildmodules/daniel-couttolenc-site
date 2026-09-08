@@ -1,8 +1,10 @@
 ---
 titulo: BLEO bench
 slug: bleo-bench
-portada: /images/Bleo bench/1.jpg
+portada: /images/Bleo bench/portada.jpg
+portadaHover: /images/Bleo bench/portada-hover.jpg
 galeria:
+  - /images/Bleo bench/portada.jpg
   - /images/Bleo bench/1.jpg
   - /images/Bleo bench/2.jpg
   - /images/Bleo bench/3.jpg
@@ -28,7 +30,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 18

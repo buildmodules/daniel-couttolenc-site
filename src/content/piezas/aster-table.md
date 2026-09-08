@@ -1,8 +1,10 @@
 ---
 titulo: ASTER table
 slug: aster-table
-portada: /images/Aster table/1.jpg
+portada: /images/Aster table/portada.jpg
+portadaHover: /images/Aster table/portada-hover.jpg
 galeria:
+  - /images/Aster table/portada.jpg
   - /images/Aster table/1.jpg
   - /images/Aster table/2.jpg
   - /images/Aster table/3.jpg
@@ -22,7 +24,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 25

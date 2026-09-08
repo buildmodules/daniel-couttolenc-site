@@ -48,6 +48,13 @@ export default defineConfig({
             type: "image",
             name: "portada",
             label: "Imagen de portada",
+            description: "Se usa en el grid de /work.",
+          },
+          {
+            type: "image",
+            name: "portadaHover",
+            label: "Imagen de portada (hover)",
+            description: "Reemplaza a la portada al pasar el mouse sobre la tarjeta en /work.",
           },
           {
             type: "image",
@@ -214,6 +221,13 @@ export default defineConfig({
             type: "image",
             name: "portada",
             label: "Imagen de portada",
+            description: "Se usa en el grid de /work.",
+          },
+          {
+            type: "image",
+            name: "portadaHover",
+            label: "Imagen de portada (hover)",
+            description: "Reemplaza a la portada al pasar el mouse sobre la tarjeta en /work.",
           },
           {
             type: "image",

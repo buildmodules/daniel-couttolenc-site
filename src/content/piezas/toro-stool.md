@@ -1,8 +1,10 @@
 ---
 titulo: TORO stool
 slug: toro-stool
-portada: /images/Toro stool/1.jpg
+portada: /images/Toro stool/portada.jpg
+portadaHover: /images/Toro stool/portada-hover.jpg
 galeria:
+  - /images/Toro stool/portada.jpg
   - /images/Toro stool/1.jpg
   - /images/Toro stool/2.jpg
   - /images/Toro stool/3.jpg
@@ -24,7 +26,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 4

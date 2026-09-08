@@ -1,8 +1,10 @@
 ---
 titulo: JUNCO stool
 slug: junco-stool
-portada: /images/Junco stool/1.jpg
+portada: /images/Junco stool/portada.jpg
+portadaHover: /images/Junco stool/portada-hover.jpg
 galeria:
+  - /images/Junco stool/portada.jpg
   - /images/Junco stool/1.jpg
   - /images/Junco stool/2.jpg
   - /images/Junco stool/3.jpg
@@ -22,7 +24,7 @@ variantes:
     imagen: /images/Materials/Tzalam.png
   - nombre: American Walnut
     imagen: /images/Materials/American-Walnut.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 20

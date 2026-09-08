@@ -1,8 +1,10 @@
 ---
 titulo: ZINIA console
 slug: zinia-console
-portada: /images/Zinia console/1.jpg
+portada: /images/Zinia console/portada.jpg
+portadaHover: /images/Zinia console/portada-hover.jpg
 galeria:
+  - /images/Zinia console/portada.jpg
   - /images/Zinia console/1.jpg
   - /images/Zinia console/2.jpg
   - /images/Zinia console/3.jpg
@@ -16,7 +18,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: Mexican Oak (Rosamorada)
+  - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
 orden: 22

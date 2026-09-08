@@ -1,11 +1,10 @@
 ---
 titulo: IXIA desk
 slug: ixia-desk
-portada: /images/Ixia desk/1.jpg
+portada: /images/Ixia desk/portada.jpg
+portadaHover: /images/Ixia desk/portada-hover.jpg
 galeria:
-  - /images/Ixia desk/1.jpg
-  - /images/Ixia desk/2.jpg
-  - /images/Ixia desk/3.jpg
+  - /images/Ixia desk/portada.jpg
   - /images/Ixia desk/4.jpg
 dimensiones: 152 x 76 x 76cm
 variantes:

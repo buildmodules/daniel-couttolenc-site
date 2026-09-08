@@ -1,8 +1,10 @@
 ---
 titulo: KABIKI collection
 slug: kabiki
-portada: /images/collections/kabiki/1.jpg
+portada: /images/collections/kabiki/portada.jpg
+portadaHover: /images/collections/kabiki/portada-hover.jpg
 galeria:
+  - /images/collections/kabiki/portada.jpg
   - /images/collections/kabiki/1.jpg
   - /images/collections/kabiki/2.jpg
   - /images/collections/kabiki/3.jpg

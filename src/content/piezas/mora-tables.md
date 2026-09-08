@@ -5,7 +5,6 @@ portada: /images/Mora tables/portada.jpg
 portadaHover: /images/Mora tables/portada-hover.jpg
 galeria:
   - /images/Mora tables/portada.jpg
-  - /images/Mora tables/1.jpg
   - /images/Mora tables/2.jpg
   - /images/Mora tables/3.jpg
   - /images/Mora tables/4.jpg
@@ -21,6 +20,7 @@ dimensiones: |
   Coffee Table: 120 x 75 x 35cm
 variantes:
   - nombre: Tzalam, Maple, Oak, American Walnut
+    imagen: /images/Materials/Mora-Combo.png
 leadTime: 8-10 weeks
 orden: 3
 metaTitle: MORA tables | Daniel Couttolenc

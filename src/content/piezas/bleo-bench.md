@@ -5,7 +5,6 @@ portada: /images/Bleo bench/portada.jpg
 portadaHover: /images/Bleo bench/portada-hover.jpg
 galeria:
   - /images/Bleo bench/portada.jpg
-  - /images/Bleo bench/1.jpg
   - /images/Bleo bench/2.jpg
   - /images/Bleo bench/3.jpg
   - /images/Bleo bench/4.jpg

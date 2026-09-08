@@ -5,7 +5,6 @@ portada: /images/Bleo pedestal/portada.jpg
 portadaHover: /images/Bleo pedestal/portada-hover.jpg
 galeria:
   - /images/Bleo pedestal/portada.jpg
-  - /images/Bleo pedestal/1.jpg
   - /images/Bleo pedestal/2.jpg
   - /images/Bleo pedestal/3.jpg
   - /images/Bleo pedestal/4.jpg

@@ -5,7 +5,6 @@ portada: /images/Bleo stool III/portada.jpg
 portadaHover: /images/Bleo stool III/portada-hover.jpg
 galeria:
   - /images/Bleo stool III/portada.jpg
-  - /images/Bleo stool III/1.jpg
   - /images/Bleo stool III/2.jpg
   - /images/Bleo stool III/3.jpg
   - /images/Bleo stool III/4.jpg

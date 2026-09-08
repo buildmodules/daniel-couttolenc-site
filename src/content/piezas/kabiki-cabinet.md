@@ -5,7 +5,6 @@ portada: /images/Kabiki cabinet/portada.jpg
 portadaHover: /images/Kabiki cabinet/portada-hover.jpg
 galeria:
   - /images/Kabiki cabinet/portada.jpg
-  - /images/Kabiki cabinet/1.jpg
   - /images/Kabiki cabinet/2.jpg
   - /images/Kabiki cabinet/3.jpg
   - /images/Kabiki cabinet/4.jpg

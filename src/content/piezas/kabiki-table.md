@@ -5,7 +5,6 @@ portada: /images/Kabiki table/portada.jpg
 portadaHover: /images/Kabiki table/portada-hover.jpg
 galeria:
   - /images/Kabiki table/portada.jpg
-  - /images/Kabiki table/1.jpg
   - /images/Kabiki table/2.jpg
   - /images/Kabiki table/3.jpg
   - /images/Kabiki table/4.jpg

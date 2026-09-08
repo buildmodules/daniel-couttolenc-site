@@ -5,7 +5,6 @@ portada: /images/Cacto bench/portada.jpg
 portadaHover: /images/Cacto bench/portada-hover.jpg
 galeria:
   - /images/Cacto bench/portada.jpg
-  - /images/Cacto bench/1.jpg
   - /images/Cacto bench/2.jpg
   - /images/Cacto bench/3.jpg
   - /images/Cacto bench/4.jpg

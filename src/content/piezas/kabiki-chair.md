@@ -5,7 +5,6 @@ portada: /images/Kabiki chair/portada.jpg
 portadaHover: /images/Kabiki chair/portada-hover.jpg
 galeria:
   - /images/Kabiki chair/portada.jpg
-  - /images/Kabiki chair/1.jpg
   - /images/Kabiki chair/2.jpg
   - /images/Kabiki chair/3.jpg
   - /images/Kabiki chair/4.jpg

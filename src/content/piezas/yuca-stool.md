@@ -5,7 +5,6 @@ portada: /images/Yuca stool/portada.jpg
 portadaHover: /images/Yuca stool/portada-hover.jpg
 galeria:
   - /images/Yuca stool/portada.jpg
-  - /images/Yuca stool/1.jpg
   - /images/Yuca stool/2.jpg
   - /images/Yuca stool/3.jpg
 dimensiones: 42 x 42 x 63cm

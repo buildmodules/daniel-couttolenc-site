@@ -5,7 +5,6 @@ portada: /images/Junco stool/portada.jpg
 portadaHover: /images/Junco stool/portada-hover.jpg
 galeria:
   - /images/Junco stool/portada.jpg
-  - /images/Junco stool/1.jpg
   - /images/Junco stool/2.jpg
   - /images/Junco stool/3.jpg
   - /images/Junco stool/4.jpg

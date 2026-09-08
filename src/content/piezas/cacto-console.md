@@ -5,7 +5,6 @@ portada: /images/Cacto console/portada.jpg
 portadaHover: /images/Cacto console/portada-hover.jpg
 galeria:
   - /images/Cacto console/portada.jpg
-  - /images/Cacto console/1.jpg
   - /images/Cacto console/2.jpg
   - /images/Cacto console/3.jpg
   - /images/Cacto console/4.jpg

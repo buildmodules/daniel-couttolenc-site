@@ -5,7 +5,6 @@ portada: /images/Kabiki rocking stool/portada.jpg
 portadaHover: /images/Kabiki rocking stool/portada-hover.jpg
 galeria:
   - /images/Kabiki rocking stool/portada.jpg
-  - /images/Kabiki rocking stool/1.jpg
   - /images/Kabiki rocking stool/2.jpg
   - /images/Kabiki rocking stool/3.jpg
   - /images/Kabiki rocking stool/4.jpg

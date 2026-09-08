@@ -5,7 +5,6 @@ portada: /images/Bleo auxiliary table/portada.jpg
 portadaHover: /images/Bleo auxiliary table/portada-hover.jpg
 galeria:
   - /images/Bleo auxiliary table/portada.jpg
-  - /images/Bleo auxiliary table/1.jpg
   - /images/Bleo auxiliary table/2.jpg
   - /images/Bleo auxiliary table/3.jpg
   - /images/Bleo auxiliary table/4.jpg

@@ -5,7 +5,6 @@ portada: /images/Bleo coffee table/portada.jpg
 portadaHover: /images/Bleo coffee table/portada-hover.jpg
 galeria:
   - /images/Bleo coffee table/portada.jpg
-  - /images/Bleo coffee table/1.jpg
   - /images/Bleo coffee table/2.jpg
   - /images/Bleo coffee table/3.jpg
   - /images/Bleo coffee table/4.jpg

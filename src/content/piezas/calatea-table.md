@@ -5,7 +5,6 @@ portada: /images/Calatea table/portada.jpg
 portadaHover: /images/Calatea table/portada-hover.jpg
 galeria:
   - /images/Calatea table/portada.jpg
-  - /images/Calatea table/1.jpg
   - /images/Calatea table/2.jpg
   - /images/Calatea table/3.jpg
   - /images/Calatea table/4.jpg

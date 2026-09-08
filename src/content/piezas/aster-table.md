@@ -5,7 +5,6 @@ portada: /images/Aster table/portada.jpg
 portadaHover: /images/Aster table/portada-hover.jpg
 galeria:
   - /images/Aster table/portada.jpg
-  - /images/Aster table/1.jpg
   - /images/Aster table/2.jpg
   - /images/Aster table/3.jpg
   - /images/Aster table/4.jpg

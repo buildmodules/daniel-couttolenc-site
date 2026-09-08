@@ -5,7 +5,6 @@ portada: /images/Zinia console/portada.jpg
 portadaHover: /images/Zinia console/portada-hover.jpg
 galeria:
   - /images/Zinia console/portada.jpg
-  - /images/Zinia console/1.jpg
   - /images/Zinia console/2.jpg
   - /images/Zinia console/3.jpg
   - /images/Zinia console/4.jpg

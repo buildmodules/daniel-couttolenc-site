@@ -5,7 +5,6 @@ portada: /images/Kabiki bronze/portada.jpg
 portadaHover: /images/Kabiki bronze/portada-hover.jpg
 galeria:
   - /images/Kabiki bronze/portada.jpg
-  - /images/Kabiki bronze/1.jpg
   - /images/Kabiki bronze/2.jpg
   - /images/Kabiki bronze/3.jpg
   - /images/Kabiki bronze/4.jpg

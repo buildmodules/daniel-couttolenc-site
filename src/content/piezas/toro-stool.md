@@ -5,7 +5,6 @@ portada: /images/Toro stool/portada.jpg
 portadaHover: /images/Toro stool/portada-hover.jpg
 galeria:
   - /images/Toro stool/portada.jpg
-  - /images/Toro stool/1.jpg
   - /images/Toro stool/2.jpg
   - /images/Toro stool/3.jpg
   - /images/Toro stool/4.jpg

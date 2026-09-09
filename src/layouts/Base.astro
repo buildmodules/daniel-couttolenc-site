@@ -47,7 +47,22 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
         <a class="site-header__brand" href="/">
           <img src="/site/logo-full.svg" alt="Daniel Couttolenc" class="site-header__logo" />
         </a>
-        <nav class="site-header__nav">
+        <!-- Solo mobile: el hamburger reemplaza al nav inline (ver CSS) —
+             abre/cierra el mismo <nav> de abajo como overlay de pantalla
+             completa. En desktop es invisible, no afecta nada. -->
+        <button
+          type="button"
+          class="site-header__toggle"
+          id="nav-toggle"
+          aria-label="Abrir menú"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-header__nav" id="site-nav">
           <a href="/work" aria-current={isActive("/work") ? "page" : undefined}>Work</a>
           <a href="/about" aria-current={isActive("/about") ? "page" : undefined}>About</a>
           <a href="/contact" aria-current={isActive("/contact") ? "page" : undefined}>Contact</a>
@@ -114,6 +129,41 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 
     document.addEventListener("mouseleave", () => cursorEl.classList.add("is-idle"));
     document.addEventListener("mouseenter", () => cursorEl.classList.remove("is-idle"));
+  }
+</script>
+
+<script>
+  // --- Hamburger menu (solo mobile) — el mismo <nav> del header se abre
+  // como overlay de pantalla completa (ver CSS); bloquea el scroll de la
+  // página mientras está abierto.
+  const navToggle = document.getElementById("nav-toggle");
+  const siteNav = document.getElementById("site-nav");
+
+  if (navToggle && siteNav) {
+    const closeNav = () => {
+      navToggle.classList.remove("is-open");
+      navToggle.setAttribute("aria-expanded", "false");
+      siteNav.classList.remove("is-open");
+      document.body.classList.remove("no-scroll");
+    };
+    const openNav = () => {
+      navToggle.classList.add("is-open");
+      navToggle.setAttribute("aria-expanded", "true");
+      siteNav.classList.add("is-open");
+      document.body.classList.add("no-scroll");
+    };
+
+    navToggle.addEventListener("click", () => {
+      if (navToggle.classList.contains("is-open")) closeNav();
+      else openNav();
+    });
+
+    // Al navegar (tap en un link) o con Escape, se cierra — por si la
+    // navegación no descarta la página al instante.
+    siteNav.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeNav));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeNav();
+    });
   }
 </script>
 
@@ -313,6 +363,13 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     white-space: nowrap;
     border: 0;
   }
+
+  /* Compartido por el hamburger menu de abajo y los modales (lightbox,
+     inquire) definidos por página — bloquea el scroll del body detrás de
+     cualquier overlay de pantalla completa. */
+  body.no-scroll {
+    overflow: hidden;
+  }
 </style>
 
 <style>
@@ -375,6 +432,12 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     align-items: center;
   }
 
+  /* Hamburger — invisible en desktop, el nav inline de arriba se queda
+     igual que siempre. */
+  .site-header__toggle {
+    display: none;
+  }
+
   .site-footer {
     display: flex;
     flex-direction: column;
@@ -393,12 +456,82 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     color: var(--color-text-muted);
   }
 
+  @media (max-width: 900px) {
+    /* El toggle reemplaza al nav inline — mismo breakpoint que el resto
+       del sitio (WorkGrid, pieza/colección, about, contact). */
+    .site-header__toggle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 24px;
+      height: 24px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      appearance: none;
+      outline: none;
+      /* Por encima del overlay del nav (hermano, más adelante en el DOM)
+         para seguir siendo clickeable/visible con el nav abierto. */
+      position: relative;
+      z-index: 2;
+    }
+    .site-header__toggle span {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--color-text);
+      transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+    /* Animación a X cuando el nav está abierto. */
+    .site-header__toggle.is-open span:first-child {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .site-header__toggle.is-open span:nth-child(2) {
+      opacity: 0;
+    }
+    .site-header__toggle.is-open span:last-child {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    /* El logo también queda por encima del overlay (mismo motivo que el
+       toggle) — sigue visible mientras el menú está abierto. */
+    .site-header__brand {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* El nav inline se oculta — solo existe como el overlay de abajo. */
+    .site-header__nav {
+      display: none;
+    }
+    .site-header__nav.is-open {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100dvh;
+      margin: 0;
+      background: #fff;
+      text-align: center;
+      gap: 32px;
+    }
+    .site-header__nav.is-open a {
+      font-size: var(--fs-heading);
+    }
+  }
+
   @media (max-width: 640px) {
     .site-header__inner {
       padding: 0 16px;
     }
     .site-header__logo {
-      height: 18px;
+      height: 22px;
     }
     .site-header__nav {
       gap: 10px;

@@ -71,7 +71,13 @@ const materialNote =
 
     <div class="pieza__info-sticky">
       <div class="pieza__info">
-        <h1 class="type-heading">{titulo}</h1>
+        <div class="pieza__title-row">
+          <h1 class="type-heading">{titulo}</h1>
+          <!-- Mismo trigger que el botón Inquire de abajo (#inquire-open) —
+               solo visible en mobile, donde el diseño lo pone junto al
+               título en vez de al fondo de la columna de info. -->
+          <button type="button" class="pieza__inquire-top" id="inquire-open-mobile">Inquire</button>
+        </div>
         {badge && <p class="pieza__badge type-label">{badge}</p>}
         <div class="pieza__descripcion"><Content /></div>
 
@@ -211,6 +217,17 @@ const materialNote =
     if (e.target === lightbox) closeLightbox();
   });
 
+  // Swipe para navegar (reemplaza las flechas, que se ocultan en mobile —
+  // mismo umbral/patrón que el carrusel del home).
+  let lightboxTouchStartX = 0;
+  lightbox?.addEventListener("touchstart", (e) => {
+    lightboxTouchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  lightbox?.addEventListener("touchend", (e) => {
+    const delta = e.changedTouches[0].clientX - lightboxTouchStartX;
+    if (Math.abs(delta) > 40) showLightbox(delta > 0 ? -1 : 1);
+  }, { passive: true });
+
   // --- Modal de Inquire ---
   const inquireOpenBtn = document.getElementById("inquire-open");
   const inquireModal = document.getElementById("inquire-modal");
@@ -234,6 +251,7 @@ const materialNote =
   };
 
   inquireOpenBtn?.addEventListener("click", openInquire);
+  document.getElementById("inquire-open-mobile")?.addEventListener("click", openInquire);
   inquireClose?.addEventListener("click", closeInquire);
   inquireModal?.addEventListener("click", (e) => {
     if (e.target === inquireModal) closeInquire();
@@ -496,9 +514,19 @@ const materialNote =
     margin-bottom: 32px;
   }
   /* Cuando hay badge, va pegado al título (como en collections) — el h1
-     usa un margin chico en vez del que separa título de párrafo. */
-  .pieza__info h1:has(+ .pieza__badge) {
+     usa un margin chico en vez del que separa título de párrafo. Apunta al
+     wrapper (.pieza__title-row), no a h1 directo, porque el botón de
+     Inquire mobile ahora vive entre el h1 y el badge en el DOM. */
+  .pieza__title-row:has(+ .pieza__badge) h1 {
     margin-bottom: 8px;
+  }
+  /* En desktop el wrapper es invisible (misma caja que antes, solo h1) — el
+     botón de Inquire mobile no ocupa lugar ni se ve aquí. */
+  .pieza__title-row {
+    display: contents;
+  }
+  .pieza__inquire-top {
+    display: none;
   }
   .pieza__badge {
     color: var(--color-text-muted);
@@ -598,7 +626,23 @@ const materialNote =
   @media (max-width: 900px) {
     .pieza {
       grid-template-columns: 1fr;
-      padding-top: 72px;
+      /* Sin padding extra: la galería empieza justo debajo del header fijo
+         (ese offset ya lo da `main{padding-top:var(--header-h)}` en
+         Base.astro). La X (.pieza__close, fixed) queda entonces flotando
+         directo sobre la primera foto en vez de en un hueco en blanco. */
+      padding-top: 0;
+      /* La galería ahora es edge-to-edge (sin el --gutter del artículo) —
+         el inset horizontal se mueve a .pieza__info, que es la única otra
+         hija directa con contenido visible (.pieza__close es fixed, no le
+         afecta el padding del artículo). */
+      padding-left: 0;
+      padding-right: 0;
+    }
+    /* Más adentro que el default (arriba/derecha) para que quede
+       claramente sobre la foto, no en el margen blanco de arriba. */
+    .pieza__close {
+      top: calc(var(--header-h) + 12px);
+      right: calc(var(--gutter) + 12px);
     }
     .pieza__info-sticky {
       position: static;
@@ -608,6 +652,92 @@ const materialNote =
     }
     .pieza__info {
       max-width: none;
+      padding: 0 var(--gutter);
+    }
+
+    /* Como Zara Home mobile: la galería es un carrete vertical de una foto
+       a la vez (scroll-snap), edge-to-edge. El alto de cada "página" del
+       carrete usa el mismo aspect ratio que la caja de portada del grid
+       (333/401) para que se sienta consistente con el resto del sitio —
+       no el ratio real de cada imagen. Al llegar a la última foto y seguir
+       el swipe, no hace falta JS: es scroll chaining nativo del navegador,
+       el gesto se lo pasa a la página y sigue hacia .pieza__info. */
+    .pieza__galeria {
+      /* flex column + gap en vez de block: así el espacio entre fotos es
+         real (se ve al pasar de una a otra durante el swipe) sin afectar
+         el alto de cada "página" (aspect-ratio de abajo sigue siendo el
+         de una sola foto — el gap se suma aparte, no lo reemplaza). */
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      aspect-ratio: 333 / 401;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+    }
+    .pieza__galeria::-webkit-scrollbar {
+      display: none;
+    }
+    .pieza__foto {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      margin-bottom: 0;
+      /* Padding del diseño — la foto queda enmarcada a los lados, no
+         edge-to-edge; se ve el fondo de la página (--color-bg). Sin padding
+         arriba/abajo: la foto llega hasta ambos bordes de su "página" del
+         carrete. */
+      padding: 0 var(--gutter);
+    }
+    .pieza__foto:first-child {
+      /* Ahora la controla el contenedor (.pieza__galeria) por igual para
+         todas las fotos, no solo la primera. */
+      aspect-ratio: auto;
+    }
+    .pieza__foto img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Título + Inquire en la misma línea, arriba de la columna de info —
+       el botón de Inquire de abajo (al fondo, con el resto del contenido)
+       se oculta; es el mismo #inquire-open handler, solo cambia cuál de
+       los dos triggers se ve según el breakpoint. */
+    .pieza__title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .pieza__title-row:has(+ .pieza__badge) {
+      margin-bottom: 8px;
+    }
+    .pieza__title-row h1 {
+      margin-bottom: 0;
+    }
+    .pieza__inquire-top {
+      display: inline-block;
+      flex-shrink: 0;
+      font-size: var(--fs-body);
+      font-weight: var(--fw-medium);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      appearance: none;
+      outline: none;
+    }
+    .pieza__info > .inquire {
+      display: none;
     }
   }
 </style>
@@ -723,6 +853,13 @@ const materialNote =
   .lightbox__arrow--next span {
     transform: rotate(45deg);
     margin-right: 3px;
+  }
+
+  /* En mobile se navega con swipe (ver el script) — las flechas sobran. */
+  @media (max-width: 900px) {
+    .lightbox__arrow {
+      display: none;
+    }
   }
 
   /* Modal de Inquire */

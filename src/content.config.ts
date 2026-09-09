@@ -73,6 +73,10 @@ const homeSlider = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/home-slider" }),
   schema: z.object({
     imagen: z.string(),
+    // Foto vertical dedicada para mobile — no un recorte de `imagen` (que es
+    // horizontal para el hero de escritorio), sino otra toma con su propio
+    // aspect ratio. Si falta, mobile cae de vuelta a `imagen`.
+    imagenMobile: z.string().optional(),
     piezaRelacionada: z.string().optional(),
     coleccionRelacionada: z.string().optional(),
     orden: z.number(),

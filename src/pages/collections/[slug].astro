@@ -45,7 +45,17 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
 
     <div class="coleccion__info-sticky">
       <div class="coleccion__info">
-        <h1 class="type-heading">{titulo}</h1>
+        <div class="coleccion__title-row">
+          <h1 class="type-heading">{titulo}</h1>
+          <!-- Mismo destino que el link Inquire de abajo — solo visible en
+               mobile, ver el comentario equivalente en pieces/[slug].astro. -->
+          <a
+            class="coleccion__inquire-top"
+            href={`/contact?subject=${encodeURIComponent(`I'd like to know more about ${titulo}.`)}`}
+          >
+            Inquire
+          </a>
+        </div>
         {badge && <p class="coleccion__badge type-label">{badge}</p>}
         <div class="coleccion__descripcion"><Content /></div>
 
@@ -115,6 +125,17 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
   lightbox?.addEventListener("click", (e) => {
     if (e.target === lightbox) closeLightbox();
   });
+
+  // Swipe para navegar (reemplaza las flechas, que se ocultan en mobile —
+  // ver el comentario equivalente en pieces/[slug].astro).
+  let lightboxTouchStartX = 0;
+  lightbox?.addEventListener("touchstart", (e) => {
+    lightboxTouchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  lightbox?.addEventListener("touchend", (e) => {
+    const delta = e.changedTouches[0].clientX - lightboxTouchStartX;
+    if (Math.abs(delta) > 40) showLightbox(delta > 0 ? -1 : 1);
+  }, { passive: true });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeLightbox();
@@ -313,6 +334,14 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
     text-transform: uppercase;
     margin-bottom: 8px;
   }
+  /* En desktop el wrapper es invisible (misma caja que antes, solo h1) — el
+     link de Inquire mobile no ocupa lugar ni se ve aquí. */
+  .coleccion__title-row {
+    display: contents;
+  }
+  .coleccion__inquire-top {
+    display: none;
+  }
   .coleccion__badge {
     color: var(--color-text-muted);
     margin-bottom: 24px;
@@ -332,7 +361,15 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
   @media (max-width: 900px) {
     .coleccion {
       grid-template-columns: 1fr;
-      padding-top: 72px;
+      /* Ver el comentario equivalente en pieces/[slug].astro. */
+      padding-top: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    /* Ver el comentario equivalente en pieces/[slug].astro. */
+    .coleccion__close {
+      top: calc(var(--header-h) + 12px);
+      right: calc(var(--gutter) + 12px);
     }
     .coleccion__info-sticky {
       position: static;
@@ -342,6 +379,68 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
     }
     .coleccion__info {
       max-width: none;
+      padding: 0 var(--gutter);
+    }
+
+    /* Carrete vertical de una foto a la vez, edge-to-edge — ver el
+       comentario equivalente en pieces/[slug].astro. */
+    .coleccion__galeria {
+      /* Ver el comentario equivalente en pieces/[slug].astro. */
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      aspect-ratio: 333 / 401;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+    }
+    .coleccion__galeria::-webkit-scrollbar {
+      display: none;
+    }
+    .coleccion__foto {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      margin-bottom: 0;
+      /* Ver el comentario equivalente en pieces/[slug].astro. */
+      padding: 0 var(--gutter);
+    }
+    .coleccion__foto:first-child {
+      aspect-ratio: auto;
+    }
+    .coleccion__foto img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Título + Inquire en la misma línea, arriba de la columna de info —
+       ver el comentario equivalente en pieces/[slug].astro. */
+    .coleccion__title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .coleccion__title-row h1 {
+      margin-bottom: 0;
+    }
+    .coleccion__inquire-top {
+      display: inline-block;
+      flex-shrink: 0;
+      font-size: var(--fs-body);
+      font-weight: var(--fw-medium);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      text-decoration: underline;
+    }
+    .coleccion__info > .inquire {
+      display: none;
     }
   }
 </style>
@@ -451,5 +550,12 @@ const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen,
   .lightbox__arrow--next span {
     transform: rotate(45deg);
     margin-right: 3px;
+  }
+
+  /* En mobile se navega con swipe (ver el script) — las flechas sobran. */
+  @media (max-width: 900px) {
+    .lightbox__arrow {
+      display: none;
+    }
   }
 </style>

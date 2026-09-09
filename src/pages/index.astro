@@ -27,6 +27,7 @@ const items = slides
       titulo: related.data.titulo,
       slug: related.data.slug,
       portada: slide.data.imagen,
+      portadaMobile: slide.data.imagenMobile,
       type: (pieza ? "pieces" : "collections") as const,
       _order: slide.data.orden,
     };

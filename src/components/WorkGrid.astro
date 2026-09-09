@@ -15,12 +15,15 @@ interface Props {
 }
 
 const { items, defaultCols = 4 } = Astro.props;
-// Solo 3 tamaños fijos en el track: izquierda = pequeño (8 columnas),
-// centro = normal (4), derecha = grande (2). El slider mueve un índice
-// (0, 1, 2) que se traduce a columnas via SIZES, no un valor continuo.
+// Solo 3 tamaños fijos en el track: izquierda = pequeño, centro = normal
+// (default), derecha = grande. El slider mueve un índice (0, 1, 2) que se
+// traduce a columnas via SIZES — distinto set en mobile (el track se
+// re-lee según el viewport, ver el script). El índice default (1, centro)
+// es el mismo en ambos sets a propósito, para no necesitar ninguna lógica
+// extra al cambiar de viewport.
 const SIZES = [8, 4, 2];
+const SIZES_MOBILE = [4, 2, 1];
 const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) : 1;
-const DENSE_COLS = 8;
 ---
 <div class="work-grid">
   <div class="work-grid__toolbar">
@@ -34,12 +37,13 @@ const DENSE_COLS = 8;
       step="1"
       value={DEFAULT_INDEX}
       data-sizes={SIZES.join(",")}
+      data-sizes-mobile={SIZES_MOBILE.join(",")}
       aria-label="Tamaño del grid"
     />
   </div>
 
   <section
-    class:list={["grid", { "grid--dense": defaultCols >= DENSE_COLS }]}
+    class:list={["grid", { "grid--dense": defaultCols >= Math.max(...SIZES) }]}
     id="grid"
     style={`--cols: ${defaultCols};`}
   >
@@ -63,8 +67,13 @@ const DENSE_COLS = 8;
   const grid = document.getElementById("grid");
 
   if (slider && grid) {
-    const sizes = (slider.dataset.sizes ?? "8,4,2").split(",").map(Number);
-    const denseCols = Math.max(...sizes);
+    const sizesDesktop = (slider.dataset.sizes ?? "8,4,2").split(",").map(Number);
+    const sizesMobile = (slider.dataset.sizesMobile ?? "4,2,1").split(",").map(Number);
+    const mobileQuery = window.matchMedia("(max-width: 900px)");
+    // El track tiene un set de columnas distinto en mobile — se relee en
+    // cada uso (no una sola vez al cargar) para que un resize/rotación
+    // cruzando el breakpoint tome el set correcto.
+    const currentSizes = () => (mobileQuery.matches ? sizesMobile : sizesDesktop);
 
     // Animating `flex-basis` directly makes the browser recompute line-wrapping
     // at every intermediate value, so cards snap between rows mid-transition —
@@ -72,6 +81,8 @@ const DENSE_COLS = 8;
     // FLIP animation (capture position/size before, then animate a compensating
     // transform back to identity) so the reflow itself reads as one smooth move.
     const applyIndex = (index: string) => {
+      const sizes = currentSizes();
+      const denseCols = Math.max(...sizes);
       const cols = sizes[Number(index)] ?? sizes[1];
       const cardEls = Array.from(grid.querySelectorAll<HTMLElement>(".item-card"));
       const frameEls = cardEls.map((c) => c.querySelector<HTMLElement>(".item-card__frame"));
@@ -133,6 +144,21 @@ const DENSE_COLS = 8;
     slider.addEventListener("input", () => {
       applyIndex(slider.value);
     });
+
+    // El markup se renderiza en el servidor asumiendo el set de escritorio
+    // (--cols arranca en el valor default de ESE set) — en mobile hay que
+    // corregirlo al montar, sin animar (nada que journeyar todavía). Mismo
+    // índice (1, centro) en ambos sets, así que no hace falta tocar el
+    // value del slider, solo qué columnas le corresponden.
+    const syncToViewport = () => {
+      const sizes = currentSizes();
+      const denseCols = Math.max(...sizes);
+      const cols = sizes[Number(slider.value)] ?? sizes[1];
+      grid.style.setProperty("--cols", String(cols));
+      grid.classList.toggle("grid--dense", cols >= denseCols);
+    };
+    syncToViewport();
+    window.addEventListener("resize", syncToViewport);
   }
 </script>
 
@@ -201,13 +227,20 @@ const DENSE_COLS = 8;
   .grid {
     display: flex;
     flex-wrap: wrap;
-    column-gap: var(--grid-gap);
+    /* --card-gap es el gap "real" que se está usando (column-gap), separado
+       de --grid-gap (el valor base) porque la vista densa de mobile lo
+       reduce a la mitad — el ancho de cada tarjeta tiene que calcularse con
+       ese mismo valor o sobra espacio a la derecha (columnas angostas de
+       más). Cualquier contexto que cambie el column-gap real debe
+       redeclarar --card-gap, no solo la propiedad column-gap. */
+    --card-gap: var(--grid-gap);
+    column-gap: var(--card-gap);
     row-gap: 64px;
     padding: 16px var(--gutter) 0;
   }
 
   .grid :global(.item-card) {
-    flex: 0 0 calc((100% - (var(--cols) - 1) * var(--grid-gap)) / var(--cols));
+    flex: 0 0 calc((100% - (var(--cols) - 1) * var(--card-gap)) / var(--cols));
   }
 
   .grid.grid--dense :global(.item-card__title) {
@@ -223,15 +256,25 @@ const DENSE_COLS = 8;
   }
 
   @media (max-width: 900px) {
-    .work-grid__toolbar {
-      display: none;
-    }
+    /* El track de tamaño ahora también vive en mobile — mismo lugar que
+       escritorio (arriba a la derecha), solo cambia el set de columnas
+       (ver data-sizes-mobile / el script). */
     .grid {
-      gap: 16px;
+      column-gap: var(--card-gap);
+      /* Vistas de 2 y 1 columna (con título) — 30% más de aire entre filas
+         que el gap base. */
+      row-gap: calc(var(--grid-gap) * 1.3);
       padding-top: 24px;
     }
-    .grid :global(.item-card) {
-      flex-basis: calc(50% - 8px) !important;
+    /* Vista de 4 columnas en mobile (sin título) — gap 50% más chico que
+       las otras dos vistas. .grid--dense en mobile es justo esta vista
+       (el "denso" de escritorio, 8 cols, vive fuera de este media query).
+       Redeclara --card-gap (no solo column-gap) para que el ancho de cada
+       tarjeta se recalcule con el gap chico y no deje espacio vacío. */
+    .grid.grid--dense {
+      --card-gap: calc(var(--grid-gap) / 2);
+      column-gap: var(--card-gap);
+      row-gap: var(--card-gap);
     }
   }
 </style>

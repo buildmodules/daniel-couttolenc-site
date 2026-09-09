@@ -317,8 +317,14 @@ export default defineConfig({
           {
             type: "image",
             name: "imagen",
-            label: "Foto del slide",
+            label: "Foto del slide (horizontal, escritorio)",
             required: true,
+          },
+          {
+            type: "image",
+            name: "imagenMobile",
+            label: "Foto del slide (vertical, mobile)",
+            description: "Toma vertical propia, no un recorte de la de escritorio — mantiene su propio aspect ratio en mobile.",
           },
           {
             type: "reference",

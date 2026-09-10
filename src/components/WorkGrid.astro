@@ -178,13 +178,15 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
 
   .work-grid__toolbar-label {
     color: var(--color-text-muted);
+    font-size: 14px;
   }
 
+  /* Slider 25% más grande que antes: pista 70→88px, dot 6→7.5px. */
   .work-grid__slider {
     -webkit-appearance: none;
     appearance: none;
-    width: 70px;
-    height: 14px;
+    width: 88px;
+    height: 18px;
     background: transparent;
     cursor: pointer;
   }
@@ -202,19 +204,19 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
   .work-grid__slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 6px;
-    height: 6px;
+    width: 7.5px;
+    height: 7.5px;
     border-radius: 50%;
     background: var(--color-text);
-    margin-top: -2.5px;
+    margin-top: -3.25px;
     transition: transform 0.15s ease;
   }
   .work-grid__slider::-webkit-slider-thumb:active {
     transform: scale(1.6);
   }
   .work-grid__slider::-moz-range-thumb {
-    width: 6px;
-    height: 6px;
+    width: 7.5px;
+    height: 7.5px;
     border: none;
     border-radius: 50%;
     background: var(--color-text);
@@ -275,6 +277,39 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
       --card-gap: calc(var(--grid-gap) / 2);
       column-gap: var(--card-gap);
       row-gap: var(--card-gap);
+    }
+
+    /* El track "Vista" 30% más grande en mobile (pedido del diseño):
+       88→114px de ancho, dot 7.5→9.75px, label 14→18px. */
+    .work-grid__toolbar-label {
+      font-size: 18px;
+    }
+    .work-grid__slider {
+      width: 114px;
+      height: 24px;
+    }
+    .work-grid__slider::-webkit-slider-thumb {
+      width: 9.75px;
+      height: 9.75px;
+      margin-top: -4.375px;
+    }
+    .work-grid__slider::-moz-range-thumb {
+      width: 9.75px;
+      height: 9.75px;
+    }
+
+    /* El mini-slider por tarjeta (swipe portada ↔ hover, ver ItemCard.astro)
+       NO aplica en la vista de 4 columnas — ahí las fotos son muy chicas y
+       no hay dónde deslizar. Se vuelve a la foto de portada sola. */
+    .grid.grid--dense :global(.item-card__frame) {
+      display: block;
+      overflow: visible;
+    }
+    .grid.grid--dense :global(.item-card__img--hover) {
+      display: none;
+    }
+    .grid.grid--dense :global(.item-card__dots) {
+      display: none;
     }
   }
 </style>

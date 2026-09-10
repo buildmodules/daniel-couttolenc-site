@@ -8,6 +8,10 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
   if (oa !== ob) return oa - ob;
   return b.data.anio.localeCompare(a.data.anio);
 });
+
+// Todos los enunciados terminan con un punto — algunos en el CMS no lo
+// traen. Normaliza (agrega el que falta, no duplica el que ya está).
+const conPunto = (s: string) => s.replace(/\s*\.?\s*$/, ".");
 ---
 <Base
   title="About"
@@ -47,7 +51,7 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
                    el li se ve exactamente igual que antes. -->
               <button type="button" class="about__exhibition-row" aria-expanded="false">
                 <span class="about__year">{e.data.anio}</span>
-                <span class="about__exhibition-name">{e.data.nombre}</span>
+                <span class="about__exhibition-name">{conPunto(e.data.nombre)}</span>
                 <span class="about__arrow" aria-hidden="true">
                   <svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4.15625 3.48008e-07L4.15625 8" stroke="currentColor" stroke-width="0.5" />
@@ -62,7 +66,7 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
           ) : (
             <li data-foto="">
               <span class="about__year">{e.data.anio}</span>
-              <span class="about__exhibition-name">{e.data.nombre}</span>
+              <span class="about__exhibition-name">{conPunto(e.data.nombre)}</span>
             </li>
           )
         ))}
@@ -247,26 +251,42 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
     display: flex;
     gap: var(--grid-gap);
     padding: 9px 0;
-    border-top: 1px solid var(--color-hairline);
+    /* Texto y líneas full black (pedido del diseño), no el hairline al 50%. */
+    color: var(--color-text);
+    border-top: 1px solid var(--color-text);
     font-size: var(--fs-meta);
-    letter-spacing: var(--ls-meta);
+    /* Kerning 8% en las mayúsculas (pedido del diseño). */
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     /* Sin cursor: default/pointer aquí — el sitio usa un cursor propio
        (cursor: none global + elemento JS); un cursor explícito en este li
        gana sobre esa herencia y muestra la flecha/manita nativa. */
   }
   .about__exhibitions li:last-child {
-    border-bottom: 1px solid var(--color-hairline);
+    border-bottom: 1px solid var(--color-text);
   }
   .about__year {
-    flex: 0 0 40px;
+    /* Un poco de sangría a la izquierda para que el año no quede a ras de
+       las líneas divisorias (el +6 en el basis compensa el padding para
+       que el área de texto siga siendo ~40px). */
+    flex: 0 0 46px;
+    padding-left: 6px;
   }
 
   /* El botón es invisible en desktop (display:contents) — el li se ve
      exactamente igual que antes, año + nombre en fila. El dropdown
-     (flecha + panel de foto) es un componente solo-mobile. */
+     (flecha + panel de foto) es un componente solo-mobile.
+     font/text-align/etc. a inherit: el <button> trae estilos del UA
+     (Arial, text-align:center, sin uppercase ni kerning) que, aun con
+     display:contents, se heredan a los <span> de adentro y rompían el
+     texto en las filas CON foto (las sin foto no tienen <button>). */
   .about__exhibition-row {
     display: contents;
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    text-align: inherit;
   }
   .about__arrow {
     display: none;
@@ -279,7 +299,8 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
     position: fixed;
     top: 0;
     left: 0;
-    height: 25vh;
+    /* 25% más grande que antes (25vh). */
+    height: 31.25vh;
     width: auto;
     pointer-events: none;
     opacity: 0;
@@ -313,15 +334,12 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
     }
     .about__portrait {
       position: static;
-      /* Pedido del diseño: la foto ocupa 75% del ancho, centrada — no
-         100vw como antes. height:auto = alto natural según el ratio real
-         del archivo, tampoco se recorta aquí. 10% más chica que ese 75%
-         (67.5%). */
-      width: 67.5%;
+      /* Pedido del diseño (revisado): sin marco ni padding, la foto ocupa
+         el 100% del ancho del container. */
+      width: 100%;
       height: auto;
-      margin: 0 auto;
-      padding-top: 10%;
-      padding-bottom: 10%;
+      margin: 0;
+      padding: 0;
     }
     .about__float {
       display: none;
@@ -363,17 +381,24 @@ const exhibiciones = (await getCollection("exhibiciones")).sort((a, b) => {
       outline: 1px solid var(--color-hairline);
       outline-offset: 4px;
     }
-    /* Del diseño: el nombre no ocupa todo el ancho disponible de la fila —
-       envuelve antes, en una columna angosta (año | nombre | flecha, no
-       año | nombre-larguísimo | flecha). */
+    /* El nombre toma todo el ancho disponible entre el año y la flecha
+       (flex:1) — la columna de texto queda lo más grande posible. */
     .about__exhibition-name {
-      max-width: 170px;
+      flex: 1;
+      max-width: none;
+      font-size: var(--fs-body);
     }
     .about__arrow {
       display: block;
       flex-shrink: 0;
       margin-left: auto;
       transition: transform 0.25s ease;
+    }
+    /* Flecha del toggle 20% más grande (SVG viene a 9px). */
+    .about__arrow svg {
+      display: block;
+      width: 10.8px;
+      height: 10.8px;
     }
     .about__exhibition-row[aria-expanded="true"] .about__arrow {
       transform: rotate(180deg);

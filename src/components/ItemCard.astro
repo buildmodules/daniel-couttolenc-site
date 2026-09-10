@@ -10,20 +10,61 @@ const { titulo, slug, portada, portadaHover, type } = Astro.props;
 const href = `/${type}/${slug}`;
 ---
 <a class="item-card" href={href}>
-  <span class="item-card__frame">
-    {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading="lazy" />}
+  <span class="item-card__media">
+    <span class="item-card__frame">
+      {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading="lazy" />}
+      {portadaHover && (
+        <img class="item-card__img item-card__img--hover" src={portadaHover} alt="" loading="lazy" aria-hidden="true" />
+      )}
+    </span>
     {portadaHover && (
-      <img class="item-card__img item-card__img--hover" src={portadaHover} alt="" loading="lazy" aria-hidden="true" />
+      <span class="item-card__dots" aria-hidden="true">
+        <span class="item-card__dot is-active" data-i="0"></span>
+        <span class="item-card__dot" data-i="1"></span>
+      </span>
     )}
   </span>
   <span class="item-card__title">{titulo}</span>
 </a>
+
+<script>
+  // Mobile: cada tarjeta con foto de hover es un mini-carrusel horizontal
+  // (swipe entre portada y portada-hover) con un indicador de 2 puntos, al
+  // estilo del carrusel del home pero chiquito. En desktop el .item-card__frame
+  // no es scrollable (overflow:hidden) — el scroll queda en 0, los handlers
+  // no hacen nada y los dots están ocultos por CSS.
+  document.querySelectorAll<HTMLElement>(".item-card__media").forEach((media) => {
+    const frame = media.querySelector<HTMLElement>(".item-card__frame");
+    const dots = Array.from(media.querySelectorAll<HTMLElement>(".item-card__dot"));
+    if (!frame || dots.length < 2) return;
+
+    const sync = () => {
+      const i = Math.round(frame.scrollLeft / Math.max(1, frame.clientWidth));
+      dots.forEach((d, di) => d.classList.toggle("is-active", di === i));
+    };
+    frame.addEventListener("scroll", sync, { passive: true });
+
+    dots.forEach((dot, di) => {
+      dot.addEventListener("click", (e) => {
+        // El dot vive dentro del <a> de la tarjeta — cortamos el click para
+        // que deslice en vez de navegar.
+        e.preventDefault();
+        e.stopPropagation();
+        frame.scrollTo({ left: di * frame.clientWidth, behavior: "smooth" });
+      });
+    });
+  });
+</script>
 
 <style>
   .item-card {
     display: block;
     text-decoration: none;
     color: inherit;
+  }
+  .item-card__media {
+    display: block;
+    position: relative;
   }
   .item-card__frame {
     display: block;
@@ -52,6 +93,10 @@ const href = `/${type}/${slug}`;
   .item-card:focus-visible .item-card__img--hover {
     opacity: 1;
   }
+  /* Los dots solo existen en mobile (ver media query). */
+  .item-card__dots {
+    display: none;
+  }
   .item-card__title {
     display: block;
     margin-top: 20px;
@@ -66,6 +111,56 @@ const href = `/${type}/${slug}`;
   @media (max-width: 900px) {
     .item-card__title {
       margin-top: 10px;
+    }
+
+    /* En mobile no hay hover: el frame se vuelve un carrusel horizontal
+       con scroll-snap entre las dos fotos. WorkGrid.astro lo desactiva en
+       la vista de 4 columnas (.grid--dense). */
+    .item-card__frame {
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .item-card__frame::-webkit-scrollbar {
+      display: none;
+    }
+    .item-card__img {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+    .item-card__img--hover {
+      position: static;
+      inset: auto;
+      opacity: 1;
+      transition: none;
+    }
+
+    /* Indicador de 2 puntos — mismos colores que el carrusel del home
+       (blanco / #a2a2a2 activo), más chico. */
+    .item-card__dots {
+      display: flex;
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      gap: 6px;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .item-card__dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #fff;
+      transition: background 0.2s ease;
+      pointer-events: auto;
+    }
+    .item-card__dot.is-active {
+      background: #a2a2a2;
     }
   }
 </style>

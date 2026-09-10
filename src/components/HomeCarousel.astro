@@ -38,12 +38,12 @@ const { items } = Astro.props;
 
       {items.length > 1 && (
         <>
-          <button type="button" class="carousel__arrow carousel__arrow--prev" id="carousel-prev" aria-label="Pieza anterior">
-            <span></span>
-          </button>
-          <button type="button" class="carousel__arrow carousel__arrow--next" id="carousel-next" aria-label="Siguiente pieza">
-            <span></span>
-          </button>
+          <!-- Sin flechas visibles: la foto se parte en dos mitades — la
+               izquierda va a la anterior, la derecha a la siguiente. En
+               desktop el cursor personalizado cambia a una flecha ←/→
+               según la mitad (ver Base.astro). -->
+          <button type="button" class="carousel__nav carousel__nav--prev" id="carousel-prev" aria-label="Pieza anterior"></button>
+          <button type="button" class="carousel__nav carousel__nav--next" id="carousel-next" aria-label="Siguiente pieza"></button>
 
           <div class="carousel__dots" id="carousel-dots">
             {items.map((_, i) => (
@@ -111,11 +111,13 @@ const { items } = Astro.props;
       if (e.key === "ArrowRight") goManual(index + 1);
     });
 
+    // Swipe: en el carrusel entero (no solo el track) — las mitades
+    // clickeables lo tapan y los touch no llegarían al track.
     let touchStartX = 0;
-    track.addEventListener("touchstart", (e) => {
+    carousel.addEventListener("touchstart", (e) => {
       touchStartX = e.touches[0].clientX;
     }, { passive: true });
-    track.addEventListener("touchend", (e) => {
+    carousel.addEventListener("touchend", (e) => {
       const delta = e.changedTouches[0].clientX - touchStartX;
       if (Math.abs(delta) > 40) goManual(delta > 0 ? index - 1 : index + 1);
     }, { passive: true });
@@ -179,40 +181,26 @@ const { items } = Astro.props;
     display: none;
   }
 
-  .carousel__arrow {
+  /* Mitades clickeables invisibles sobre la foto — izquierda = anterior,
+     derecha = siguiente. Sin ícono propio: en desktop lo da el cursor
+     personalizado (ver Base.astro). */
+  .carousel__nav {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 0;
+    bottom: 0;
+    width: 50%;
     background: none;
     border: none;
-    cursor: pointer;
     padding: 0;
+    margin: 0;
+    cursor: pointer;
+    z-index: 1;
   }
-  .carousel__arrow--prev {
-    left: 24px;
+  .carousel__nav--prev {
+    left: 0;
   }
-  .carousel__arrow--next {
-    right: 24px;
-  }
-  .carousel__arrow span {
-    display: block;
-    width: 9px;
-    height: 9px;
-    border-top: 1px solid var(--color-text);
-    border-right: 1px solid var(--color-text);
-  }
-  .carousel__arrow--prev span {
-    transform: rotate(-135deg);
-    margin-left: 3px;
-  }
-  .carousel__arrow--next span {
-    transform: rotate(45deg);
-    margin-right: 3px;
+  .carousel__nav--next {
+    right: 0;
   }
 
   .carousel__dots {
@@ -223,7 +211,9 @@ const { items } = Astro.props;
     display: flex;
     justify-content: center;
     gap: 10px;
-    z-index: 1;
+    /* Encima de las mitades clickeables (z-index: 1) para seguir siendo
+       clickeables. */
+    z-index: 2;
   }
   .carousel__dot {
     width: 5px;
@@ -246,26 +236,17 @@ const { items } = Astro.props;
     .carousel__viewport {
       max-width: none;
     }
-    /* Foto vertical propia en mobile, con su propio aspect ratio — no la
-       misma horizontal de escritorio recortada. */
+    /* El slide ocupa el 80% del alto del dispositivo (pedido del diseño);
+       la foto vertical de mobile va a cover dentro de esa caja. */
     .carousel__frame {
-      aspect-ratio: 2790 / 3360;
+      height: 80dvh;
+      aspect-ratio: auto;
     }
     .carousel__img--desktop {
       display: none;
     }
     .carousel__img--mobile {
       display: block;
-    }
-    .carousel__arrow {
-      width: 26px;
-      height: 26px;
-    }
-    .carousel__arrow--prev {
-      left: 8px;
-    }
-    .carousel__arrow--next {
-      right: 8px;
     }
   }
 </style>

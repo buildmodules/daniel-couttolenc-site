@@ -233,14 +233,16 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     box-sizing: border-box;
   }
 
-  /* Los form controls no heredan la tipografía del sitio por default (el UA
-     les pone Arial/etc.) — en varios sitios los <button> "Inquire" salían
-     con la fuente equivocada. */
+  /* Los form controls no heredan del sitio por default: el UA les pone su
+     propia fuente (Arial/etc.) y, en iOS Safari, el texto de los <button>
+     en azul (color de acento del sistema) — de ahí que "Inquire" saliera
+     azul en celular. */
   button,
   input,
   select,
   textarea {
     font-family: inherit;
+    color: inherit;
   }
 
   /* Cursor personalizado (ver #custom-cursor + script al final del layout):

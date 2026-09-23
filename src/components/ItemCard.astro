@@ -100,13 +100,10 @@ const href = `/${type}/${slug}`;
   .item-card__title {
     display: block;
     margin-top: 20px;
-    font-size: var(--fs-heading);
+    font-size: 12px;
     line-height: var(--lh-body);
     font-weight: var(--fw-medium);
-    /* Season Sans renders lowercase almost like small caps (versalitas) —
-       feedback from Juanjo Romero: needs more tracking so it doesn't read
-       cramped at this size. */
-    letter-spacing: 0.4px;
+    letter-spacing: normal;
   }
 
   @media (max-width: 900px) {

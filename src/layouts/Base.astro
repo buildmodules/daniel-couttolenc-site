@@ -369,6 +369,14 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     padding: 0;
   }
 
+  /* Color de "relleno" que se asoma un instante en el rebote elástico del
+     scroll (Safari/iOS) cuando el usuario pasa de largo el tope/fin de la
+     página — el body no cubre ese hueco, lo cubre el html de atrás.
+     Pedido del diseño: BB4825 en vez del blanco default. */
+  html {
+    background: #bb4825;
+  }
+
   body {
     background: var(--color-bg);
     color: var(--color-text);
@@ -507,6 +515,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 
   .site-header__nav a {
     font-size: var(--fs-body);
+    font-weight: var(--fw-medium);
     text-decoration: none;
     color: var(--color-text);
     transition: opacity 0.2s ease;

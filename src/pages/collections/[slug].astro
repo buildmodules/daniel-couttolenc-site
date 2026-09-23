@@ -450,9 +450,14 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     display: flex;
     align-items: flex-end;
     padding-bottom: 58px;
+    /* Ver el comentario equivalente en pieces/[slug].astro — evita que el
+       track 1fr de .coleccion (grid) se fuerce ancho por el min-content
+       de su contenido. */
+    min-width: 0;
   }
   .coleccion__info {
     max-width: 510px;
+    min-width: 0;
   }
   /* Espaciado reducido 25% (pedido del diseño), igual que en pieces/[slug].astro. */
   .coleccion__info h1 {
@@ -481,6 +486,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
 
   .inquire {
     margin-top: 18px;
+    color: #6e6e6e;
     background: none;
     border: none;
     padding: 0;
@@ -490,7 +496,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     transition: color 0.2s ease;
   }
   .inquire:hover {
-    color: var(--color-text-muted);
+    color: var(--color-text);
   }
   .inquire:focus-visible {
     outline: 1px solid var(--color-hairline);
@@ -577,6 +583,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
       letter-spacing: 0.4px;
       text-transform: uppercase;
       text-decoration: underline;
+      color: #6e6e6e;
       background: none;
       border: none;
       padding: 0;

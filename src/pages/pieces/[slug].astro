@@ -607,9 +607,23 @@ const materialNote =
     display: flex;
     align-items: flex-end;
     padding-bottom: 58px;
+    /* Sin esto, el track 1fr de .pieza (grid) nunca se encoge por debajo
+       del ancho mínimo de su contenido — con 7 materiales en una sola fila
+       (ver .pieza__variantes) ese mínimo pasaba el espacio real disponible
+       y desbordaba TODA la página (empujaba la foto, desalineaba Inquire,
+       etc.), no solo la lista de materiales. min-width:0 es el fix
+       estándar de grid/flexbox para este caso. */
+    min-width: 0;
   }
   /* Sin max-width (pedido del diseño) — la columna de info ahora usa todo
-     el ancho de su columna del grid (1fr). */
+     el ancho de su columna del grid (1fr). min-width:0 porque .pieza__info
+     es a su vez el único hijo flex de .pieza__info-sticky — sin esto,
+     aunque el grid de afuera ya no se fuerce ancho (ver el comentario en
+     .pieza__info-sticky), esta caja igual se resistiría a encoger al
+     ancho real de su columna. */
+  .pieza__info {
+    min-width: 0;
+  }
   /* Espaciado entre bloques de info reducido 25% (pedido del diseño) —
      cada valor de abajo es el original × 0.75. */
   .pieza__info h1 {
@@ -675,11 +689,26 @@ const materialNote =
      el mismo flex-wrap se acomoda solo, menos por fila. */
   .pieza__variantes {
     display: flex;
-    flex-wrap: wrap;
-    gap: 24px 10px;
+    /* nowrap en desktop — junto con el flex-shrink de cada <li> (ver abajo)
+       esto es lo que de verdad logra que quepan los 7 materiales de CACTO
+       en una sola fila: flex-wrap:wrap decide si envolver ANTES de
+       encoger los items de esa fila, así que con wrap puesto el shrink
+       nunca llegaba a activarse. En mobile se vuelve a wrap (columna
+       angosta, ahí sí conviene partir a varias filas). */
+    flex-wrap: nowrap;
+    gap: 12px 0;
     list-style: none;
     padding: 0;
     margin: 12px 0 0;
+    /* Red de seguridad: si la columna de info queda angosta (ej. cerca del
+       breakpoint de mobile, donde la foto todavía se lleva la mayoría del
+       ancho) y ni el shrink de los items ni el piso de 64px alcanzan para
+       que los 7 quepan, la fila scrollea en vez de desbordar la página. */
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .pieza__variantes::-webkit-scrollbar {
+    display: none;
   }
   .pieza__variantes + hr {
     margin-top: 12px;
@@ -704,13 +733,16 @@ const materialNote =
     align-items: center;
     gap: 8px;
     text-align: center;
-    /* Width fijo — el item no crece ni se achica. 96px es lo justo para
-       que el renglón más largo actual ("Cinnamon finish") no vuelva a
-       partirse en una 3ª línea — antes con 64px sí pasaba. Con esto 7
-       materiales ya no siempre caben en una sola fila en pantallas
-       angostas de escritorio, pero el texto nunca pasa de 2 líneas. */
-    flex: 0 0 auto;
-    width: 96px;
+    /* 96px es el ancho ideal (el renglón más largo, "Cinnamon finish", no
+       pasa de 2 líneas ahí) — pero con 7 materiales (CACTO, el máximo hoy)
+       ese ancho fijo no siempre cabía en una sola fila en la columna de
+       info. Con flex-shrink permitido (y un piso de 64px, el mínimo donde
+       el texto seguía leyéndose bien) los items se achican juntos lo
+       justo para que quepan los 7, sin afectar los casos de menos
+       materiales (ahí sobra espacio de sobra y se quedan en 96px). */
+    flex: 1 1 96px;
+    max-width: 96px;
+    min-width: 64px;
     /* --fs-caption/--lh-caption: el token que ya existía justo para esto
        ("material swatch captions") — 25% menos que el texto de antes. */
     font-size: var(--fs-caption);
@@ -727,6 +759,7 @@ const materialNote =
 
   .inquire {
     margin-top: 25px;
+    color: #6e6e6e;
     background: none;
     border: none;
     padding: 0;
@@ -736,7 +769,7 @@ const materialNote =
     transition: color 0.2s ease;
   }
   .inquire:hover {
-    color: var(--color-text-muted);
+    color: var(--color-text);
   }
   .inquire:focus-visible {
     outline: 1px solid var(--color-hairline);
@@ -744,6 +777,11 @@ const materialNote =
   }
 
   @media (max-width: 900px) {
+    /* En mobile sí conviene volver a partir en varias filas — ver el
+       comentario en la regla base (desktop) de arriba. */
+    .pieza__variantes {
+      flex-wrap: wrap;
+    }
     .pieza {
       grid-template-columns: 1fr;
       /* Sin padding extra: la galería empieza justo debajo del header fijo
@@ -849,6 +887,7 @@ const materialNote =
       letter-spacing: 0.4px;
       text-transform: uppercase;
       text-decoration: underline;
+      color: #6e6e6e;
       background: none;
       border: none;
       padding: 0;

@@ -16,7 +16,7 @@ creditosFotos:
     texto: photo courtesy of Hiperlocalidad
 dimensiones: 39.5 x 39.5 x 56cm (assembled)
 variantes:
-  - nombre: Red oak|Cream wash finish
+  - nombre: Red oak Cream|wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Red oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png

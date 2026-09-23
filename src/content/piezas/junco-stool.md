@@ -21,7 +21,7 @@ variantes:
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Tzalam
     imagen: /images/Materials/Tzalam.png
-  - nombre: American Walnut
+  - nombre: American|Walnut
     imagen: /images/Materials/American-Walnut.png
   - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png

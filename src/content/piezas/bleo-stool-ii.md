@@ -20,7 +20,7 @@ creditosFotos:
     texto: photo courtesy of Galerie PHILIA
 dimensiones: 55 x 21 x 42cm
 variantes:
-  - nombre: Red Oak|Cream wash finish
+  - nombre: Red Oak Cream|wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png

@@ -81,7 +81,7 @@ const { items } = Astro.props;
     // vez que el usuario navega a mano (flechas, dots, swipe) para que no
     // "pelee" saltando justo después de una interacción, y se pausa en
     // hover / pestaña oculta.
-    const AUTOPLAY_MS = 4000;
+    const AUTOPLAY_MS = 10000;
     let autoplayTimer: ReturnType<typeof setInterval> | null = null;
 
     const stopAutoplay = () => {
@@ -135,17 +135,24 @@ const { items } = Astro.props;
 </script>
 
 <style>
+  /* Container propio del home (no el --max-width de 1512 del resto del
+     sitio) — 1300px en pantallas grandes, con 100px de padding lateral en
+     desktop (pedido del diseño, probado con Daniel). */
   .carousel {
-    max-width: var(--max-width);
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 40px var(--gutter) 0;
+    padding: 0 100px;
   }
 
   .carousel__viewport {
-    /* El hero mide 6 columnas de la grilla de 8 columnas que usa Work (mismo
-       --gutter/--grid-gap), no el ancho completo del contenedor. */
-    --grid-content-w: min(calc(100vw - 2 * var(--gutter)), calc(var(--max-width) - 2 * var(--gutter)));
-    max-width: calc(0.75 * var(--grid-content-w) - 0.25 * var(--grid-gap));
+    /* El slider no cabe por un ancho fijo — cabe por el ALTO disponible
+       (--carousel-avail-h, calculado en JS en index.astro a partir de
+       header/footer para que la página entera quepa en un viewport sin
+       scroll). El ancho es el menor entre "todo el ancho lateral
+       disponible" y "el ancho que le tocaría a la foto si usara todo ese
+       alto" — así nunca se distorsiona ni se corta el aspect ratio, y
+       encoge solo si hace falta. */
+    width: min(100%, calc(var(--carousel-avail-h, 620px) * 1039 / 705));
     margin: 0 auto;
     position: relative;
     overflow: hidden;
@@ -230,17 +237,17 @@ const { items } = Astro.props;
   }
 
   @media (max-width: 900px) {
+    /* Mismo mecanismo que desktop (ver .carousel__viewport arriba) — menos
+       padding lateral (40px, pedido del diseño) y el aspect ratio propio
+       de la foto vertical de mobile. */
     .carousel {
-      padding: 24px 20px 0;
+      padding: 0 40px;
     }
     .carousel__viewport {
-      max-width: none;
+      width: min(100%, calc(var(--carousel-avail-h, 520px) * 2790 / 3360));
     }
-    /* El slide ocupa el 80% del alto del dispositivo (pedido del diseño);
-       la foto vertical de mobile va a cover dentro de esa caja. */
     .carousel__frame {
-      height: 80dvh;
-      aspect-ratio: auto;
+      aspect-ratio: 2790 / 3360;
     }
     .carousel__img--desktop {
       display: none;

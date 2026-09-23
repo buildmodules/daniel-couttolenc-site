@@ -25,7 +25,7 @@ creditosFotos:
     texto: photo courtesy of DIFANE
 dimensiones: 87 x 87 x 34cm
 variantes:
-  - nombre: Red Oak|Cream wash finish
+  - nombre: Red Oak Cream|wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png

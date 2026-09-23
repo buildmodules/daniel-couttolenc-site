@@ -27,7 +27,7 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
 ---
 <div class="work-grid">
   <div class="work-grid__toolbar">
-    <span class="work-grid__toolbar-label type-meta">Vista</span>
+    <span class="work-grid__toolbar-label type-meta">View</span>
     <input
       type="range"
       id="grid-cols-slider"
@@ -178,7 +178,7 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
 
   .work-grid__toolbar-label {
     color: var(--color-text-muted);
-    font-size: 14px;
+    font-size: 13px;
   }
 
   /* Slider 25% más grande que antes: pista 70→88px, dot 6→7.5px. */
@@ -238,7 +238,9 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     --card-gap: var(--grid-gap);
     column-gap: var(--card-gap);
     row-gap: 64px;
-    padding: 16px var(--gutter) 0;
+    /* Más aire pedido por el cliente — solo desktop, ver el media query de
+       abajo para el padding lateral de mobile (se queda en --gutter). */
+    padding: 40px 100px;
   }
 
   .grid :global(.item-card) {
@@ -266,7 +268,13 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
       /* Vistas de 2 y 1 columna (con título) — 30% más de aire entre filas
          que el gap base. */
       row-gap: calc(var(--grid-gap) * 1.3);
+      /* El padding de arriba (40px 100px) es solo para desktop — en mobile
+         vuelve a los valores de siempre (--gutter a los lados, sin espacio
+         abajo del grid). */
       padding-top: 24px;
+      padding-left: var(--gutter);
+      padding-right: var(--gutter);
+      padding-bottom: 0;
     }
     /* Vista de 4 columnas en mobile (sin título) — gap 50% más chico que
        las otras dos vistas. .grid--dense en mobile es justo esta vista
@@ -280,9 +288,10 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     }
 
     /* El track "Vista" 30% más grande en mobile (pedido del diseño):
-       88→114px de ancho, dot 7.5→9.75px, label 14→18px. */
+       88→114px de ancho, dot 7.5→9.75px. Label: 1px menos que antes
+       (17px), igual que el resto de la escala. */
     .work-grid__toolbar-label {
-      font-size: 18px;
+      font-size: 17px;
     }
     .work-grid__slider {
       width: 114px;

@@ -314,6 +314,32 @@ const materialNote =
   const pieza = document.querySelector<HTMLElement>(".pieza");
   const galeria = document.querySelector<HTMLElement>(".pieza__galeria");
   const inquireBtn = document.getElementById("inquire-open");
+
+  // --- Aire mínimo arriba del título ---
+  // El panel de info se ancla abajo (align-items:flex-end, ver CSS) para
+  // que Inquire llegue a la misma línea que el final de la foto — en
+  // pantallas bajas (o piezas con mucho texto/materiales) eso podía dejar
+  // muy poco aire entre el nav y el título. Recortamos el padding-bottom
+  // (58px de base) hasta un mínimo si hace falta, para garantizar un aire
+  // consistente arriba sin importar el alto de pantalla.
+  const infoSticky = document.querySelector<HTMLElement>(".pieza__info-sticky");
+  const infoH1 = document.querySelector<HTMLElement>(".pieza__info h1");
+  const MIN_TOP_GAP = 120;
+  const BASE_PADDING_BOTTOM = 58;
+  const MIN_PADDING_BOTTOM = 16;
+
+  const applyMinTopGap = () => {
+    if (!infoSticky || !infoH1) return;
+    if (window.matchMedia("(max-width: 900px)").matches) return;
+    // Reseteamos primero para medir el gap "natural" antes de recortar —
+    // si no, una corrida previa ya recortada sesga la medición.
+    infoSticky.style.paddingBottom = `${BASE_PADDING_BOTTOM}px`;
+    const gap = infoH1.getBoundingClientRect().top - infoSticky.getBoundingClientRect().top;
+    if (gap < MIN_TOP_GAP) {
+      const deficit = MIN_TOP_GAP - gap;
+      infoSticky.style.paddingBottom = `${Math.max(MIN_PADDING_BOTTOM, BASE_PADDING_BOTTOM - deficit)}px`;
+    }
+  };
   // Debe coincidir con --cols / aspect-ratio de .item-card__frame en ItemCard.astro.
   const FIRST_PHOTO_ASPECT = 333 / 401;
   // El requisito de los diseñadores (que la foto siempre se vea completa,
@@ -376,12 +402,100 @@ const materialNote =
     }
   };
 
+  // applyMinTopGap corre antes que fitFirstPhoto (y de nuevo después): el
+  // padding-bottom que recorta mueve a Inquire, así que la foto debe
+  // ajustarse a esa posición final, no a la de antes del recorte.
+  const runLayoutPass = () => {
+    applyMinTopGap();
+    fitFirstPhoto();
+    applyMinTopGap();
+    fitFirstPhoto();
+  };
+
   // El ratio ya no depende de que la imagen cargue (es fijo), pero el texto
   // de la columna de info sí puede reflowear cuando el webfont termina de
   // cargar y mueve el botón Inquire — remedimos una vez más en ese momento.
-  fitFirstPhoto();
-  document.fonts?.ready.then(fitFirstPhoto);
-  window.addEventListener("resize", fitFirstPhoto);
+  runLayoutPass();
+  document.fonts?.ready.then(runLayoutPass);
+  window.addEventListener("resize", runLayoutPass);
+
+  // --- Contraste automático del crédito de foto ---
+  // El crédito ahora está siempre visible (sin overlay al hover) — para que
+  // se lea bien sobre cualquier foto, muestreamos en un canvas el color
+  // promedio de la esquina donde cae el texto (replicando el recorte real
+  // de object-fit:cover cuando aplica, vía las mismas cuentas que hace el
+  // navegador) y elegimos blanco o negro según su luminancia. Sabido
+  // trade-off: es un promedio de la esquina completa, así que una esquina
+  // mitad clara/mitad oscura puede fallar — para eso está el text-shadow
+  // del CSS como red de seguridad, no reemplaza un buen recorte de foto.
+  const updateCreditContrast = () => {
+    document.querySelectorAll<HTMLElement>(".pieza__foto--con-credito").forEach((foto) => {
+      const img = foto.querySelector("img");
+      const credito = foto.querySelector<HTMLElement>(".pieza__foto-credito");
+      if (!img || !credito) return;
+
+      const sample = () => {
+        const boxW = foto.clientWidth;
+        const boxH = foto.clientHeight;
+        const naturalW = img.naturalWidth;
+        const naturalH = img.naturalHeight;
+        if (!boxW || !boxH || !naturalW || !naturalH) return;
+
+        // Mismo cálculo que hace el navegador para object-fit:cover — si la
+        // foto no lo usa, el resultado es simplemente la imagen completa
+        // (su ratio ya coincide con el de la caja), así que esta única
+        // fórmula cubre ambos casos.
+        const boxRatio = boxW / boxH;
+        const imgRatio = naturalW / naturalH;
+        let sx: number, sy: number, sw: number, sh: number;
+        if (imgRatio > boxRatio) {
+          sh = naturalH;
+          sw = sh * boxRatio;
+          sx = (naturalW - sw) / 2;
+          sy = 0;
+        } else {
+          sw = naturalW;
+          sh = sw / boxRatio;
+          sx = 0;
+          sy = (naturalH - sh) / 2;
+        }
+
+        // Solo la esquina abajo-izquierda donde cae el texto, no la foto
+        // entera — así reacciona a lo que hay justo detrás del crédito.
+        const REGION_W = 0.4;
+        const REGION_H = 0.3;
+        const regionSx = sx;
+        const regionSy = sy + sh * (1 - REGION_H);
+        const regionSw = sw * REGION_W;
+        const regionSh = sh * REGION_H;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 8;
+        canvas.height = 8;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        try {
+          ctx.drawImage(img, regionSx, regionSy, regionSw, regionSh, 0, 0, 8, 8);
+          const { data } = ctx.getImageData(0, 0, 8, 8);
+          let total = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            total += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+          }
+          const avg = total / (data.length / 4);
+          credito.classList.toggle("is-on-light", avg > 150);
+        } catch {
+          // Foto cross-origin u otro error de canvas — se queda en blanco
+          // (default), el text-shadow sigue dando algo de contraste.
+        }
+      };
+
+      if (img.complete && img.naturalWidth) sample();
+      else img.addEventListener("load", sample, { once: true });
+    });
+  };
+
+  updateCreditContrast();
+  window.addEventListener("resize", updateCreditContrast);
 
 </script>
 
@@ -453,21 +567,12 @@ const materialNote =
     display: block;
   }
 
-  /* Crédito de foto (ej. "Photo courtesy of X") — oculto por default, solo
-     aparece al hacer hover sobre esa foto puntual, abajo a la izquierda.
-     El degradado (::before) es lo que garantiza que el texto blanco quede
-     legible sin importar qué haya en esa esquina de la foto — text-shadow
-     solo no alcanza sobre fondos claros. */
-  .pieza__foto--con-credito::before {
-    content: "";
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 40%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-  }
+  /* Crédito de foto (ej. "Photo courtesy of X") — siempre visible, sin
+     overlay/gradiente detrás. El color (blanco u oscuro) lo decide JS
+     muestreando la esquina real de la foto (ver updateCreditContrast) y
+     togglea .is-on-light; el text-shadow de abajo es solo la red de
+     seguridad para el caso raro de una esquina con mezcla de claro/oscuro,
+     donde el muestreo promedio puede no alcanzar. */
   .pieza__foto-credito {
     position: absolute;
     left: 12px;
@@ -475,15 +580,11 @@ const materialNote =
     color: #fff;
     font-size: var(--fs-caption);
     line-height: var(--lh-caption);
-    opacity: 0;
-    transition: opacity 0.2s ease;
     pointer-events: none;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5), 0 0 6px rgba(0, 0, 0, 0.35);
   }
-  .pieza__foto--con-credito:hover::before,
-  .pieza__foto--con-credito:focus-visible::before,
-  .pieza__foto:hover .pieza__foto-credito,
-  .pieza__foto:focus-visible .pieza__foto-credito {
-    opacity: 1;
+  .pieza__foto-credito.is-on-light {
+    color: #000;
   }
 
   /* Primera foto: misma caja (aspect ratio) que las portadas del grid —
@@ -507,18 +608,19 @@ const materialNote =
     align-items: flex-end;
     padding-bottom: 58px;
   }
-  .pieza__info {
-    max-width: 510px;
-  }
+  /* Sin max-width (pedido del diseño) — la columna de info ahora usa todo
+     el ancho de su columna del grid (1fr). */
+  /* Espaciado entre bloques de info reducido 25% (pedido del diseño) —
+     cada valor de abajo es el original × 0.75. */
   .pieza__info h1 {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
   /* Cuando hay badge, va pegado al título (como en collections) — el h1
      usa un margin chico en vez del que separa título de párrafo. Apunta al
      wrapper (.pieza__title-row), no a h1 directo, porque el botón de
      Inquire mobile ahora vive entre el h1 y el badge en el DOM. */
   .pieza__title-row:has(+ .pieza__badge) h1 {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   /* En desktop el wrapper es invisible (misma caja que antes, solo h1) — el
      botón de Inquire mobile no ocupa lugar ni se ve aquí. */
@@ -530,11 +632,11 @@ const materialNote =
   }
   .pieza__badge {
     color: var(--color-text-muted);
-    margin-bottom: 24px;
+    margin-bottom: 18px;
   }
   .pieza__dimensiones {
     white-space: pre-line;
-    margin: 5px 0 0;
+    margin: 4px 0 0;
   }
   .pieza__descripcion {
     font-size: var(--fs-body);
@@ -554,41 +656,45 @@ const materialNote =
   }
 
   .pieza__label {
-    margin: 40px 0 0;
+    margin: 30px 0 0;
   }
   .pieza__label-value {
     text-transform: none;
     font-weight: var(--fw-regular);
   }
   .pieza__label + hr {
-    margin-top: 5px;
+    margin-top: 4px;
   }
   .pieza__dimensiones + hr {
-    margin-top: 5px;
+    margin-top: 4px;
   }
 
+  /* flex-wrap con un width fijo por item (no grid de 4 columnas) — así las
+     piezas con hasta 7 materiales (el máximo hoy, ej. CACTO) caben en una
+     sola fila en desktop en vez de partirse a una segunda fila. En mobile
+     el mismo flex-wrap se acomoda solo, menos por fila. */
   .pieza__variantes {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 10px;
     list-style: none;
     padding: 0;
-    margin: 16px 0 0;
+    margin: 12px 0 0;
   }
   .pieza__variantes + hr {
-    margin-top: 16px;
+    margin-top: 12px;
   }
   .pieza__disclaimer {
     font-size: var(--fs-body);
     line-height: var(--lh-body);
     color: var(--color-text);
-    margin: 16px 0 0;
+    margin: 12px 0 0;
   }
   .pieza__leadtime {
-    margin-top: 48px;
+    margin-top: 36px;
   }
   .pieza__material-note {
-    margin-top: 20px;
+    margin-top: 15px;
     font-size: var(--fs-body);
     line-height: var(--lh-body);
   }
@@ -598,19 +704,29 @@ const materialNote =
     align-items: center;
     gap: 8px;
     text-align: center;
-    font-size: 12px;
-    line-height: 15px;
+    /* Width fijo — el item no crece ni se achica. 96px es lo justo para
+       que el renglón más largo actual ("Cinnamon finish") no vuelva a
+       partirse en una 3ª línea — antes con 64px sí pasaba. Con esto 7
+       materiales ya no siempre caben en una sola fila en pantallas
+       angostas de escritorio, pero el texto nunca pasa de 2 líneas. */
+    flex: 0 0 auto;
+    width: 96px;
+    /* --fs-caption/--lh-caption: el token que ya existía justo para esto
+       ("material swatch captions") — 25% menos que el texto de antes. */
+    font-size: var(--fs-caption);
+    line-height: var(--lh-caption);
     font-weight: var(--fw-medium);
   }
   .swatch {
-    width: 48px;
-    height: 48px;
+    /* 25% más chico (pedido del diseño) — 48px → 36px. */
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
   }
 
   .inquire {
-    margin-top: 20px;
+    margin-top: 25px;
     background: none;
     border: none;
     padding: 0;
@@ -717,10 +833,10 @@ const materialNote =
       align-items: baseline;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
     .pieza__title-row:has(+ .pieza__badge) {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .pieza__title-row h1 {
       margin-bottom: 0;
@@ -776,6 +892,8 @@ const materialNote =
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
+    /* Safari necesita el prefijo -webkit- para backdrop-filter. */
+    -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
@@ -876,6 +994,7 @@ const materialNote =
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
+    -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;

@@ -37,7 +37,69 @@ const items = slides
 ---
 <Base
   title="Daniel Couttolenc"
-  description="Daniel Couttolenc is a Mexican designer creating solid wood and cast bronze furniture and objects guided by proportion, geometry, and material exploration."
+  description="Daniel Couttolenc is a Mexican designer creating collectible objects."
+  noScroll
 >
-  <HomeCarousel items={items} />
+  <!-- El home cabe siempre en un solo viewport (sin scroll) — este wrapper
+       mide en JS el alto real del header y el footer y le da al slider
+       exactamente el espacio que sobra entre los dos, centrado (flex), así
+       el aire arriba (navbar→slider) y abajo (slider→footer) queda igual. -->
+  <div class="home-stage" id="home-stage">
+    <HomeCarousel items={items} />
+  </div>
 </Base>
+
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header");
+  const footer = document.querySelector<HTMLElement>(".site-footer");
+  const stage = document.getElementById("home-stage");
+
+  // Aire mínimo garantizado arriba/abajo del slider — sin esto, cuando el
+  // ratio de la foto "gana" (la necesita tan alta como el espacio
+  // disponible), la foto queda pegada al header y al footer con 0px de
+  // por medio. Se resta de --carousel-avail-h (lo que ve el cálculo de
+  // ancho en HomeCarousel.astro), no del alto real de .home-stage — el
+  // centrado flex ya reparte ese aire igual arriba y abajo solo.
+  const MIN_V_GAP = 40;
+
+  if (header && footer && stage) {
+    const updateStageHeight = () => {
+      const headerH = header.getBoundingClientRect().height;
+      const footerH = footer.getBoundingClientRect().height;
+      const available = Math.max(0, window.innerHeight - headerH - footerH);
+      stage.style.height = `${available}px`;
+      // El slider (HomeCarousel.astro) usa esta variable para calcular su
+      // propio ancho a partir del alto disponible, sin distorsionar el
+      // aspect ratio de la foto — ver el comentario ahí.
+      const availForCarousel = Math.max(0, available - MIN_V_GAP * 2);
+      stage.style.setProperty("--carousel-avail-h", `${availForCarousel}px`);
+    };
+
+    updateStageHeight();
+    window.addEventListener("resize", updateStageHeight);
+    window.addEventListener("orientationchange", updateStageHeight);
+    window.visualViewport?.addEventListener("resize", updateStageHeight);
+    // El footer puede cambiar de alto cuando el webfont termina de cargar
+    // (mueve el wrap del texto) — remedimos una vez más en ese momento.
+    document.fonts?.ready.then(updateStageHeight);
+    new ResizeObserver(updateStageHeight).observe(footer);
+  }
+</script>
+
+<style>
+  .home-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Salvavidas por si algún redondeo de px deja un pixel de sobra. */
+    overflow: hidden;
+  }
+
+  /* Solo en home (body.no-scroll): el footer queda más pegado al borde del
+     viewport (35px, antes 4rem/64px) — el ResizeObserver del script de
+     arriba nota que el footer se achicó y le da ese espacio extra al
+     slider, que sigue centrado igual entre el nav y el footer. */
+  :global(body.no-scroll .site-footer) {
+    padding-bottom: 35px;
+  }
+</style>

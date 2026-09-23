@@ -4,6 +4,10 @@ interface Props {
   description?: string;
   image?: string;
   type?: "website" | "article";
+  // Home: la página completa (header + slider + footer) cabe en un solo
+  // viewport, sin scroll vertical — ver el script en index.astro que mide
+  // header/footer y calcula el alto disponible para el slider.
+  noScroll?: boolean;
 }
 
 const SITE_NAME = "Daniel Couttolenc";
@@ -11,7 +15,7 @@ const DEFAULT_DESCRIPTION =
   "Daniel Couttolenc is a Mexican designer creating solid wood and cast bronze furniture and objects guided by proportion, geometry, and material exploration.";
 const DEFAULT_IMAGE = "/images/Aster table/1.jpg";
 
-const { title, description = DEFAULT_DESCRIPTION, image = DEFAULT_IMAGE, type = "website" } = Astro.props;
+const { title, description = DEFAULT_DESCRIPTION, image = DEFAULT_IMAGE, type = "website", noScroll = false } = Astro.props;
 const pageTitle =
   title === SITE_NAME || title.includes(SITE_NAME) ? title : `${title} · ${SITE_NAME}`;
 const path = Astro.url.pathname;
@@ -41,7 +45,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={absoluteImage} />
   </head>
-  <body>
+  <body class:list={[{ "no-scroll": noScroll }]}>
     <header class="site-header">
       <div class="site-header__inner">
         <a class="site-header__brand" href="/">
@@ -197,6 +201,28 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     font-display: swap;
   }
 
+  /* Tipografía del sitio (pedido del diseño) — dos cortes: Thin (el más
+     liviano, OS/2 usWeightClass 275) para texto normal, y Light (el más
+     grueso de los dos, usWeightClass 300 — reemplaza al "Ultra Light" que
+     usábamos antes) para títulos. Registrados en ese orden real (Thin=100,
+     Light=200) para que --fw-regular (body) quede con el corte liviano y
+     --fw-medium (headings/CTA) con el grueso. Season Sans se deja
+     declarada arriba por si hiciera falta un fallback puntual. */
+  @font-face {
+    font-family: "GT America";
+    src: url("/fonts/GTAmerica-Thin.woff2") format("woff2");
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "GT America";
+    src: url("/fonts/GTAmerica-Light.woff2") format("woff2");
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+  }
+
   :root {
     --color-bg: #f7f7f7;
     --color-placeholder: #d9d9d9;
@@ -204,28 +230,33 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     --color-text-muted: rgba(0, 0, 0, 0.6);
     --color-text-soft: rgba(0, 0, 0, 0.7);
     --color-hairline: rgba(0, 0, 0, 0.5);
-    --font-sans: "Season Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-sans: "GT America", "Season Sans", -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
     --font-wordmark: "Styrene A", var(--font-sans);
     --header-h: 60px;
     --gutter: 58px;
-    --grid-gap: 20px;
+    --grid-gap: 35px;
     --max-width: 1512px;
 
     /* Type scale — audited from every screen in the Figma file so sizing/weight/
-       tracking stays consistent instead of each page inventing its own values. */
-    --fw-regular: 400;
-    --fw-medium: 500;
+       tracking stays consistent instead of each page inventing its own values.
+       GT America solo viene en Thin/UltraLight (100/200) — regular usa el
+       corte más liviano (Thin) y medium el más pesado de los dos
+       (UltraLight), para no perder el corte real pintando bold sintético. */
+    --fw-regular: 100;
+    --fw-medium: 200;
 
-    --fs-caption: 10px;   /* material swatch captions */
-    --lh-caption: 15px;
+    /* Toda la escala bajada 1px (pedido del diseño) — proporcional, cada
+       tamaño se achica el mismo punto. */
+    --fs-caption: 9px;    /* material swatch captions */
+    --lh-caption: 14px;
 
-    --fs-meta: 12px;      /* footer, exhibitions table */
+    --fs-meta: 11px;      /* footer, exhibitions table */
     --ls-meta: 0.24px;
 
-    --fs-body: 14px;      /* nav links, descriptions, labels, grid item titles */
-    --lh-body: 20px;
+    --fs-body: 13px;      /* nav links, descriptions, labels, grid item titles */
+    --lh-body: 19px;
 
-    --fs-heading: 16px;   /* page/section titles, Inquire/Submit CTA */
+    --fs-heading: 15px;   /* page/section titles, Inquire/Submit CTA */
     --ls-heading: 0.32px;
   }
 
@@ -342,8 +373,9 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
-    font-size: 14px;
-    line-height: 20px;
+    font-weight: var(--fw-regular);
+    font-size: 13px;
+    line-height: 19px;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -380,13 +412,18 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 
   .type-label {
     font-size: var(--fs-body);
-    font-weight: var(--fw-medium);
+    /* Antes fw-medium — pedido del diseño: Dimensions/Material/Lead time
+       ya no llevan más peso que el body, la jerarquía la dan las
+       mayúsculas + las líneas, no el bold. */
+    font-weight: var(--fw-regular);
     text-transform: uppercase;
   }
 
   .type-cta {
     display: inline-block;
     font-size: var(--fs-heading);
+    /* Inquire/Submit van con el corte grueso (Thin, --fw-medium) — mismo
+       peso que los títulos, para que el CTA se note como tal. */
     font-weight: var(--fw-medium);
     letter-spacing: var(--ls-heading);
     text-transform: uppercase;
@@ -431,6 +468,10 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     inset: 0 0 auto 0;
     height: var(--header-h);
     z-index: 50;
+    /* Safari (sobre todo iOS y macOS < 15.4) necesita el prefijo -webkit-
+       para aplicar backdrop-filter — sin él, la propiedad se ignora en
+       silencio y solo se ve el fondo translúcido, sin blur. */
+    -webkit-backdrop-filter: blur(3.9px);
     backdrop-filter: blur(3.9px);
     background: rgba(255, 255, 255, 0.3);
   }
@@ -619,7 +660,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
       gap: 6px;
     }
     .site-header__nav a {
-      font-size: 12px;
+      font-size: 11px;
     }
   }
 

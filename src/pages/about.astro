@@ -249,7 +249,10 @@ const conPunto = (s: string) => s.replace(/\s*\.?\s*$/, ".");
   }
   .about__exhibitions li {
     display: flex;
-    gap: var(--grid-gap);
+    /* Espacio año/nombre/flecha — fijo en 20px a propósito: es el gap
+       interno de una fila, no el "column gap" de layout (--grid-gap, ahora
+       35px) que sí debía crecer en /work, /about y /contact. */
+    gap: 20px;
     padding: 9px 0;
     /* Texto y líneas full black (pedido del diseño), no el hairline al 50%. */
     color: var(--color-text);
@@ -364,7 +367,8 @@ const conPunto = (s: string) => s.replace(/\s*\.?\s*$/, ".");
       display: flex;
       align-items: center;
       width: 100%;
-      gap: var(--grid-gap);
+      /* Ver el comentario equivalente arriba (.about__exhibitions li). */
+      gap: 20px;
       padding: 9px 0;
       background: none;
       border: none;

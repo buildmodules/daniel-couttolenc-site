@@ -13,7 +13,7 @@ galeria:
   - /images/Bleo auxiliary table/7.jpg
 dimensiones: 38 x 21 x 55cm
 variantes:
-  - nombre: Red Oak|Cream wash finish
+  - nombre: Red Oak Cream|wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png

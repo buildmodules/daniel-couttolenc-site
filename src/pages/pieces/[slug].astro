@@ -37,6 +37,11 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
 // corresponde. Se detecta por el prefijo "Ø" en vez de un campo nuevo en
 // el CMS, así cualquier pieza redonda futura queda bien automáticamente.
 const dimensionesRedondas = dimensiones?.trim().startsWith("Ø") ?? false;
+// Tina/el CMS guarda las dimensiones con una "x" normal ("61 x 57 x 82cm") —
+// tipográficamente debe ser el signo de multiplicar "×" (como ya usa el
+// label de arriba, "W × D × H"), no la letra. Se corrige acá en vez de
+// pedirle a Daniel que lo escriba bien cada vez en el CMS.
+const dimensionesFmt = dimensiones?.replace(/(\d)\s*x\s*(\d)/gi, "$1 × $2");
 
 const materialNote =
   materialTipo === "Cast Bronze"
@@ -87,7 +92,7 @@ const materialNote =
               Dimensions ({dimensionesRedondas ? "Ø × H" : "W × D × H"}):
             </p>
             <hr />
-            <p class="pieza__dimensiones">{dimensiones}</p>
+            <p class="pieza__dimensiones">{dimensionesFmt}</p>
             <hr />
           </>
         )}

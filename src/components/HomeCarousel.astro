@@ -167,6 +167,14 @@ const { items } = Astro.props;
   .carousel__slide {
     flex: 0 0 100%;
     display: block;
+    /* Fuerza su propia capa de composición con límites redondeados a pixel
+       entero — mitiga la rayita de 1px del slide vecino que a veces se
+       alcanza a ver en el borde (más notorio con zoom, varía entre Safari
+       y Chrome): es un problema clásico de sub-pixel rounding en carruseles
+       con transform:translateX(%) sobre un ancho calculado, no un typo de
+       CSS puntual. */
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
 
   .carousel__frame {
@@ -226,14 +234,16 @@ const { items } = Astro.props;
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #fff;
+    /* En transparencia (pedido de Daniel) — antes blanco sólido, se veía
+       muy fuerte sobre algunos fondos claros de foto. */
+    background: rgba(255, 255, 255, 0.45);
     border: none;
     padding: 0;
     cursor: pointer;
     transition: background 0.2s ease;
   }
   .carousel__dot.is-active {
-    background: #a2a2a2;
+    background: rgba(255, 255, 255, 0.85);
   }
 
   @media (max-width: 900px) {

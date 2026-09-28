@@ -24,7 +24,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   image={ogImage || portada}
 >
   <article class="coleccion">
-    <a class="coleccion__close" href="/work" aria-label="Cerrar">
+    <a class="coleccion__close" id="coleccion-close" href="/work" aria-label="Cerrar">
       <span></span>
       <span></span>
     </a>
@@ -103,6 +103,16 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
 </Base>
 
 <script>
+  // --- Cerrar (X) vuelve a /work en el scroll donde estabas — ver el
+  // comentario equivalente en pieces/[slug].astro.
+  const closeBtn = document.getElementById("coleccion-close") as HTMLAnchorElement | null;
+  closeBtn?.addEventListener("click", (e) => {
+    if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
+      e.preventDefault();
+      history.back();
+    }
+  });
+
   // --- Lightbox de galería ---
   const photos = Array.from(document.querySelectorAll<HTMLButtonElement>(".coleccion__foto"));
   const lightbox = document.getElementById("lightbox");

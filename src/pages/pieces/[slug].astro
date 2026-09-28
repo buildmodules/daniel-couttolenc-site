@@ -39,9 +39,12 @@ const mensajeInquire = `I'd like to request a quote for ${titulo}.`;
 const dimensionesRedondas = dimensiones?.trim().startsWith("Ø") ?? false;
 // Tina/el CMS guarda las dimensiones con una "x" normal ("61 x 57 x 82cm") —
 // tipográficamente debe ser el signo de multiplicar "×" (como ya usa el
-// label de arriba, "W × D × H"), no la letra. Se corrige acá en vez de
-// pedirle a Daniel que lo escriba bien cada vez en el CMS.
-const dimensionesFmt = dimensiones?.replace(/(\d)\s*x\s*(\d)/gi, "$1 × $2");
+// label de arriba, "W × D × H"), no la letra. También falta un espacio
+// antes de la unidad ("82cm" → "82 cm", pedido de Daniel). Se corrige acá
+// en vez de pedirle a Daniel que lo escriba bien cada vez en el CMS.
+const dimensionesFmt = dimensiones
+  ?.replace(/(\d)\s*x\s*(\d)/gi, "$1 × $2")
+  .replace(/(\d)(cm)\b/gi, "$1 $2");
 
 const materialNote =
   materialTipo === "Cast Bronze"
@@ -54,7 +57,7 @@ const materialNote =
   image={ogImage || portada}
 >
   <article class="pieza">
-    <a class="pieza__close" href="/work" aria-label="Cerrar">
+    <a class="pieza__close" id="pieza-close" href="/work" aria-label="Cerrar">
       <span></span>
       <span></span>
     </a>
@@ -184,6 +187,20 @@ const materialNote =
 </Base>
 
 <script>
+  // --- Cerrar (X) vuelve a /work en la posición de scroll donde estabas,
+  // no hasta arriba. Un <a href="/work"> normal es navegación "forward"
+  // para el navegador — no recupera el scroll (eso solo lo hace el botón
+  // "atrás" nativo). Si la pieza se abrió desde el propio sitio (siempre
+  // el caso salvo un link directo compartido), imitamos ese "atrás" real
+  // con history.back(), que sí restaura el scroll de /work. */
+  const closeBtn = document.getElementById("pieza-close") as HTMLAnchorElement | null;
+  closeBtn?.addEventListener("click", (e) => {
+    if (document.referrer && new URL(document.referrer).origin === window.location.origin) {
+      e.preventDefault();
+      history.back();
+    }
+  });
+
   // --- Lightbox de galería ---
   const photos = Array.from(document.querySelectorAll<HTMLButtonElement>(".pieza__foto"));
   const lightbox = document.getElementById("lightbox");

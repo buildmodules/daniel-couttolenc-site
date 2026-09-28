@@ -16,7 +16,7 @@ galeria:
   - /images/Cacto console/10.jpg
 dimensiones: 144 x 39 x 102cm
 variantes:
-  - nombre: Red Oak Cream|wash finish
+  - nombre: Red Oak|Cream wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png

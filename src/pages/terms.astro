@@ -1,0 +1,171 @@
+---
+import Base from "../layouts/Base.astro";
+
+// Texto proporcionado por Daniel (Terms_Conditions.docx) — se corrigió una
+// duplicación evidente ("Daniel Daniel Couttolenc Diaz Barriga" → "Daniel
+// Couttolenc Diaz Barriga", como aparece consistentemente en el Privacy
+// Policy) en las secciones 2 y 11. El resto del texto se dejó tal cual.
+const lastUpdated = "September 2026";
+
+const sections = [
+  {
+    heading: "1. Website Content",
+    body: [
+      "This website presents the work, collections, designs, and projects of Daniel Couttolenc Studio.",
+      "All content on this website, including but not limited to designs, furniture and spatial objects, photographs, images, drawings, texts, graphics, logos, names, and other materials, is owned by or licensed to Daniel Couttolenc Studio and is protected by applicable intellectual property and copyright laws.",
+      "All rights are reserved unless otherwise stated.",
+    ],
+  },
+  {
+    heading: "2. Intellectual Property",
+    body: [
+      "The designs and creative work presented on this website remain the intellectual property of Daniel Couttolenc Diaz Barriga, operating under the name Daniel Couttolenc Studio, unless otherwise expressly stated.",
+      "The publication of any design or piece on this website does not grant any license or right to reproduce, manufacture, copy, modify, distribute, sell, or commercially exploit the design or any part of it.",
+      "No content from this website may be reproduced, distributed, modified, published, or used commercially without prior written authorization.",
+    ],
+  },
+  {
+    heading: "3. Images and Information",
+    body: [
+      "We make reasonable efforts to ensure that the information presented on this website is accurate and current.",
+      "Descriptions, dimensions, materials, finishes, colors, and other specifications may be subject to change.",
+      "Images are intended to represent the pieces as accurately as possible. Variations may occur due to materials, craftsmanship, lighting, photography, or individual screen settings.",
+    ],
+  },
+  {
+    heading: "4. Inquiries and Communications",
+    body: [
+      "The contact form on this website allows visitors to submit inquiries regarding pieces, collections, projects, commissions, collaborations, or other matters related to Daniel Couttolenc Studio.",
+      "Submitting an inquiry does not constitute an order, purchase agreement, reservation, or other contractual commitment.",
+      "Any potential commission, purchase, collaboration, or other professional engagement will be subject to separate terms agreed upon by the parties.",
+    ],
+  },
+  {
+    heading: "5. Limited Editions and Availability",
+    body: [
+      "Certain pieces presented on this website may be produced as limited editions.",
+      "The presentation of a piece on the website does not guarantee its availability at any particular time.",
+      "Edition size, availability, production specifications, and other details may vary by piece and will be confirmed directly with Daniel Couttolenc Studio when applicable.",
+    ],
+  },
+  {
+    heading: "6. Website Use",
+    body: [
+      "You agree to use this website only for lawful purposes and in a manner that does not infringe upon the rights of Daniel Couttolenc Studio or any third party.",
+      "You may not use this website or its content to reproduce, manufacture, distribute, or commercially exploit any design without prior written authorization.",
+      "We reserve the right to modify, update, suspend, or discontinue any part of the website without prior notice.",
+    ],
+  },
+  {
+    heading: "7. Third-Party Services",
+    body: [
+      "This website may rely on third-party services necessary for its operation, including hosting and contact-form functionality.",
+      "Daniel Couttolenc Studio is not responsible for the content, availability, or policies of third-party websites or services linked to or accessible through this website.",
+    ],
+  },
+  {
+    heading: "8. Disclaimer",
+    body: [
+      "This website and its content are provided for general informational purposes.",
+      "To the extent permitted by applicable law, Daniel Couttolenc Studio does not guarantee that the website will always be available, uninterrupted, error-free, or free from harmful components.",
+      "Daniel Couttolenc Studio shall not be liable for any loss or damage arising from the use of, or inability to use, this website, except where such liability cannot be excluded under applicable law.",
+    ],
+  },
+  {
+    heading: "9. Governing Law",
+    body: [
+      "These Terms & Conditions shall be governed by and interpreted in accordance with the laws of Mexico.",
+      "Any dispute arising from the use of this website or these Terms & Conditions shall be subject to the applicable jurisdiction in Mexico, unless otherwise required by applicable law.",
+    ],
+  },
+  {
+    heading: "10. Changes to These Terms",
+    body: [
+      "We may update these Terms & Conditions from time to time to reflect changes to the website, our practices, or applicable legal requirements.",
+      "The updated version will be published on this website, and the date of the most recent update will be indicated at the beginning of these Terms & Conditions.",
+    ],
+  },
+];
+---
+<Base
+  title="Terms & Conditions"
+  description="Terms & Conditions for the Daniel Couttolenc Studio website."
+  noindex
+>
+  <article class="legal">
+    <h1 class="type-heading">Terms &amp; Conditions</h1>
+    <p class="legal__updated type-meta">Last updated: {lastUpdated}</p>
+
+    <p>Welcome to the website of Daniel Couttolenc Studio.</p>
+    <p>
+      By accessing and using this website, you agree to the following Terms &amp;
+      Conditions. If you do not agree with these terms, please do not use this website.
+    </p>
+
+    {sections.map((section) => (
+      <section>
+        <h2>{section.heading}</h2>
+        {section.body.map((p) => <p>{p}</p>)}
+      </section>
+    ))}
+
+    <section>
+      <h2>11. Contact</h2>
+      <p>For questions regarding these Terms &amp; Conditions, please contact:</p>
+      <p class="legal__address">
+        Daniel Couttolenc Diaz Barriga<br />
+        Daniel Couttolenc Studio<br />
+        Diagonal Rancho San Isidro 3216-A, 304-B. Santiago Momoxpan, San Pedro Cholula
+        &mdash; Puebla, Mexico 72775<br />
+        <a href="mailto:daniel@danielcouttolenc.com">daniel@danielcouttolenc.com</a>
+      </p>
+    </section>
+
+    <p class="legal__updated type-meta">Last updated: {lastUpdated}</p>
+  </article>
+</Base>
+
+<style>
+  .legal {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px var(--gutter) 6rem;
+  }
+  .legal h1 {
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .legal__updated {
+    color: var(--color-text-muted);
+    margin-bottom: 32px;
+  }
+  .legal > p {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    margin-bottom: 1em;
+  }
+  .legal section {
+    margin-top: 32px;
+  }
+  .legal section h2 {
+    font-size: var(--fs-body);
+    font-weight: var(--fw-medium);
+    margin-bottom: 12px;
+  }
+  .legal section p {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+  }
+  .legal section p + p {
+    margin-top: 1em;
+  }
+  .legal__address {
+    font-style: normal;
+  }
+
+  @media (max-width: 640px) {
+    .legal {
+      padding-top: 24px;
+    }
+  }
+</style>

@@ -8,6 +8,9 @@ interface Props {
   // viewport, sin scroll vertical — ver el script en index.astro que mide
   // header/footer y calcula el alto disponible para el slider.
   noScroll?: boolean;
+  // Terms/Privacy: páginas legales que no deben aparecer en buscadores ni
+  // pasar autoridad por sus links salientes (pedido explícito de Daniel).
+  noindex?: boolean;
 }
 
 const SITE_NAME = "Daniel Couttolenc";
@@ -15,7 +18,7 @@ const DEFAULT_DESCRIPTION =
   "Daniel Couttolenc is a Mexican designer creating solid wood and cast bronze furniture and objects guided by proportion, geometry, and material exploration.";
 const DEFAULT_IMAGE = "/images/Aster table/1.jpg";
 
-const { title, description = DEFAULT_DESCRIPTION, image = DEFAULT_IMAGE, type = "website", noScroll = false } = Astro.props;
+const { title, description = DEFAULT_DESCRIPTION, image = DEFAULT_IMAGE, type = "website", noScroll = false, noindex = false } = Astro.props;
 const pageTitle =
   title === SITE_NAME || title.includes(SITE_NAME) ? title : `${title} · ${SITE_NAME}`;
 const path = Astro.url.pathname;
@@ -31,7 +34,11 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" type="image/png" href="/site/cursor-isotipo.png" />
+    <!-- Recorte propio para el favicon (no el archivo del cursor): el
+         isotipo original tiene mucho aire alrededor y a 16px se veía casi
+         invisible en la pestaña — pedido de Daniel. -->
+    <link rel="icon" type="image/png" href="/site/favicon-isotipo.png" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:type" content={type} />
@@ -77,7 +84,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
             rel="noreferrer"
             aria-label="Instagram"
           >
-            <img src="/site/instagram.svg" alt="" width="14" height="14" />
+            <span class="site-header__social-icon" aria-hidden="true"></span>
           </a>
         </nav>
       </div>
@@ -88,13 +95,16 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     <footer class="site-footer">
       {isActive("/contact") ? (
         <>
-          <a href="mailto:danielcouttolenc@gmail.com">danielcouttolenc@gmail.com</a>
+          <a href="mailto:daniel@danielcouttolenc.com">daniel@danielcouttolenc.com</a>
           <a href="mailto:studio@danielcouttolenc.com">studio@danielcouttolenc.com</a>
         </>
       ) : (
-        <a href="mailto:danielcouttolenc@gmail.com">danielcouttolenc@gmail.com</a>
+        <a href="mailto:daniel@danielcouttolenc.com">daniel@danielcouttolenc.com</a>
       )}
-      <a href="/terms" class="site-footer__terms">Terms and Conditions</a>
+      <div class="site-footer__legal">
+        <a href="/terms" rel="nofollow">Terms &amp; Conditions</a>
+        <a href="/privacy" rel="nofollow">Privacy Policy</a>
+      </div>
     </footer>
 
     <div id="custom-cursor" aria-hidden="true">
@@ -116,9 +126,22 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
       "mousemove",
       (e) => {
         cursorEl.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        cursorEl.classList.remove("is-idle");
       },
       { passive: true }
     );
+
+    // Bug de Chrome: al volver con el botón "atrás" del navegador (la
+    // página se restaura desde la bfcache, congelada tal cual quedó), el
+    // cursor custom reaparece en su última posición/estado de antes de
+    // salir — como el mouse no se movió, no hay un mousemove que lo
+    // reubique, y por un instante se ve superpuesto con el cursor nativo
+    // (que Chrome sí vuelve a mostrar brevemente en esa transición). Lo
+    // ocultamos al restaurar y lo dejamos oculto hasta el próximo
+    // mousemove real, que ya lo reposiciona bien y lo revela arriba.
+    window.addEventListener("pageshow", () => {
+      cursorEl.classList.add("is-idle");
+    });
 
     document.addEventListener("mouseover", (e) => {
       const el = e.target as HTMLElement;
@@ -517,22 +540,33 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     font-size: var(--fs-body);
     font-weight: var(--fw-medium);
     text-decoration: none;
-    color: var(--color-text);
-    transition: opacity 0.2s ease;
+    /* Pedido de Daniel: intercambiar los colores fijo/hover — antes negro
+       fijo y gris en hover, ahora gris fijo (igual que Inquire) y negro en
+       hover. */
+    color: var(--color-text-muted);
+    transition: color 0.2s ease;
   }
 
   .site-header__nav a:hover {
-    color: var(--color-text-muted);
-  }
-
-  /* El activo ya no se subraya — queda con el gris de hover, fijo. */
-  .site-header__nav a[aria-current="page"] {
-    color: var(--color-text-muted);
+    color: var(--color-text);
   }
 
   .site-header__social {
     display: flex;
     align-items: center;
+  }
+
+  /* Antes era un <img src="instagram.svg">: un archivo externo no puede
+     heredar el color del link, por eso el hover no le hacía nada. Con
+     mask-image + background-color:currentColor el ícono sí sigue el color
+     (y su transition) del <a> que lo contiene, igual que el texto. */
+  .site-header__social-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+    background-color: currentColor;
+    -webkit-mask: url("/site/instagram.svg") center / contain no-repeat;
+    mask: url("/site/instagram.svg") center / contain no-repeat;
   }
 
   /* Hamburger — invisible en desktop, el nav inline de arriba se queda
@@ -560,7 +594,9 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     color: var(--color-text-muted);
   }
 
-  .site-footer__terms {
+  .site-footer__legal {
+    display: flex;
+    gap: 16px;
     color: var(--color-text-muted);
   }
 
@@ -636,7 +672,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     .site-header__nav.is-open a {
       font-size: calc(var(--fs-heading) * 2);
     }
-    .site-header__nav.is-open .site-header__social img {
+    .site-header__nav.is-open .site-header__social-icon {
       width: 30px;
       height: 30px;
     }

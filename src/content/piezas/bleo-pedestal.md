@@ -13,7 +13,7 @@ galeria:
   - /images/Bleo pedestal/7.jpg
 dimensiones: 47 x 41 x 89cm
 variantes:
-  - nombre: Red Oak Cream|wash finish
+  - nombre: Red Oak|Cream wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png
@@ -24,7 +24,7 @@ variantes:
   - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 19
+orden: 18
 metaTitle: BLEO pedestal | Daniel Couttolenc
 metaDescription: BLEO explores the possibilities of the circle. Not as a flat shape, but as a form capable of generating volume, structure, and relationships between…
 ogImage: /images/Bleo pedestal/1.jpg

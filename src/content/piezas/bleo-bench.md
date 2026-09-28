@@ -21,7 +21,7 @@ creditosFotos:
     texto: photo courtesy of DIFANE
 dimensiones: 163 x 49 x 47cm
 variantes:
-  - nombre: Red Oak Cream|wash finish
+  - nombre: Red Oak|Cream wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
   - nombre: Red Oak|Cinnamon finish
     imagen: /images/Materials/Red-Oak_Cinnamon-Finish.png
@@ -32,7 +32,7 @@ variantes:
   - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
 leadTime: 8-10 weeks
-orden: 18
+orden: 19
 metaTitle: BLEO bench | Daniel Couttolenc
 metaDescription: BLEO explores the possibilities of the circle. Not as a flat shape, but as a form capable of generating volume, structure, and relationships between…
 ogImage: /images/Bleo bench/1.jpg

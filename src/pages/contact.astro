@@ -65,6 +65,9 @@ import Base from "../layouts/Base.astro";
       if (res.ok) {
         status.textContent = "Thank you — we'll be in touch soon.";
         form.reset();
+        // Esconde todos los campos y el botón — solo queda el "Thank you"
+        // (pedido de Daniel, mismo tratamiento que el modal de Inquire).
+        form.classList.add("is-sent");
       } else {
         status.textContent = "Something went wrong. Please try again.";
         submitBtn.disabled = false;
@@ -116,6 +119,18 @@ import Base from "../layouts/Base.astro";
     flex-direction: column;
     gap: 22px;
     position: relative;
+  }
+  /* Tras enviar: se esconde todo menos el status, que pasa de mensajito
+     absoluto bajo el botón a ser el contenido — más grande, en flujo
+     normal (pedido de Daniel, mismo tratamiento que el modal de Inquire). */
+  form.is-sent > *:not(.contacto__status) {
+    display: none;
+  }
+  form.is-sent .contacto__status {
+    position: static;
+    font-size: var(--fs-heading);
+    font-weight: var(--fw-medium);
+    color: var(--color-text);
   }
   .row {
     display: grid;
@@ -216,6 +231,10 @@ import Base from "../layouts/Base.astro";
     button {
       align-self: center;
       margin-top: 2rem;
+    }
+    /* Centrado, igual que el h1/intro de arriba en mobile. */
+    form.is-sent .contacto__status {
+      text-align: center;
     }
   }
 </style>

@@ -600,6 +600,13 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     color: var(--color-text-muted);
   }
 
+  /* Ya arrancan grises (heredado de .site-footer__legal) — el hover
+     general de .site-footer a los dejaría en el mismo gris, sin cambio
+     visible. Este override los lleva a negro, como Inquire/nav. */
+  .site-footer__legal a:hover {
+    color: var(--color-text);
+  }
+
   @media (max-width: 900px) {
     /* El toggle reemplaza al nav inline — mismo breakpoint que el resto
        del sitio (WorkGrid, pieza/colección, about, contact). */

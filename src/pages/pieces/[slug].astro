@@ -270,6 +270,11 @@ const materialNote =
     inquireModal.classList.remove("is-visible");
     inquireModal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("no-scroll");
+    // Si mandó un inquire y vuelve a abrir el modal (para otra pieza, por
+    // ejemplo), que empiece de nuevo en el formulario, no en el "Thank you".
+    inquireForm?.classList.remove("is-sent");
+    if (inquireStatus) inquireStatus.textContent = "";
+    if (inquireSubmit) inquireSubmit.disabled = false;
   };
 
   inquireOpenBtn?.addEventListener("click", openInquire);
@@ -300,6 +305,9 @@ const materialNote =
       if (res.ok) {
         inquireStatus.textContent = "Thank you — we'll be in touch soon.";
         inquireForm.reset();
+        // Esconde el input de email, el textarea y el botón — solo queda
+        // el "Thank you" centrado en el panel (pedido de Daniel).
+        inquireForm.classList.add("is-sent");
       } else {
         inquireStatus.textContent = "Something went wrong. Please try again.";
         inquireSubmit.disabled = false;
@@ -439,7 +447,18 @@ const materialNote =
   // cargar y mueve el botón Inquire — remedimos una vez más en ese momento.
   runLayoutPass();
   document.fonts?.ready.then(runLayoutPass);
-  window.addEventListener("resize", runLayoutPass);
+  // Solo re-corremos el layout si cambió el ANCHO — no en cada "resize".
+  // En iPad (viewports ≥900px, donde esto sí corre), Safari dispara resize
+  // cuando la barra de direcciones se oculta/muestra al hacer scroll, lo
+  // que solo cambia el alto — eso hacía que --photo-col se recalculara con
+  // una altura distinta cada vez y la columna de texto se fuera achicando
+  // progresivamente mientras el usuario scrolleaba las fotos.
+  let lastInnerWidth = window.innerWidth;
+  window.addEventListener("resize", () => {
+    if (window.innerWidth === lastInnerWidth) return;
+    lastInnerWidth = window.innerWidth;
+    runLayoutPass();
+  });
 
   // --- Contraste automático del crédito de foto ---
   // El crédito ahora está siempre visible (sin overlay al hover) — para que
@@ -819,10 +838,23 @@ const materialNote =
       padding-right: 0;
     }
     /* Más adentro que el default (arriba/derecha) para que quede
-       claramente sobre la foto, no en el margen blanco de arriba. */
+       claramente sobre la foto, no en el margen blanco de arriba.
+       También se agranda el hit-target a 44x44 (mínimo recomendado para
+       el dedo) — con 18x18 el tap a veces caía fuera y le pegaba a la
+       foto de abajo, abriendo el lightbox en vez de cerrar. Se corren
+       top/right la mitad de lo que creció (13px) para que la X visual
+       quede en el mismo lugar de antes; los spans mantienen su ancho
+       fijo (18px, no 100% del padre) para no agrandarse con la caja. */
     .pieza__close {
-      top: calc(var(--header-h) + 12px);
-      right: calc(var(--gutter) + 12px);
+      top: calc(var(--header-h) - 1px);
+      right: calc(var(--gutter) - 1px);
+      width: 44px;
+      height: 44px;
+    }
+    .pieza__close span {
+      width: 18px;
+      left: 50%;
+      margin-left: -9px;
     }
     .pieza__info-sticky {
       position: static;
@@ -881,7 +913,11 @@ const materialNote =
     .pieza__foto img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      /* contain, no cover (pedido de Daniel) — con cover, una foto
+         horizontal dentro de esta caja vertical fija se recortaba y no se
+         veía completa; contain la deja completa, con aire arriba/abajo
+         cuando la proporción no calza. */
+      object-fit: contain;
     }
 
     /* Título + Inquire en la misma línea, arriba de la columna de info —
@@ -1101,6 +1137,26 @@ const materialNote =
     flex-direction: column;
     gap: 20px;
     margin-top: 8px;
+  }
+  /* Tras enviar: se esconde todo menos el mensaje de status, que pasa a
+     ocupar el panel centrado (pedido de Daniel) — min-height mantiene el
+     panel con un tamaño similar al que tenía con el form, para que no se
+     sienta un salto brusco a una caja chiquita. */
+  .inquire-modal form.is-sent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    margin-top: 0;
+  }
+  .inquire-modal form.is-sent > *:not(.inquire-modal__status) {
+    display: none;
+  }
+  .inquire-modal form.is-sent .inquire-modal__status {
+    font-size: var(--fs-heading);
+    font-weight: var(--fw-medium);
+    color: var(--color-text);
+    text-align: center;
   }
   .inquire-modal input {
     border: none;

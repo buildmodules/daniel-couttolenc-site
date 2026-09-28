@@ -160,6 +160,27 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     syncToViewport();
     window.addEventListener("resize", syncToViewport);
   }
+
+  // --- Restaurar el scroll al volver de una pieza/colección ---
+  // Antes se intentaba con history.back() + document.referrer al cerrar
+  // con la X (en pieces/collections [slug].astro) — funcionaba en algunos
+  // casos pero Safari a veces restringe document.referrer, así que fallaba
+  // justo ahí. Este mecanismo no depende de eso: /work guarda su propio
+  // scroll en sessionStorage justo antes de navegar a una pieza, y lo
+  // restaura al volver a cargar, sin importar cómo se volvió (la X, el
+  // botón "atrás", etc.).
+  const SCROLL_KEY = "work-scroll";
+  if (grid) {
+    grid.addEventListener("click", (e) => {
+      const link = (e.target as HTMLElement)?.closest("a.item-card");
+      if (link) sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+    });
+  }
+  const savedScroll = sessionStorage.getItem(SCROLL_KEY);
+  if (savedScroll) {
+    sessionStorage.removeItem(SCROLL_KEY);
+    window.scrollTo(0, Number(savedScroll));
+  }
 </script>
 
 <style>

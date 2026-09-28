@@ -180,6 +180,10 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     inquireModal.classList.remove("is-visible");
     inquireModal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("no-scroll");
+    // Ver el comentario equivalente en pieces/[slug].astro.
+    inquireForm?.classList.remove("is-sent");
+    if (inquireStatus) inquireStatus.textContent = "";
+    if (inquireSubmit) inquireSubmit.disabled = false;
   };
 
   document.getElementById("inquire-open")?.addEventListener("click", openInquire);
@@ -208,6 +212,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
       if (res.ok) {
         inquireStatus.textContent = "Thank you — we'll be in touch soon.";
         inquireForm.reset();
+        inquireForm.classList.add("is-sent");
       } else {
         inquireStatus.textContent = "Something went wrong. Please try again.";
         inquireSubmit.disabled = false;
@@ -296,7 +301,13 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   // Ver el comentario equivalente en pieces/[slug].astro.
   fitFirstColeccionPhoto();
   document.fonts?.ready.then(fitFirstColeccionPhoto);
-  window.addEventListener("resize", fitFirstColeccionPhoto);
+  // Ídem el guard de ancho en pieces/[slug].astro (bug de iPad).
+  let lastInnerWidth = window.innerWidth;
+  window.addEventListener("resize", () => {
+    if (window.innerWidth === lastInnerWidth) return;
+    lastInnerWidth = window.innerWidth;
+    fitFirstColeccionPhoto();
+  });
 
   // --- Contraste automático del crédito de foto ---
   // Ver el comentario equivalente en pieces/[slug].astro.
@@ -523,8 +534,15 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     }
     /* Ver el comentario equivalente en pieces/[slug].astro. */
     .coleccion__close {
-      top: calc(var(--header-h) + 12px);
-      right: calc(var(--gutter) + 12px);
+      top: calc(var(--header-h) - 1px);
+      right: calc(var(--gutter) - 1px);
+      width: 44px;
+      height: 44px;
+    }
+    .coleccion__close span {
+      width: 18px;
+      left: 50%;
+      margin-left: -9px;
     }
     .coleccion__info-sticky {
       position: static;
@@ -570,7 +588,8 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     .coleccion__foto img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      /* Ver el comentario equivalente en pieces/[slug].astro. */
+      object-fit: contain;
     }
 
     /* Título + Inquire en la misma línea, arriba de la columna de info —
@@ -789,6 +808,23 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     flex-direction: column;
     gap: 20px;
     margin-top: 8px;
+  }
+  /* Ver el comentario equivalente en pieces/[slug].astro. */
+  .inquire-modal form.is-sent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    margin-top: 0;
+  }
+  .inquire-modal form.is-sent > *:not(.inquire-modal__status) {
+    display: none;
+  }
+  .inquire-modal form.is-sent .inquire-modal__status {
+    font-size: var(--fs-heading);
+    font-weight: var(--fw-medium);
+    color: var(--color-text);
+    text-align: center;
   }
   .inquire-modal input {
     border: none;

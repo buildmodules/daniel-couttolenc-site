@@ -240,20 +240,23 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   // real de la imagen subida. ---
   const coleccion = document.querySelector<HTMLElement>(".coleccion");
   const coleccionGaleria = document.querySelector<HTMLElement>(".coleccion__galeria");
+  const coleccionInfoSticky = document.querySelector<HTMLElement>(".coleccion__info-sticky");
   const coleccionInquireLink = document.querySelector<HTMLElement>(".coleccion .inquire");
   // Debe coincidir con --cols / aspect-ratio de .item-card__frame en ItemCard.astro.
   const FIRST_PHOTO_ASPECT = 333 / 401;
   const COLECCION_MIN_COL = 24; // ver comentario equivalente en pieces/[slug].astro
 
   const fitFirstColeccionPhoto = () => {
-    if (!coleccion || !coleccionGaleria || !coleccionInquireLink) return;
+    if (!coleccion || !coleccionGaleria || !coleccionInfoSticky || !coleccionInquireLink) return;
     if (window.matchMedia("(max-width: 900px)").matches) return;
 
     // Ver el comentario equivalente en pieces/[slug].astro.
     coleccion.style.setProperty("--photo-col", "45%");
 
     const measure = () => {
-      const top = coleccionGaleria.getBoundingClientRect().top;
+      // Ver el comentario equivalente en pieces/[slug].astro sobre por qué
+      // es coleccionInfoSticky.top y no coleccionGaleria.top.
+      const top = coleccionInfoSticky.getBoundingClientRect().top;
       return {
         available: coleccionInquireLink.getBoundingClientRect().bottom - top,
       };

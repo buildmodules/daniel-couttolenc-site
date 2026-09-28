@@ -380,7 +380,7 @@ const materialNote =
   const MIN_COL = 24;
 
   const fitFirstPhoto = () => {
-    if (!pieza || !galeria || !inquireBtn) return;
+    if (!pieza || !galeria || !inquireBtn || !infoSticky) return;
     if (window.matchMedia("(max-width: 900px)").matches) return; // en mobile el layout ya es 1 columna
 
     // Reset a la base ANTES de medir — sin esto, "available" se mide sobre
@@ -394,7 +394,18 @@ const materialNote =
     pieza.style.setProperty("--photo-col", "45%");
 
     const measure = () => {
-      const top = galeria.getBoundingClientRect().top;
+      // OJO: NO usar galeria.getBoundingClientRect().top acá — .pieza__galeria
+      // no es sticky, así que su posición en el viewport cambia con el
+      // scroll (se va muy arriba, a valores negativos grandes, en cuanto
+      // scrolleas la galería). inquireBtn vive en la columna sticky, que sí
+      // se queda fija — la resta entre ambos, después de scrollear, daba un
+      // número gigante y mandaba --photo-col directo al tope de 92% (bug
+      // reportado por Daniel: "si haces scroll y luego resize se rompe").
+      // infoSticky.top es la referencia correcta: en la misma fila del
+      // grid que galeria (así que coincide con su top real al cargar la
+      // página, scrollY=0) y además se queda fijo en cuanto engancha el
+      // sticky — o sea, es scroll-invariante en los dos casos.
+      const top = infoSticky.getBoundingClientRect().top;
       return {
         // El objetivo real es "la foto llega hasta donde termina Inquire" —
         // se mide directo en vez de asumir un padding fijo, para que quede exacto.

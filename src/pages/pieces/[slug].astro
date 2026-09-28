@@ -474,11 +474,22 @@ const materialNote =
   // que solo cambia el alto — eso hacía que --photo-col se recalculara con
   // una altura distinta cada vez y la columna de texto se fuera achicando
   // progresivamente mientras el usuario scrolleaba las fotos.
+  //
+  // Además: en Safari, arrastrar el borde de la ventana dispara resize con
+  // el layout todavía a medio asentar (mide un estado intermedio, no el
+  // final) — eso daba fotos angostas al soltar en ventanas grandes.
+  // Debounce (esperar a que el resize termine) + requestAnimationFrame
+  // (medir recién en el siguiente frame, ya con el layout final aplicado)
+  // evita medir sobre un estado transitorio.
   let lastInnerWidth = window.innerWidth;
+  let resizeTimer: ReturnType<typeof setTimeout> | null = null;
   window.addEventListener("resize", () => {
     if (window.innerWidth === lastInnerWidth) return;
     lastInnerWidth = window.innerWidth;
-    runLayoutPass();
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      requestAnimationFrame(runLayoutPass);
+    }, 120);
   });
 
   // --- Contraste automático del crédito de foto ---

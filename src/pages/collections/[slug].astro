@@ -307,12 +307,17 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   // Ver el comentario equivalente en pieces/[slug].astro.
   fitFirstColeccionPhoto();
   document.fonts?.ready.then(fitFirstColeccionPhoto);
-  // Ídem el guard de ancho en pieces/[slug].astro (bug de iPad).
+  // Ídem el guard de ancho + debounce/rAF en pieces/[slug].astro (bugs de
+  // iPad y de Safari midiendo a medio resize).
   let lastInnerWidth = window.innerWidth;
+  let resizeTimer: ReturnType<typeof setTimeout> | null = null;
   window.addEventListener("resize", () => {
     if (window.innerWidth === lastInnerWidth) return;
     lastInnerWidth = window.innerWidth;
-    fitFirstColeccionPhoto();
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      requestAnimationFrame(fitFirstColeccionPhoto);
+    }, 120);
   });
 
   // --- Contraste automático del crédito de foto ---

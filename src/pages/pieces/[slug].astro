@@ -383,6 +383,16 @@ const materialNote =
     if (!pieza || !galeria || !inquireBtn) return;
     if (window.matchMedia("(max-width: 900px)").matches) return; // en mobile el layout ya es 1 columna
 
+    // Reset a la base ANTES de medir — sin esto, "available" se mide sobre
+    // el --photo-col que haya quedado de la corrida anterior. Si un resize
+    // agarraba el layout a medio reflow, el % calculado podía irse a un
+    // extremo (ej. 92%, el tope); la siguiente medición partía de ESE
+    // estado ya roto en vez de uno neutral, así que confirmaba el mismo
+    // extremo en vez de corregirlo — quedaba atorado ahí para siempre
+    // (bug reportado por Daniel: un resize chico rompía el layout por
+    // completo y no se recuperaba ni haciendo más resize).
+    pieza.style.setProperty("--photo-col", "45%");
+
     const measure = () => {
       const top = galeria.getBoundingClientRect().top;
       return {

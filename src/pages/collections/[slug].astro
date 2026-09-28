@@ -249,6 +249,9 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     if (!coleccion || !coleccionGaleria || !coleccionInquireLink) return;
     if (window.matchMedia("(max-width: 900px)").matches) return;
 
+    // Ver el comentario equivalente en pieces/[slug].astro.
+    coleccion.style.setProperty("--photo-col", "45%");
+
     const measure = () => {
       const top = coleccionGaleria.getBoundingClientRect().top;
       return {

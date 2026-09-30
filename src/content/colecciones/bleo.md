@@ -5,10 +5,10 @@ portada: /images/collections/bleo/portada.jpg
 portadaHover: /images/collections/bleo/portada-hover.jpg
 galeria:
   - /images/collections/bleo/portada.jpg
+  - /images/collections/bleo/bleo5.jpg
   - /images/collections/bleo/2.jpg
   - /images/collections/bleo/3.jpg
   - /images/collections/bleo/4.jpg
-  - /images/collections/bleo/bleo5.jpg
 orden: 13
 metaTitle: BLEO collection | Daniel Couttolenc
 metaDescription: BLEO explores the possibilities of the circle. Not as a flat shape, but as a form capable of generating volume, structure, and relationships between…

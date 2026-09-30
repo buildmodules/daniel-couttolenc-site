@@ -11,6 +11,7 @@ variantes:
   - nombre: Red Oak|Black finish
     imagen: /images/Materials/Red-Oak_Black-Finish.png
   - nombre: Red Oak|Gray finish
+    imagen: /images/Materials/Red-Oak_Gray-Finish.png
 leadTime: 8-10 weeks
 orden: 23
 metaTitle: IXIA desk | Daniel Couttolenc

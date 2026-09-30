@@ -187,6 +187,16 @@ const { items } = Astro.props;
     height: 100%;
     object-fit: cover;
     display: block;
+    /* El translateZ/backface-visibility de .carousel__slide no bastó — la
+       rayita de 1px del slide vecino (sub-pixel rounding entre el ancho
+       de cada slide y el % del transform) seguía apareciendo. En vez de
+       un gap (dejaría ver el fondo del viewport, --color-placeholder, en
+       el seam), agrandamos la foto un 1.5% centrada: como .carousel__slide
+       no tiene su propio overflow:hidden (solo el viewport, por fuera),
+       ese ligero excedente se mete sobre el slide de al lado y tapa
+       cualquier hueco de redondeo con foto real, nunca con el vecino
+       asomándose. */
+    transform: scale(1.015);
   }
   /* Dos fotos por slide, una horizontal (escritorio) y una vertical
      (mobile) — no es la misma foto recortada distinto, son dos tomas

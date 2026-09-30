@@ -9,11 +9,6 @@ galeria:
   - /images/Aster table/3.jpg
   - /images/Aster table/4.jpg
   - /images/Aster table/5.jpg
-  - /images/Aster table/6.jpg
-  - /images/Aster table/7.jpg
-creditosFotos:
-  - imagen: /images/Aster table/7.jpg
-    texto: photo courtesy of Hiperlocalidad
 dimensiones: 39.5 x 39.5 x 56cm (assembled)
 variantes:
   - nombre: Red Oak|Cream wash finish

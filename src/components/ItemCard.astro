@@ -5,11 +5,16 @@ interface Props {
   portada?: string;
   portadaHover?: string;
   type: "pieces" | "collections";
+  // Cascada de entrada del grid (ver WorkGrid.astro) — calculado en el
+  // servidor según el índice de la tarjeta, sin JS: así no hay riesgo de
+  // que la animación arranque sin stagger un instante antes de que un
+  // script la corrija.
+  animationDelay?: number;
 }
-const { titulo, slug, portada, portadaHover, type } = Astro.props;
+const { titulo, slug, portada, portadaHover, type, animationDelay = 0 } = Astro.props;
 const href = `/${type}/${slug}`;
 ---
-<a class="item-card" href={href}>
+<a class="item-card anim-fade-up" href={href} style={`animation-delay: ${animationDelay}ms`}>
   <span class="item-card__media">
     <span class="item-card__frame">
       {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading="lazy" />}

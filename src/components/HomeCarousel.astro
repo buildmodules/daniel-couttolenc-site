@@ -15,7 +15,7 @@ const { items } = Astro.props;
 ---
 {items.length > 0 && (
   <div class="carousel" id="home-carousel">
-    <div class="carousel__viewport">
+    <div class="carousel__viewport anim-zoom-blur-in">
       <div class="carousel__track" id="carousel-track">
         {items.map((item) => (
           <a class="carousel__slide" href={`/${item.type}/${item.slug}`}>

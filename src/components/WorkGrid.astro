@@ -47,13 +47,14 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     id="grid"
     style={`--cols: ${defaultCols};`}
   >
-    {items.map((item) => (
+    {items.map((item, i) => (
       <ItemCard
         titulo={item.titulo}
         slug={item.slug}
         portada={item.portada}
         portadaHover={item.portadaHover}
         type={item.type}
+        animationDelay={Math.min(i * 40, 400)}
       />
     ))}
   </section>

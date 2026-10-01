@@ -491,6 +491,74 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   body.no-scroll {
     overflow: hidden;
   }
+
+  /* --- Animaciones de entrada (pedido de los diseñadores, referencias:
+     ROA, Zara, cosmos.so) — tres variantes compartidas por el sitio.
+     "both" como fill-mode: el elemento arranca en el estado "from" desde
+     antes de que la animación corra (sin flash del estado final) y se
+     queda en "to" al terminar. Además de "both", cada clase declara
+     opacity/transform/filter directo (no solo dentro del @keyframes) —
+     así el estado inicial (oculto) no depende de que el navegador ya
+     haya resuelto la animación a tiempo para el primer paint; es la
+     causa típica del parpadeo "aparece visible y luego se esconde".
+     Todas respetan prefers-reduced-motion. */
+  @keyframes anim-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes anim-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes anim-zoom-blur-in {
+    from {
+      opacity: 0;
+      transform: scale(1.03);
+      filter: blur(5px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0);
+    }
+  }
+
+  .anim-fade-in {
+    opacity: 0;
+    animation: anim-fade-in 0.65s ease-out both;
+  }
+  .anim-fade-up {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: anim-fade-up 0.6s ease-out both;
+  }
+  .anim-zoom-blur-in {
+    opacity: 0;
+    transform: scale(1.03);
+    filter: blur(5px);
+    animation: anim-zoom-blur-in 0.85s ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .anim-fade-in,
+    .anim-fade-up,
+    .anim-zoom-blur-in {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      animation: none !important;
+    }
+  }
 </style>
 
 <style>

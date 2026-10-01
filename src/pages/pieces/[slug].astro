@@ -56,7 +56,7 @@ const materialNote =
   description={metaDescription}
   image={ogImage || portada}
 >
-  <article class="pieza">
+  <article class="pieza anim-fade-in">
     <a class="pieza__close" id="pieza-close" href="/work" aria-label="Cerrar">
       <span></span>
       <span></span>
@@ -66,8 +66,9 @@ const materialNote =
       {imagenes.map((img: string, i: number) => (
         <button
           type="button"
-          class:list={["pieza__foto", creditosPorFoto.has(img) && "pieza__foto--con-credito"]}
+          class:list={["pieza__foto", "anim-fade-up", creditosPorFoto.has(img) && "pieza__foto--con-credito"]}
           data-index={i}
+          style={`animation-delay: ${Math.min(i * 60, 360)}ms`}
         >
           <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
           {creditosPorFoto.has(img) && (
@@ -1120,6 +1121,9 @@ const materialNote =
     inset: 0;
     z-index: 100;
     display: flex;
+    /* El panel queda centrado (como antes) — lo que cambia es que ENTRA
+       deslizándose desde abajo (ver .inquire-modal__panel), no que se
+       quede anclado ahí. */
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
@@ -1127,7 +1131,7 @@ const materialNote =
     backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.25s ease;
   }
   .inquire-modal.is-visible {
     opacity: 1;
@@ -1139,6 +1143,13 @@ const materialNote =
     background: var(--color-placeholder);
     padding: 32px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    /* El panel entra deslizándose desde abajo, no solo con el fade del
+       fondo. */
+    transform: translateY(40px);
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .inquire-modal.is-visible .inquire-modal__panel {
+    transform: translateY(0);
   }
   .inquire-modal__close {
     position: absolute;

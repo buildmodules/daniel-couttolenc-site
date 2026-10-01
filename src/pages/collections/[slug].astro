@@ -23,7 +23,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   description={metaDescription}
   image={ogImage || portada}
 >
-  <article class="coleccion">
+  <article class="coleccion anim-fade-in">
     <a class="coleccion__close" id="coleccion-close" href="/work" aria-label="Cerrar">
       <span></span>
       <span></span>
@@ -33,8 +33,9 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
       {imagenes.map((img: string, i: number) => (
         <button
           type="button"
-          class:list={["coleccion__foto", creditosPorFoto.has(img) && "coleccion__foto--con-credito"]}
+          class:list={["coleccion__foto", "anim-fade-up", creditosPorFoto.has(img) && "coleccion__foto--con-credito"]}
           data-index={i}
+          style={`animation-delay: ${Math.min(i * 60, 360)}ms`}
         >
           <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
           {creditosPorFoto.has(img) && (
@@ -770,6 +771,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     inset: 0;
     z-index: 100;
     display: flex;
+    /* Ver el comentario equivalente en pieces/[slug].astro. */
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
@@ -777,7 +779,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.25s ease;
   }
   .inquire-modal.is-visible {
     opacity: 1;
@@ -789,6 +791,11 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     background: var(--color-placeholder);
     padding: 32px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(40px);
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .inquire-modal.is-visible .inquire-modal__panel {
+    transform: translateY(0);
   }
   .inquire-modal__close {
     position: absolute;

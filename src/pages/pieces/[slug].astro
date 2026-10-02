@@ -895,6 +895,19 @@ const materialNote =
       display: block;
       padding-bottom: 0;
     }
+    /* Barrita tipo "handle" de iOS (pedido de usabilidad) — sugiere que
+       esta sección se puede interactuar/jalar, como el indicador de un
+       bottom sheet. Puramente decorativa (aria-hidden vía ::before, no
+       hay nada que leer). */
+    .pieza__info-sticky::before {
+      content: "";
+      display: block;
+      width: 50%;
+      height: 4px;
+      margin: 16px auto;
+      border-radius: 999px;
+      background: var(--color-placeholder);
+    }
     .pieza__info {
       max-width: none;
       padding: 0 var(--gutter);

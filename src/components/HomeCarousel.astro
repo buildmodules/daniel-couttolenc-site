@@ -63,6 +63,28 @@ const { items } = Astro.props;
     const prevBtn = document.getElementById("carousel-prev");
     const nextBtn = document.getElementById("carousel-next");
     const dotsWrap = document.getElementById("carousel-dots");
+
+    // Orden aleatorio en cada carga (pedido de Daniel) — se reordenan los
+    // slides y sus dots correspondientes (mismo índice) ANTES de que el
+    // resto del script arranque, así todo lo de abajo (autoplay, flechas,
+    // swipe) sigue funcionando igual sin saber ni importarle que el orden
+    // real ya no es el del CMS.
+    const shuffle = (n: number) => {
+      const order = Array.from({ length: n }, (_, i) => i);
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      return order;
+    };
+    const slideEls = Array.from(track.children);
+    const dotEls = dotsWrap ? Array.from(dotsWrap.children) : [];
+    const order = shuffle(slideEls.length);
+    order.forEach((originalIndex) => {
+      track.appendChild(slideEls[originalIndex]);
+      if (dotsWrap) dotsWrap.appendChild(dotEls[originalIndex]);
+    });
+
     const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll<HTMLButtonElement>(".carousel__dot")) : [];
     const slideCount = track.children.length;
     let index = 0;

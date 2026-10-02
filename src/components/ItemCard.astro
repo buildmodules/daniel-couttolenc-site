@@ -134,6 +134,14 @@ const href = `/${type}/${slug}`;
       flex: 0 0 100%;
       scroll-snap-align: start;
       scroll-snap-stop: always;
+      /* Misma técnica que .carousel__slide en HomeCarousel.astro — acá
+         item-card__img ES el flex item (no hay un wrapper aparte), así
+         que el fix va directo acá: recorta cualquier desborde por
+         sub-pixel rounding entre el ancho del slide y el scroll-snap, que
+         podía dejar ver una rayita de la foto vecina. */
+      overflow: hidden;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     .item-card__img--hover {
       position: static;

@@ -8,7 +8,7 @@ galeria:
   - /images/Aster table/2.jpg
   - /images/Aster table/3.jpg
   - /images/Aster table/4.jpg
-  - /images/Aster table/5.jpg
+  - /images/Aster table/5.gif
 dimensiones: 39.5 x 39.5 x 56cm (assembled)
 variantes:
   - nombre: Red Oak|Cream wash finish

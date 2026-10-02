@@ -218,13 +218,13 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
   }
   .work-grid__slider::-webkit-slider-runnable-track {
     height: 1px;
-    /* Mismo color que la palabra "View" (pedido de Daniel) — antes
-       --color-hairline, un gris ligeramente distinto. */
-    background: var(--color-text-muted);
+    /* Más claro que antes (pedido nuevo) — ya no el mismo gris que "View",
+       uno más tenue para que la línea no compita con el punto. */
+    background: rgba(0, 0, 0, 0.3);
   }
   .work-grid__slider::-moz-range-track {
     height: 1px;
-    background: var(--color-text-muted);
+    background: rgba(0, 0, 0, 0.3);
   }
   .work-grid__slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -232,7 +232,10 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     width: 7.5px;
     height: 7.5px;
     border-radius: 50%;
-    background: var(--color-text-muted);
+    /* Mismo gris clarito que la línea, pero sólido (no rgba) — pedido
+       nuevo: el mismo color, sin transparencia. #b3b3b3 ≈ rgba(0,0,0,0.3)
+       sobre el fondo blanco del toolbar. */
+    background: #b3b3b3;
     margin-top: -3.25px;
     transition: transform 0.15s ease;
   }
@@ -244,7 +247,7 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     height: 7.5px;
     border: none;
     border-radius: 50%;
-    background: var(--color-text-muted);
+    background: #b3b3b3;
     transition: transform 0.15s ease;
   }
   .work-grid__slider::-moz-range-thumb:active {

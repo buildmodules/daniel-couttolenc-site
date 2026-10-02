@@ -62,6 +62,18 @@ const items = slides
   // centrado flex ya reparte ese aire igual arriba y abajo solo.
   const MIN_V_GAP = 40;
 
+  // Para el ajuste fino de abajo: el primer link del nav y la primera
+  // línea del footer son las referencias "de texto" reales — el centrado
+  // por cajas (header/footer completos) no basta porque cada uno tiene su
+  // propio padding interno alrededor del texto, y no es el mismo en los
+  // dos (el nav centra su texto en los 60px del header; el footer cuelga
+  // del suyo, padding-top, que es más grande). Esa diferencia se traduce
+  // en un gap de abajo (slider→texto del footer) visualmente más grande
+  // que el de arriba (texto del nav→slider), aunque el centrado por cajas
+  // dé el mismo espacio a ambos lados.
+  const navLink = document.querySelector<HTMLElement>(".site-header__nav a");
+  const footerFirstLine = footer?.querySelector<HTMLElement>("a, p");
+
   if (header && footer && stage) {
     const updateStageHeight = () => {
       const headerH = header.getBoundingClientRect().height;
@@ -73,6 +85,17 @@ const items = slides
       // aspect ratio de la foto — ver el comentario ahí.
       const availForCarousel = Math.max(0, available - MIN_V_GAP * 2);
       stage.style.setProperty("--carousel-avail-h", `${availForCarousel}px`);
+
+      // Shift fino: cuánto hay que correr el slider (dentro del espacio ya
+      // centrado por cajas) para que el gap de TEXTO quede parejo. Positivo
+      // = corre el slider hacia abajo (el footer tiene más padding oculto
+      // que el header); negativo = lo corre hacia arriba.
+      if (navLink && footerFirstLine) {
+        const topHidden = header.getBoundingClientRect().bottom - navLink.getBoundingClientRect().bottom;
+        const bottomHidden = footerFirstLine.getBoundingClientRect().top - footer.getBoundingClientRect().top;
+        const shift = (bottomHidden - topHidden) / 2;
+        stage.style.setProperty("--stage-shift", `${shift}px`);
+      }
     };
 
     updateStageHeight();
@@ -93,6 +116,13 @@ const items = slides
     justify-content: center;
     /* Salvavidas por si algún redondeo de px deja un pixel de sobra. */
     overflow: hidden;
+  }
+
+  /* Corre el slider (ya centrado por cajas) lo que haga falta para que el
+     gap de TEXTO quede parejo arriba/abajo — ver --stage-shift en el
+     script de arriba. */
+  :global(.home-stage .carousel) {
+    transform: translateY(var(--stage-shift, 0px));
   }
 
   /* Solo en home (body.no-scroll): el footer queda más pegado al borde del

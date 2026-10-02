@@ -93,16 +93,14 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
       <slot />
     </main>
     <footer class="site-footer">
-      {isActive("/contact") ? (
-        <>
-          <a href="mailto:daniel@danielcouttolenc.com">daniel@danielcouttolenc.com</a>
-          <a href="mailto:studio@danielcouttolenc.com">studio@danielcouttolenc.com</a>
-        </>
-      ) : (
+      {/* En Contact los correos ya no van en el footer — suben debajo del
+         párrafo de intro (ver contact.astro), así que acá solo quedan
+         Terms/Privacy en esa página. */}
+      {!isActive("/contact") && (
         <a href="mailto:daniel@danielcouttolenc.com">daniel@danielcouttolenc.com</a>
       )}
       <div class="site-footer__legal">
-        <a href="/terms" rel="nofollow">Terms &amp; Conditions</a>
+        <a href="/terms" rel="nofollow">Terms and Conditions</a>
         <a href="/privacy" rel="nofollow">Privacy Policy</a>
       </div>
     </footer>
@@ -616,6 +614,12 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   }
 
   .site-header__nav a:hover {
+    color: var(--color-text);
+  }
+
+  /* Sección activa en negro — pedido nuevo (antes no tenía tratamiento
+     propio: quedaba igual que el resto, gris, hasta hacerle hover). */
+  .site-header__nav a[aria-current="page"] {
     color: var(--color-text);
   }
 

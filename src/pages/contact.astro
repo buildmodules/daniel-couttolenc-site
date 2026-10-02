@@ -12,6 +12,10 @@ import Base from "../layouts/Base.astro";
     <div class="contacto__content anim-fade-up">
       <h1 class="type-heading">Contact</h1>
       <p>Daniel Couttolenc welcomes collaborations, custom commissions and media requests.</p>
+      <p class="contacto__emails">
+        <a href="mailto:daniel@danielcouttolenc.com">daniel@danielcouttolenc.com</a>
+        <a href="mailto:studio@danielcouttolenc.com">studio@danielcouttolenc.com</a>
+      </p>
 
       <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contact-form">
         <input type="hidden" name="form-name" value="contact" />
@@ -113,6 +117,25 @@ import Base from "../layouts/Base.astro";
     font-size: var(--fs-body);
     line-height: var(--lh-body);
     margin-bottom: 2.5rem;
+  }
+  .contacto__emails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Pegado al párrafo de arriba — el 2.5rem de la regla compartida ya
+       pasa antes de este bloque, no hace falta otro salto tan grande acá
+       encima. */
+    margin-top: -1.75rem;
+  }
+  .contacto__emails a {
+    /* +2px sobre el body (var(--fs-body), 13px) — pedido nuevo. */
+    font-size: 15px;
+    color: #6e6e6e;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .contacto__emails a:hover {
+    color: var(--color-text);
   }
   form {
     display: flex;

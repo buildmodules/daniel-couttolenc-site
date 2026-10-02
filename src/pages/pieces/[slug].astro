@@ -913,57 +913,36 @@ const materialNote =
       padding: 0 var(--gutter);
     }
 
-    /* Como Zara Home mobile: la galería es un carrete vertical de una foto
-       a la vez (scroll-snap), edge-to-edge. El alto de cada "página" del
-       carrete usa el mismo aspect ratio que la caja de portada del grid
-       (333/401) para que se sienta consistente con el resto del sitio —
-       no el ratio real de cada imagen. Al llegar a la última foto y seguir
-       el swipe, no hace falta JS: es scroll chaining nativo del navegador,
-       el gesto se lo pasa a la página y sigue hacia .pieza__info. */
+    /* Carrete continuo, como en desktop: las fotos van una tras otra a
+       width 100% con su alto natural (sin snap, sin object-fit:contain).
+       El área tiene el alto de la portada (la primera foto conserva su
+       aspect-ratio 333/401 de la regla base); si hay más fotos, se scrollea
+       adentro libremente y al llegar al final el gesto sigue hacia
+       .pieza__info — scroll chaining nativo, sin JS. */
     .pieza__galeria {
-      /* flex column + gap en vez de block: así el espacio entre fotos es
-         real (se ve al pasar de una a otra durante el swipe) sin afectar
-         el alto de cada "página" (aspect-ratio de abajo sigue siendo el
-         de una sola foto — el gap se suma aparte, no lo reemplaza). */
       display: flex;
       flex-direction: column;
       gap: 16px;
+      /* content-box + el gutter acá (no en cada foto): el aspect-ratio mide
+         el ancho real de la foto, así el alto del área = alto de la portada. */
+      box-sizing: content-box;
+      padding: 0 var(--gutter);
       aspect-ratio: 333 / 401;
       overflow-y: auto;
       overflow-x: hidden;
-      scroll-snap-type: y mandatory;
       scrollbar-width: none;
     }
     .pieza__galeria::-webkit-scrollbar {
       display: none;
     }
     .pieza__foto {
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
       flex-shrink: 0;
-      box-sizing: border-box;
       width: 100%;
-      height: 100%;
       margin-bottom: 0;
-      /* Padding del diseño — la foto queda enmarcada a los lados, no
-         edge-to-edge; se ve el fondo de la página (--color-bg). Sin padding
-         arriba/abajo: la foto llega hasta ambos bordes de su "página" del
-         carrete. */
-      padding: 0 var(--gutter);
-    }
-    .pieza__foto:first-child {
-      /* Ahora la controla el contenedor (.pieza__galeria) por igual para
-         todas las fotos, no solo la primera. */
-      aspect-ratio: auto;
     }
     .pieza__foto img {
       width: 100%;
-      height: 100%;
-      /* contain, no cover (pedido de Daniel) — con cover, una foto
-         horizontal dentro de esta caja vertical fija se recortaba y no se
-         veía completa; contain la deja completa, con aire arriba/abajo
-         cuando la proporción no calza. */
-      object-fit: contain;
+      height: auto;
     }
 
     /* Título + Inquire en la misma línea, arriba de la columna de info —

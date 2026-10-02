@@ -701,8 +701,11 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
       position: relative;
       z-index: 2;
       /* 30% más grande (pedido del diseño) — escala también la animación
-         a X de los spans hijos, sin recalcular sus translate. */
+         a X de los spans hijos, sin recalcular sus translate. El origen a la
+         derecha hace que crezca hacia adentro: así su borde derecho queda en
+         el mismo margen (--gutter) que el resto del contenido. */
       transform: scale(1.3);
+      transform-origin: right center;
     }
     .site-header__toggle span {
       display: block;
@@ -762,9 +765,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   }
 
   @media (max-width: 640px) {
-    .site-header__inner {
-      padding: 0 16px;
-    }
     .site-header__logo {
       height: 29px;
     }
@@ -774,9 +774,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   }
 
   @media (max-width: 360px) {
-    .site-header__inner {
-      padding: 0 12px;
-    }
     .site-header__logo {
       height: 20px;
     }

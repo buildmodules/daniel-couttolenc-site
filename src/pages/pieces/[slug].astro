@@ -858,6 +858,9 @@ const materialNote =
     }
     .pieza {
       grid-template-columns: 1fr;
+      /* Espacio entre el carrete de fotos y la info: 20px (antes el
+         --grid-gap de desktop, 35px). */
+      gap: 20px;
       /* Sin padding extra: la galería empieza justo debajo del header fijo
          (ese offset ya lo da `main{padding-top:var(--header-h)}` en
          Base.astro). La X (.pieza__close, fixed) queda entonces flotando

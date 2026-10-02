@@ -236,11 +236,9 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
        nuevo: el mismo color, sin transparencia. #b3b3b3 ≈ rgba(0,0,0,0.3)
        sobre el fondo blanco del toolbar. */
     background: #b3b3b3;
+    border: none;
+    box-shadow: none;
     margin-top: -3.25px;
-    transition: transform 0.15s ease;
-  }
-  .work-grid__slider::-webkit-slider-thumb:active {
-    transform: scale(1.6);
   }
   .work-grid__slider::-moz-range-thumb {
     width: 7.5px;
@@ -248,10 +246,23 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     border: none;
     border-radius: 50%;
     background: #b3b3b3;
-    transition: transform 0.15s ease;
+    box-shadow: none;
   }
-  .work-grid__slider::-moz-range-thumb:active {
-    transform: scale(1.6);
+  /* Sin el flash gris del tap en iOS/Android sobre el slider. */
+  .work-grid__slider {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* El "crecer al presionar" solo con mouse: en celular, el scale() del dot
+     al tocarlo se rasteriza borroso y se ve como una sombra alrededor. */
+  @media (hover: hover) and (pointer: fine) {
+    .work-grid__slider::-webkit-slider-thumb,
+    .work-grid__slider::-moz-range-thumb {
+      transition: transform 0.15s ease;
+    }
+    .work-grid__slider::-webkit-slider-thumb:active,
+    .work-grid__slider::-moz-range-thumb:active {
+      transform: scale(1.6);
+    }
   }
 
   .grid {
@@ -347,6 +358,18 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     }
     .grid.grid--dense :global(.item-card__dots) {
       display: none;
+    }
+  }
+
+  /* Celular: el espacio entre columnas = el margen lateral de la grilla
+     (--gutter, 20px), para que se vea balanceado. Se redeclara --card-gap
+     (ver comentario de arriba) para que el ancho de las tarjetas se ajuste.
+     La vista de 4 columnas sigue con su gap propio (.grid--dense, más
+     específico), y entre 641–900px el gutter es 58px, así que queda como
+     estaba. */
+  @media (max-width: 640px) {
+    .grid {
+      --card-gap: var(--gutter);
     }
   }
 </style>

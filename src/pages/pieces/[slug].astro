@@ -858,9 +858,11 @@ const materialNote =
     }
     .pieza {
       grid-template-columns: 1fr;
-      /* Espacio entre el carrete de fotos y la info: 20px (antes el
-         --grid-gap de desktop, 35px). */
-      gap: 20px;
+      /* Cuánto se mete la tarjeta de info sobre el final del carrete de
+         fotos (20px) — en vez de un hueco entre ambos, las fotos corren
+         por detrás de la tarjeta. */
+      --sheet-overlap: 20px;
+      gap: 0;
       /* Sin padding extra: la galería empieza justo debajo del header fijo
          (ese offset ya lo da `main{padding-top:var(--header-h)}` en
          Base.astro). La X (.pieza__close, fixed) queda entonces flotando
@@ -892,24 +894,22 @@ const materialNote =
       left: 50%;
       margin-left: -9px;
     }
+    /* La info es una "tarjeta" por encima del carrete: fondo sólido (para
+       tapar las fotos que pasan por detrás) y sombra ligera en su borde
+       superior que la delimita. top:auto porque la regla base (sticky de
+       desktop) trae top:var(--header-h) y con position:relative la
+       empujaría hacia abajo. */
     .pieza__info-sticky {
-      position: static;
+      position: relative;
+      top: auto;
+      z-index: 1;
       height: auto;
       display: block;
+      margin-top: calc(var(--sheet-overlap) * -1);
+      padding-top: 24px;
       padding-bottom: 0;
-    }
-    /* Barrita tipo "handle" de iOS (pedido de usabilidad) — sugiere que
-       esta sección se puede interactuar/jalar, como el indicador de un
-       bottom sheet. Puramente decorativa (aria-hidden vía ::before, no
-       hay nada que leer). */
-    .pieza__info-sticky::before {
-      content: "";
-      display: block;
-      width: 50%;
-      height: 4px;
-      margin: 16px auto;
-      border-radius: 999px;
-      background: var(--color-placeholder);
+      background: var(--color-bg);
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
     }
     .pieza__info {
       max-width: none;
@@ -927,9 +927,12 @@ const materialNote =
       flex-direction: column;
       gap: 16px;
       /* content-box + el gutter acá (no en cada foto): el aspect-ratio mide
-         el ancho real de la foto, así el alto del área = alto de la portada. */
+         el ancho real de la foto, así el alto del área = alto de la portada.
+         El padding de abajo es la franja que tapa la tarjeta de info
+         (--sheet-overlap): sin él, la última foto quedaría escondida detrás
+         de la tarjeta al llegar al final del scroll. */
       box-sizing: content-box;
-      padding: 0 var(--gutter);
+      padding: 0 var(--gutter) var(--sheet-overlap);
       aspect-ratio: 333 / 401;
       overflow-y: auto;
       overflow-x: hidden;

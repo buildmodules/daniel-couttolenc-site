@@ -39,6 +39,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
          invisible en la pestaña — pedido de Daniel. -->
     <link rel="icon" type="image/png" href="/site/favicon-isotipo.png" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <script is:inline>document.documentElement.classList.add("js");</script>
 
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:type" content={type} />
@@ -52,7 +53,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={absoluteImage} />
   </head>
-  <body class:list={[{ "no-scroll": noScroll }]}>
+  <body class:list={[{ "home-fit": noScroll }]}>
     <header class="site-header">
       <div class="site-header__inner">
         <a class="site-header__brand" href="/">
@@ -172,6 +173,24 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 </script>
 
 <script>
+  // --- Header durante el rebote superior (ver .is-overscroll en el CSS).
+  const siteHeader = document.querySelector(".site-header");
+  if (siteHeader) {
+    let pending = false;
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(() => {
+          siteHeader.classList.toggle("is-overscroll", window.scrollY < 0);
+          pending = false;
+        });
+      },
+      { passive: true },
+    );
+  }
+
   // --- Hamburger menu (solo mobile) — el mismo <nav> del header se abre
   // como overlay de pantalla completa (ver CSS); bloquea el scroll de la
   // página mientras está abierto.
@@ -393,9 +412,9 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   /* Color de "relleno" que se asoma un instante en el rebote elástico del
      scroll (Safari/iOS) cuando el usuario pasa de largo el tope/fin de la
      página — el body no cubre ese hueco, lo cubre el html de atrás.
-     Pedido del diseño: BB4825 en vez del blanco default. */
+     Pedido del diseño: 834633 en vez del blanco default. */
   html {
-    background: #bb4825;
+    background: #834633;
   }
 
   body {
@@ -490,6 +509,25 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     overflow: hidden;
   }
 
+  /* Blur del fondo cuando hay un modal abierto (lightbox / Inquire). Se
+     aplica con filter sobre el contenido de la página en vez de
+     backdrop-filter sobre el modal: Safari ignora backdrop-filter en varios
+     casos (p. ej. con "Reducir transparencia" activado en macOS/iOS) y el
+     blur no se veía. filter funciona igual en todos los navegadores. Los
+     modales (hermanos de .pieza/.coleccion) quedan nítidos. */
+  .site-header,
+  .site-footer,
+  .pieza > *,
+  .coleccion > * {
+    transition: filter 0.25s ease;
+  }
+  body.modal-open .site-header,
+  body.modal-open .site-footer,
+  body.modal-open .pieza > *,
+  body.modal-open .coleccion > * {
+    filter: blur(24px);
+  }
+
   /* --- Animaciones de entrada (pedido de los diseñadores, referencias:
      ROA, Zara, cosmos.so) — tres variantes compartidas por el sitio.
      "both" como fill-mode: el elemento arranca en el estado "from" desde
@@ -571,6 +609,16 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     -webkit-backdrop-filter: blur(3.9px);
     backdrop-filter: blur(3.9px);
     background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Rebote elástico hacia arriba (scrollY < 0): el header fijo es
+     translúcido con blur, así que el color de relleno de atrás se veía
+     difuminado y lavado a través de él. Mientras dura el rebote se vuelve
+     transparente y sin blur para que el color se vea sólido. */
+  .site-header.is-overscroll {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: transparent;
   }
 
   .site-header__inner {

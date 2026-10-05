@@ -55,6 +55,7 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
         portadaHover={item.portadaHover}
         type={item.type}
         animationDelay={Math.min(i * 40, 400)}
+        priority={i < 8}
       />
     ))}
   </section>
@@ -66,6 +67,18 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
   // even if the user changed it, navigated away, and came back to /work.
   const slider = document.getElementById("grid-cols-slider") as HTMLInputElement | null;
   const grid = document.getElementById("grid");
+
+  // La animación de entrada de las tarjetas espera (máx. 1.5s) a que las
+  // fotos de la primera pantalla estén decodificadas; así no se ve una foto
+  // "entrando" a medias ni un salto de una a otra (Safari). Ver .js .grid
+  // en el CSS: sin JS las tarjetas animan de inmediato como siempre.
+  if (grid) {
+    const firstImgs = Array.from(grid.querySelectorAll<HTMLImageElement>(".item-card__img--base")).slice(0, 8);
+    Promise.race([
+      Promise.all(firstImgs.map((img) => img.decode().catch(() => {}))),
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]).then(() => grid.classList.add("is-ready"));
+  }
 
   if (slider && grid) {
     const sizesDesktop = (slider.dataset.sizes ?? "8,4,2").split(",").map(Number);
@@ -282,6 +295,10 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     padding: 40px 100px;
   }
 
+  :global(.js) .grid:not(.is-ready) :global(.item-card) {
+    animation-play-state: paused;
+  }
+
   .grid :global(.item-card) {
     flex: 0 0 calc((100% - (var(--cols) - 1) * var(--card-gap)) / var(--cols));
   }
@@ -346,9 +363,14 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
       height: 9.75px;
     }
 
-    /* El mini-slider por tarjeta (swipe portada ↔ hover, ver ItemCard.astro)
-       NO aplica en la vista de 4 columnas — ahí las fotos son muy chicas y
-       no hay dónde deslizar. Se vuelve a la foto de portada sola. */
+  }
+
+  /* El mini-slider por tarjeta (swipe portada ↔ hover, ver ItemCard.astro)
+     NO aplica en la vista densa (4 col en celular, 8 en escritorio) — ahí
+     las fotos son muy chicas y no hay dónde deslizar. Se vuelve a la foto
+     de portada sola. Mismo criterio de media que el carrusel (celular o
+     táctil sin hover, ej. iPad horizontal). */
+  @media (max-width: 900px), (hover: none) and (pointer: coarse) {
     .grid.grid--dense :global(.item-card__frame) {
       display: block;
       overflow: visible;

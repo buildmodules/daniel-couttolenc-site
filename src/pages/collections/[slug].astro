@@ -130,14 +130,14 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     lightboxImg.src = sources[lightboxIndex];
     lightbox.classList.add("is-visible");
     lightbox.setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
+    document.body.classList.add("no-scroll", "modal-open");
   };
 
   const closeLightbox = () => {
     if (!lightbox) return;
     lightbox.classList.remove("is-visible");
     lightbox.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
+    document.body.classList.remove("no-scroll", "modal-open");
   };
 
   const showLightbox = (delta: number) => openLightbox(lightboxIndex + delta);
@@ -174,13 +174,13 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     if (!inquireModal) return;
     inquireModal.classList.add("is-visible");
     inquireModal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
+    document.body.classList.add("no-scroll", "modal-open");
   };
   const closeInquire = () => {
     if (!inquireModal) return;
     inquireModal.classList.remove("is-visible");
     inquireModal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
+    document.body.classList.remove("no-scroll", "modal-open");
     // Ver el comentario equivalente en pieces/[slug].astro.
     inquireForm?.classList.remove("is-sent");
     if (inquireStatus) inquireStatus.textContent = "";
@@ -652,9 +652,6 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
-    /* Safari necesita el prefijo -webkit- para backdrop-filter. */
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
@@ -775,8 +772,6 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;

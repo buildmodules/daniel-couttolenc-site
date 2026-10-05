@@ -72,6 +72,11 @@ const items = slides
   // que el de arriba (texto del nav→slider), aunque el centrado por cajas
   // dé el mismo espacio a ambos lados.
   const navLink = document.querySelector<HTMLElement>(".site-header__nav a");
+  const headerLogo = document.querySelector<HTMLElement>(".site-header__logo");
+  // En celular/tablet (<=900px) el nav inline está oculto (display:none →
+  // su rect mide 0 y descuadraba el cálculo): ahí la referencia visible
+  // más baja del header es el logo.
+  const headerTextRef = () => (navLink && navLink.getClientRects().length > 0 ? navLink : headerLogo);
   const footerFirstLine = footer?.querySelector<HTMLElement>("a, p");
 
   if (header && footer && stage) {
@@ -90,8 +95,9 @@ const items = slides
       // centrado por cajas) para que el gap de TEXTO quede parejo. Positivo
       // = corre el slider hacia abajo (el footer tiene más padding oculto
       // que el header); negativo = lo corre hacia arriba.
-      if (navLink && footerFirstLine) {
-        const topHidden = header.getBoundingClientRect().bottom - navLink.getBoundingClientRect().bottom;
+      const topRef = headerTextRef();
+      if (topRef && footerFirstLine) {
+        const topHidden = header.getBoundingClientRect().bottom - topRef.getBoundingClientRect().bottom;
         const bottomHidden = footerFirstLine.getBoundingClientRect().top - footer.getBoundingClientRect().top;
         const shift = (bottomHidden - topHidden) / 2;
         stage.style.setProperty("--stage-shift", `${shift}px`);
@@ -105,7 +111,13 @@ const items = slides
     // El footer puede cambiar de alto cuando el webfont termina de cargar
     // (mueve el wrap del texto) — remedimos una vez más en ese momento.
     document.fonts?.ready.then(updateStageHeight);
-    new ResizeObserver(updateStageHeight).observe(footer);
+    // Safari a veces termina de acomodar fuentes/imágenes después del
+    // primer cálculo sin disparar ninguno de los eventos de arriba — se
+    // remide al cargar la página y cuando cambia el alto del header.
+    window.addEventListener("load", updateStageHeight);
+    const ro = new ResizeObserver(updateStageHeight);
+    ro.observe(footer);
+    ro.observe(header);
   }
 </script>
 
@@ -125,11 +137,11 @@ const items = slides
     transform: translateY(var(--stage-shift, 0px));
   }
 
-  /* Solo en home (body.no-scroll): el footer queda más pegado al borde del
+  /* Solo en home (body.home-fit): el footer queda más pegado al borde del
      viewport (35px, antes 4rem/64px) — el ResizeObserver del script de
      arriba nota que el footer se achicó y le da ese espacio extra al
      slider, que sigue centrado igual entre el nav y el footer. */
-  :global(body.no-scroll .site-footer) {
+  :global(body.home-fit .site-footer) {
     padding-bottom: 35px;
   }
 </style>

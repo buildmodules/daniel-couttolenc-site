@@ -218,14 +218,14 @@ const materialNote =
     lightboxImg.src = sources[lightboxIndex];
     lightbox.classList.add("is-visible");
     lightbox.setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
+    document.body.classList.add("no-scroll", "modal-open");
   };
 
   const closeLightbox = () => {
     if (!lightbox) return;
     lightbox.classList.remove("is-visible");
     lightbox.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
+    document.body.classList.remove("no-scroll", "modal-open");
   };
 
   const showLightbox = (delta: number) => openLightbox(lightboxIndex + delta);
@@ -263,14 +263,14 @@ const materialNote =
     if (!inquireModal) return;
     inquireModal.classList.add("is-visible");
     inquireModal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
+    document.body.classList.add("no-scroll", "modal-open");
   };
 
   const closeInquire = () => {
     if (!inquireModal) return;
     inquireModal.classList.remove("is-visible");
     inquireModal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("no-scroll");
+    document.body.classList.remove("no-scroll", "modal-open");
     // Si mandó un inquire y vuelve a abrir el modal (para otra pieza, por
     // ejemplo), que empiece de nuevo en el formulario, no en el "Thank you".
     inquireForm?.classList.remove("is-sent");
@@ -739,7 +739,9 @@ const materialNote =
      entre hermanos y cada transición quede con el valor exacto que se quiere. */
   hr {
     border: none;
-    border-top: 1px solid var(--color-hairline);
+    /* Mismo tono que la línea del slider de View (rgba 0.3) — antes
+       --color-hairline (0.5), demasiado protagonista. */
+    border-top: 1px solid rgba(0, 0, 0, 0.3);
     margin: 0;
   }
 
@@ -1020,9 +1022,6 @@ const materialNote =
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
-    /* Safari necesita el prefijo -webkit- para backdrop-filter. */
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
@@ -1125,8 +1124,6 @@ const materialNote =
     align-items: center;
     justify-content: center;
     background: rgba(160, 160, 160, 0.2);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;

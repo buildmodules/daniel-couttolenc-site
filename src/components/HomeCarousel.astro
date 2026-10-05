@@ -90,7 +90,7 @@ const { items } = Astro.props;
     let index = 0;
 
     const render = () => {
-      track.style.transform = `translateX(-${index * 100}%)`;
+      track.style.transform = `translateX(calc(${-index} * (100% + var(--slide-gap))))`;
       dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
     };
 
@@ -181,8 +181,16 @@ const { items } = Astro.props;
     background: var(--color-placeholder);
   }
 
+  /* "Space between" como en Swiper: un hueco real entre slides (--slide-gap).
+     Con slides pegados, cualquier redondeo de sub-píxel en el translateX
+     deja ver una tirita de la foto vecina; con el hueco, lo único que
+     puede asomar en reposo es fondo (el vecino queda a --slide-gap px de
+     distancia, fuera del viewport). El desplazamiento por slide es
+     100% + --slide-gap (ver render() en el script). */
   .carousel__track {
+    --slide-gap: 12px;
     display: flex;
+    gap: var(--slide-gap);
     transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   }
 

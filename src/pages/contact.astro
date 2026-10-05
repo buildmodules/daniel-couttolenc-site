@@ -231,6 +231,12 @@ import Base from "../layouts/Base.astro";
       margin-left: auto;
       margin-right: auto;
     }
+    /* El párrafo de arriba baja a 1.25rem de margen en mobile; el -1.75rem
+       de desktop ya no cabe (los correos se montaban sobre la última línea).
+       -0.5rem deja el mismo hueco de 12px que en desktop. */
+    .contacto > .contacto__content > p.contacto__emails {
+      margin-top: -0.5rem;
+    }
     .contacto__photo {
       flex-basis: auto;
       width: 100%;

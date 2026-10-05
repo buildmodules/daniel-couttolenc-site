@@ -10,14 +10,17 @@ interface Props {
   // que la animación arranque sin stagger un instante antes de que un
   // script la corrija.
   animationDelay?: number;
+  // Fotos de la primera pantalla: carga eager + alta prioridad (el resto
+  // sigue lazy). WorkGrid espera a que decodifiquen antes de animar.
+  priority?: boolean;
 }
-const { titulo, slug, portada, portadaHover, type, animationDelay = 0 } = Astro.props;
+const { titulo, slug, portada, portadaHover, type, animationDelay = 0, priority = false } = Astro.props;
 const href = `/${type}/${slug}`;
 ---
 <a class="item-card anim-fade-up" href={href} style={`animation-delay: ${animationDelay}ms`}>
   <span class="item-card__media">
     <span class="item-card__frame">
-      {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading="lazy" />}
+      {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading={priority ? "eager" : "lazy"} decoding="async" fetchpriority={priority ? "high" : "auto"} />}
       {portadaHover && (
         <img class="item-card__img item-card__img--hover" src={portadaHover} alt="" loading="lazy" aria-hidden="true" />
       )}
@@ -43,8 +46,11 @@ const href = `/${type}/${slug}`;
     const dots = Array.from(media.querySelectorAll<HTMLElement>(".item-card__dot"));
     if (!frame || dots.length < 2) return;
 
+    // Cada slide dista (ancho + gap) del anterior — "space between", ver CSS.
+    const pitch = () => frame.clientWidth + (parseFloat(getComputedStyle(frame).columnGap) || 0);
+
     const sync = () => {
-      const i = Math.round(frame.scrollLeft / Math.max(1, frame.clientWidth));
+      const i = Math.round(frame.scrollLeft / Math.max(1, pitch()));
       dots.forEach((d, di) => d.classList.toggle("is-active", di === i));
     };
     frame.addEventListener("scroll", sync, { passive: true });
@@ -55,7 +61,7 @@ const href = `/${type}/${slug}`;
         // que deslice en vez de navegar.
         e.preventDefault();
         e.stopPropagation();
-        frame.scrollTo({ left: di * frame.clientWidth, behavior: "smooth" });
+        frame.scrollTo({ left: di * pitch(), behavior: "smooth" });
       });
     });
   });
@@ -92,11 +98,16 @@ const href = `/${type}/${slug}`;
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 0.6s ease;
+    /* visibility además de opacity: Safari llegaba a pintar un instante la
+       segunda foto al cargar; así no se renderiza hasta el hover. */
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0s linear 0.6s;
   }
   .item-card:hover .item-card__img--hover,
   .item-card:focus-visible .item-card__img--hover {
     opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease, visibility 0s;
   }
   /* Los dots solo existen en mobile (ver media query). */
   .item-card__dots {
@@ -115,7 +126,12 @@ const href = `/${type}/${slug}`;
     .item-card__title {
       margin-top: 10px;
     }
+  }
 
+  /* Carrusel de swipe: celulares (<=900px) Y cualquier pantalla táctil sin
+     hover, por ejemplo un iPad en horizontal (1024px+, layout de escritorio)
+     — ahí el hover no existe y la segunda foto nunca se veía. */
+  @media (max-width: 900px), (hover: none) and (pointer: coarse) {
     /* En mobile no hay hover: el frame se vuelve un carrusel horizontal
        con scroll-snap entre las dos fotos. WorkGrid.astro lo desactiva en
        la vista de 4 columnas (.grid--dense). */
@@ -124,6 +140,9 @@ const href = `/${type}/${slug}`;
       overflow-x: auto;
       overflow-y: hidden;
       scroll-snap-type: x mandatory;
+      /* "Space between" (como Swiper): hueco real entre las dos fotos para
+         que nunca se asome una tirita de la vecina. */
+      gap: 8px;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
     }
@@ -147,6 +166,7 @@ const href = `/${type}/${slug}`;
       position: static;
       inset: auto;
       opacity: 1;
+      visibility: visible;
       transition: none;
     }
 

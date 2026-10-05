@@ -98,6 +98,26 @@ const conPunto = (s: string) => s.replace(/\s*\.?\s*$/, ".");
       float.style.transform = `translate(${x}px, ${y}px)`;
     };
 
+    // Una sola <img> flotante se comparte entre todas las filas: si le
+    // cambiamos el src y la foto nueva aún no cargó, se seguía viendo la
+    // anterior. Por eso precargamos y solo mostramos el preview cuando la
+    // foto correcta ya está decodificada.
+    const cache = new Map<string, HTMLImageElement>();
+    const preload = (src: string) => {
+      let im = cache.get(src);
+      if (!im) {
+        im = new Image();
+        im.decoding = "async";
+        im.src = src;
+        cache.set(src, im);
+      }
+      return im;
+    };
+    let current = "";
+
+    const preloadAll = () => items.forEach((it) => it.dataset.foto && preload(it.dataset.foto));
+    window.addEventListener("load", () => setTimeout(preloadAll, 800), { once: true });
+
     items.forEach((item) => {
       const foto = item.dataset.foto;
 
@@ -106,12 +126,21 @@ const conPunto = (s: string) => s.replace(/\s*\.?\s*$/, ".");
           // Sin foto asignada (falta el material) — ocultamos el preview en
           // vez de dejar pegada la última foto real que se mostró, que se
           // ve como si varias filas compartieran la misma imagen.
+          current = "";
           float.classList.remove("is-visible");
           return;
         }
-        floatImg.src = foto;
-        float.classList.add("is-visible");
+        current = foto;
         positionFloat((e as MouseEvent).clientX, (e as MouseEvent).clientY);
+        float.classList.remove("is-visible");
+        preload(foto)
+          .decode()
+          .then(() => {
+            if (current !== foto) return;
+            floatImg.src = foto;
+            float.classList.add("is-visible");
+          })
+          .catch(() => {});
       });
     });
 
@@ -120,6 +149,7 @@ const conPunto = (s: string) => s.replace(/\s*\.?\s*$/, ".");
     });
 
     list.addEventListener("mouseleave", () => {
+      current = "";
       float.classList.remove("is-visible");
     });
   }

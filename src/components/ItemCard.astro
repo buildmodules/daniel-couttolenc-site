@@ -22,7 +22,7 @@ const href = `/${type}/${slug}`;
     <span class="item-card__frame">
       {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading={priority ? "eager" : "lazy"} decoding="async" fetchpriority={priority ? "high" : "auto"} />}
       {portadaHover && (
-        <img class="item-card__img item-card__img--hover" src={portadaHover} alt="" loading="lazy" aria-hidden="true" />
+        <img class="item-card__img item-card__img--hover" data-src={portadaHover} alt="" aria-hidden="true" />
       )}
     </span>
     {portadaHover && (
@@ -36,6 +36,50 @@ const href = `/${type}/${slug}`;
 </a>
 
 <script>
+  // La foto de hover NO lleva src al cargar la página: en Safari llegaba a
+  // pintarse un instante (antes que la portada) aunque estuviera oculta con
+  // opacity/visibility. Sin src no hay nada que pintar. Se le asigna cuando
+  // la página ya terminó de cargar y la tarjeta está cerca de la pantalla
+  // (mismo criterio que loading="lazy"), o al primer hover/toque/foco.
+  const loadHover = (img: HTMLImageElement) => {
+    const src = img.dataset.src;
+    if (!src) return;
+    delete img.dataset.src;
+    img.src = src;
+  };
+  const startHoverLoading = () => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const img = entry.target.querySelector<HTMLImageElement>(".item-card__img--hover");
+          if (img) loadHover(img);
+          io.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "600px 0px" },
+    );
+    document.querySelectorAll<HTMLElement>(".item-card").forEach((card) => io.observe(card));
+  };
+  document.querySelectorAll<HTMLElement>(".item-card").forEach((card) => {
+    const img = card.querySelector<HTMLImageElement>(".item-card__img--hover");
+    if (!img) return;
+    ["pointerenter", "touchstart", "focusin"].forEach((ev) =>
+      card.addEventListener(ev, () => loadHover(img), { once: true, passive: true }),
+    );
+  });
+  const afterLoad = () =>
+    setTimeout(() => {
+      // Las primeras 8 (primera pantalla) por temporizador, el resto cuando
+      // se acercan a la pantalla.
+      document.querySelectorAll<HTMLImageElement>(".item-card__img--hover").forEach((img, i) => {
+        if (i < 8) loadHover(img);
+      });
+      startHoverLoading();
+    }, 300);
+  if (document.readyState === "complete") afterLoad();
+  else window.addEventListener("load", afterLoad, { once: true });
+
   // Mobile: cada tarjeta con foto de hover es un mini-carrusel horizontal
   // (swipe entre portada y portada-hover) con un indicador de 2 puntos, al
   // estilo del carrusel del home pero chiquito. En desktop el .item-card__frame

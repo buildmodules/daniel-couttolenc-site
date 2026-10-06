@@ -144,13 +144,13 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 
     document.addEventListener("mouseover", (e) => {
       const el = e.target as HTMLElement;
-      // Sobre una mitad clickeable del carrusel del home: el cursor se
+      // Sobre una mitad clickeable del carrusel del home o del lightbox: el cursor se
       // vuelve una flecha ←/→ según la mitad, en vez del isotipo rotado.
-      const navZone = el?.closest?.(".carousel__nav") as HTMLElement | null;
+      const navZone = el?.closest?.(".carousel__nav, .lightbox__nav") as HTMLElement | null;
       if (navZone) {
         cursorEl.classList.remove("is-hover");
-        cursorEl.classList.toggle("is-arrow-left", navZone.classList.contains("carousel__nav--prev"));
-        cursorEl.classList.toggle("is-arrow-right", navZone.classList.contains("carousel__nav--next"));
+        cursorEl.classList.toggle("is-arrow-left", navZone.matches(".carousel__nav--prev, .lightbox__nav--prev"));
+        cursorEl.classList.toggle("is-arrow-right", navZone.matches(".carousel__nav--next, .lightbox__nav--next"));
         return;
       }
       if (el?.closest(INTERACTIVE)) {
@@ -159,7 +159,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     });
     document.addEventListener("mouseout", (e) => {
       const el = e.target as HTMLElement;
-      if (el?.closest?.(".carousel__nav")) {
+      if (el?.closest?.(".carousel__nav, .lightbox__nav")) {
         cursorEl.classList.remove("is-arrow-left", "is-arrow-right");
       }
       if (el?.closest(INTERACTIVE)) {
@@ -173,24 +173,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 </script>
 
 <script>
-  // --- Header durante el rebote superior (ver .is-overscroll en el CSS).
-  const siteHeader = document.querySelector(".site-header");
-  if (siteHeader) {
-    let pending = false;
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (pending) return;
-        pending = true;
-        requestAnimationFrame(() => {
-          siteHeader.classList.toggle("is-overscroll", window.scrollY < 0);
-          pending = false;
-        });
-      },
-      { passive: true },
-    );
-  }
-
   // --- Hamburger menu (solo mobile) — el mismo <nav> del header se abre
   // como overlay de pantalla completa (ver CSS); bloquea el scroll de la
   // página mientras está abierto.
@@ -265,6 +247,11 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 
   :root {
     --color-bg: #f7f7f7;
+    /* Color del rebote elástico del scroll (pedido del diseño). Hoy NO se
+       aplica en ningún lado — se quitó el fondo de rebote; la variable queda
+       guardada por si se vuelve a usar (p. ej. html { background:
+       var(--color-overscroll) }). */
+    --color-overscroll: #834633;
     --color-placeholder: #d9d9d9;
     --color-text: #000;
     --color-text-muted: rgba(0, 0, 0, 0.6);
@@ -407,14 +394,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   body {
     margin: 0;
     padding: 0;
-  }
-
-  /* Color de "relleno" que se asoma un instante en el rebote elástico del
-     scroll (Safari/iOS) cuando el usuario pasa de largo el tope/fin de la
-     página — el body no cubre ese hueco, lo cubre el html de atrás.
-     Pedido del diseño: 834633 en vez del blanco default. */
-  html {
-    background: #834633;
   }
 
   body {
@@ -611,16 +590,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     background: rgba(255, 255, 255, 0.3);
   }
 
-  /* Rebote elástico hacia arriba (scrollY < 0): el header fijo es
-     translúcido con blur, así que el color de relleno de atrás se veía
-     difuminado y lavado a través de él. Mientras dura el rebote se vuelve
-     transparente y sin blur para que el color se vea sólido. */
-  .site-header.is-overscroll {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: transparent;
-  }
-
   .site-header__inner {
     max-width: var(--max-width);
     height: 100%;
@@ -700,7 +669,8 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    padding: 3rem var(--gutter) 4rem;
+    /* 1rem de aire hasta el fondo de la página (pedido de Daniel). */
+    padding: 3rem var(--gutter) 1rem;
     font-size: var(--fs-meta);
     text-align: center;
   }
@@ -716,7 +686,7 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 
   .site-footer__legal {
     display: flex;
-    gap: 16px;
+    gap: 8px;
     color: var(--color-text-muted);
   }
 

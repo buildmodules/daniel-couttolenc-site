@@ -158,10 +158,11 @@ const { items } = Astro.props;
 
 <style>
   /* Container propio del home (no el --max-width de 1512 del resto del
-     sitio) — 1300px en pantallas grandes, con 100px de padding lateral en
-     desktop (pedido del diseño, probado con Daniel). */
+     sitio) — con 100px de padding lateral en desktop (pedido del diseño,
+     probado con Daniel). Sin max-width: el slider ya no tiene un tope de
+     ancho, se dimensiona solo por el alto disponible (ver abajo) y encoge
+     proporcional cuando la ventana se achica. */
   .carousel {
-    max-width: 1300px;
     margin: 0 auto;
     padding: 0 100px;
   }

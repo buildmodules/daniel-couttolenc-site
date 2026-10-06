@@ -60,23 +60,12 @@ const items = slides
   // por medio. Se resta de --carousel-avail-h (lo que ve el cálculo de
   // ancho en HomeCarousel.astro), no del alto real de .home-stage — el
   // centrado flex ya reparte ese aire igual arriba y abajo solo.
-  const MIN_V_GAP = 40;
+  const MIN_V_GAP = 60;
 
-  // Para el ajuste fino de abajo: el primer link del nav y la primera
-  // línea del footer son las referencias "de texto" reales — el centrado
-  // por cajas (header/footer completos) no basta porque cada uno tiene su
-  // propio padding interno alrededor del texto, y no es el mismo en los
-  // dos (el nav centra su texto en los 60px del header; el footer cuelga
-  // del suyo, padding-top, que es más grande). Esa diferencia se traduce
-  // en un gap de abajo (slider→texto del footer) visualmente más grande
-  // que el de arriba (texto del nav→slider), aunque el centrado por cajas
-  // dé el mismo espacio a ambos lados.
-  const navLink = document.querySelector<HTMLElement>(".site-header__nav a");
-  const headerLogo = document.querySelector<HTMLElement>(".site-header__logo");
-  // En celular/tablet (<=900px) el nav inline está oculto (display:none →
-  // su rect mide 0 y descuadraba el cálculo): ahí la referencia visible
-  // más baja del header es el logo.
-  const headerTextRef = () => (navLink && navLink.getClientRects().length > 0 ? navLink : headerLogo);
+  // Referencias para el centrado: arriba, la línea inferior del navbar (el
+  // borde del header, no su texto); abajo, el texto del footer (su primera
+  // línea), porque el footer cuelga de su propio padding-top y eso hace que
+  // el centrado por cajas deje más aire visible abajo que arriba.
   const footerFirstLine = footer?.querySelector<HTMLElement>("a, p");
 
   if (header && footer && stage) {
@@ -91,16 +80,13 @@ const items = slides
       const availForCarousel = Math.max(0, available - MIN_V_GAP * 2);
       stage.style.setProperty("--carousel-avail-h", `${availForCarousel}px`);
 
-      // Shift fino: cuánto hay que correr el slider (dentro del espacio ya
-      // centrado por cajas) para que el gap de TEXTO quede parejo. Positivo
-      // = corre el slider hacia abajo (el footer tiene más padding oculto
-      // que el header); negativo = lo corre hacia arriba.
-      const topRef = headerTextRef();
-      if (topRef && footerFirstLine) {
-        const topHidden = header.getBoundingClientRect().bottom - topRef.getBoundingClientRect().bottom;
+      // Shift fino: el slider ya queda centrado entre el header y la CAJA
+      // del footer; hay que correrlo la mitad del padding-top del footer
+      // (lo que hay entre su borde y su texto) hacia abajo para quedar
+      // centrado entre el borde del nav y el TEXTO del footer.
+      if (footerFirstLine) {
         const bottomHidden = footerFirstLine.getBoundingClientRect().top - footer.getBoundingClientRect().top;
-        const shift = (bottomHidden - topHidden) / 2;
-        stage.style.setProperty("--stage-shift", `${shift}px`);
+        stage.style.setProperty("--stage-shift", `${bottomHidden / 2}px`);
       }
     };
 
@@ -135,13 +121,5 @@ const items = slides
      script de arriba. */
   :global(.home-stage .carousel) {
     transform: translateY(var(--stage-shift, 0px));
-  }
-
-  /* Solo en home (body.home-fit): el footer queda más pegado al borde del
-     viewport (35px, antes 4rem/64px) — el ResizeObserver del script de
-     arriba nota que el footer se achicó y le da ese espacio extra al
-     slider, que sigue centrado igual entre el nav y el footer. */
-  :global(body.home-fit .site-footer) {
-    padding-bottom: 35px;
   }
 </style>

@@ -40,86 +40,74 @@ const items = slides
   description="Daniel Couttolenc is a Mexican designer creating collectible objects."
   noScroll
 >
-  <!-- El home cabe siempre en un solo viewport (sin scroll) — este wrapper
-       mide en JS el alto real del header y el footer y le da al slider
-       exactamente el espacio que sobra entre los dos, centrado (flex), así
-       el aire arriba (navbar→slider) y abajo (slider→footer) queda igual. -->
+  <!-- El home cabe siempre en un solo viewport (sin scroll). El alto del
+       escenario lo da CSS (ver los estilos al final del archivo): ocupa lo que
+       sobra entre el header y el footer. El script solo mide el escenario
+       mismo (tamaño de layout) para dimensionar el slider; ya no lee
+       window.innerHeight ni visualViewport, que con el zoom inteligente de
+       Safari cambiaban y deformaban la página. -->
   <div class="home-stage" id="home-stage">
     <HomeCarousel items={items} />
   </div>
 </Base>
 
 <script>
-  const header = document.querySelector<HTMLElement>(".site-header");
-  const footer = document.querySelector<HTMLElement>(".site-footer");
+  // Alto que le toca al slider = alto del escenario - 60px de aire mínimo
+  // arriba y abajo. Se mide el escenario con ResizeObserver (tamaño de
+  // layout, que no cambia con el zoom de pellizco/doble toque de Safari).
   const stage = document.getElementById("home-stage");
-
-  // Aire mínimo garantizado arriba/abajo del slider — sin esto, cuando el
-  // ratio de la foto "gana" (la necesita tan alta como el espacio
-  // disponible), la foto queda pegada al header y al footer con 0px de
-  // por medio. Se resta de --carousel-avail-h (lo que ve el cálculo de
-  // ancho en HomeCarousel.astro), no del alto real de .home-stage — el
-  // centrado flex ya reparte ese aire igual arriba y abajo solo.
-  const MIN_V_GAP = 60;
-
-  // Referencias para el centrado: arriba, la línea inferior del navbar (el
-  // borde del header, no su texto); abajo, el texto del footer (su primera
-  // línea), porque el footer cuelga de su propio padding-top y eso hace que
-  // el centrado por cajas deje más aire visible abajo que arriba.
-  const footerFirstLine = footer?.querySelector<HTMLElement>("a, p");
-
-  if (header && footer && stage) {
-    const updateStageHeight = () => {
-      const headerH = header.getBoundingClientRect().height;
-      const footerH = footer.getBoundingClientRect().height;
-      const available = Math.max(0, window.innerHeight - headerH - footerH);
-      stage.style.height = `${available}px`;
-      // El slider (HomeCarousel.astro) usa esta variable para calcular su
-      // propio ancho a partir del alto disponible, sin distorsionar el
-      // aspect ratio de la foto — ver el comentario ahí.
-      const availForCarousel = Math.max(0, available - MIN_V_GAP * 2);
-      stage.style.setProperty("--carousel-avail-h", `${availForCarousel}px`);
-
-      // Shift fino: el slider ya queda centrado entre el header y la CAJA
-      // del footer; hay que correrlo la mitad del padding-top del footer
-      // (lo que hay entre su borde y su texto) hacia abajo para quedar
-      // centrado entre el borde del nav y el TEXTO del footer.
-      if (footerFirstLine) {
-        const bottomHidden = footerFirstLine.getBoundingClientRect().top - footer.getBoundingClientRect().top;
-        stage.style.setProperty("--stage-shift", `${bottomHidden / 2}px`);
-      }
+  if (stage) {
+    const MIN_V_GAP = 60;
+    const apply = (stageHeight: number) => {
+      stage.style.setProperty("--carousel-avail-h", `${Math.max(0, stageHeight - MIN_V_GAP * 2)}px`);
     };
-
-    updateStageHeight();
-    window.addEventListener("resize", updateStageHeight);
-    window.addEventListener("orientationchange", updateStageHeight);
-    window.visualViewport?.addEventListener("resize", updateStageHeight);
-    // El footer puede cambiar de alto cuando el webfont termina de cargar
-    // (mueve el wrap del texto) — remedimos una vez más en ese momento.
-    document.fonts?.ready.then(updateStageHeight);
-    // Safari a veces termina de acomodar fuentes/imágenes después del
-    // primer cálculo sin disparar ninguno de los eventos de arriba — se
-    // remide al cargar la página y cuando cambia el alto del header.
-    window.addEventListener("load", updateStageHeight);
-    const ro = new ResizeObserver(updateStageHeight);
-    ro.observe(footer);
-    ro.observe(header);
+    apply(stage.clientHeight);
+    new ResizeObserver(([entry]) => apply(entry.contentRect.height)).observe(stage);
   }
 </script>
 
 <style>
+  /* El body del home es una columna de exactamente una pantalla: header fijo
+     (su alto ya lo reserva main{padding-top}), main que crece y footer
+     abajo. Así el escenario siempre mide "pantalla - header - footer" por
+     CSS, sin JS. */
+  :global(body.home-fit) {
+    display: flex;
+    flex-direction: column;
+    /* Alto definido (no min-height) para que el escenario (flex: 1) tenga
+       siempre un tamaño ya resuelto: pantalla - header - footer. */
+    height: 100vh;
+    height: 100dvh;
+  }
+  :global(body.home-fit main) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
   .home-stage {
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     /* Salvavidas por si algún redondeo de px deja un pixel de sobra. */
     overflow: hidden;
+    /* Valor inicial aproximado (pantalla - header 60px - footer ~123px -
+       120px de aire) mientras corre el script de arriba, que lo reemplaza
+       por la medida exacta del escenario. */
+    --carousel-avail-h: max(0px, calc(100dvh - 303px));
   }
 
-  /* Corre el slider (ya centrado por cajas) lo que haga falta para que el
-     gap de TEXTO quede parejo arriba/abajo — ver --stage-shift en el
-     script de arriba. */
+  /* El slider queda centrado por cajas entre el borde del nav y el footer;
+     el footer tiene 3rem de padding-top antes de su primer texto, así que
+     lo corremos la mitad (1.5rem) hacia abajo para que quede centrado entre
+     el borde del nav y el TEXTO del footer. Debe coincidir con el
+     padding-top de .site-footer en Base.astro. */
   :global(.home-stage .carousel) {
-    transform: translateY(var(--stage-shift, 0px));
+    /* scale(1.08): el slider crece 8% desde su centro (pedido de Daniel);
+       como escala parejo, el centrado arriba/abajo se mantiene. */
+    transform: translateY(1.5rem) scale(1.08);
   }
 </style>

@@ -87,6 +87,19 @@ const { items } = Astro.props;
 
     const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll<HTMLButtonElement>(".carousel__dot")) : [];
     const slideCount = track.children.length;
+
+    // Todas las fotos llevan loading="lazy" en el HTML, y Safari no baja las
+    // que están fuera de pantalla (el track las desplaza) hasta el último
+    // momento: al darle a la flecha había que esperar la descarga. Una vez
+    // cargada la página se pasan a eager SOLO las de la variante visible
+    // (desktop o mobile; la otra está display:none y no hace falta bajarla).
+    const warmSlides = () => {
+      track.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+        if (getComputedStyle(img).display !== "none") img.loading = "eager";
+      });
+    };
+    if (document.readyState === "complete") warmSlides();
+    else window.addEventListener("load", warmSlides, { once: true });
     let index = 0;
 
     const render = () => {
@@ -163,13 +176,18 @@ const { items } = Astro.props;
      ancho, se dimensiona solo por el alto disponible (ver abajo) y encoge
      proporcional cuando la ventana se achica. */
   .carousel {
+    /* Ancho explícito: sin él, el contenedor se dimensionaba por su
+       contenido, y el slider (width: min(100%, ...)) por el contenedor — una
+       dependencia circular que a veces dejaba el slider en ~50px de ancho
+       hasta que algo forzaba otro layout. */
+    width: 100%;
     margin: 0 auto;
     padding: 0 100px;
   }
 
   .carousel__viewport {
     /* El slider no cabe por un ancho fijo — cabe por el ALTO disponible
-       (--carousel-avail-h, calculado en JS en index.astro a partir de
+       (--carousel-avail-h, definido en CSS en index.astro a partir de
        header/footer para que la página entera quepa en un viewport sin
        scroll). El ancho es el menor entre "todo el ancho lateral
        disponible" y "el ancho que le tocaría a la foto si usara todo ese

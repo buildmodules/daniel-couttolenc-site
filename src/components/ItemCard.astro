@@ -17,7 +17,7 @@ interface Props {
 const { titulo, slug, portada, portadaHover, type, animationDelay = 0, priority = false } = Astro.props;
 const href = `/${type}/${slug}`;
 ---
-<a class="item-card anim-fade-up" href={href} style={`animation-delay: ${animationDelay}ms`}>
+<a class="item-card anim-fade-up anim-soft" href={href} style={`animation-delay: ${animationDelay}ms`}>
   <span class="item-card__media">
     <span class="item-card__frame">
       {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading={priority ? "eager" : "lazy"} decoding="async" fetchpriority={priority ? "high" : "auto"} />}

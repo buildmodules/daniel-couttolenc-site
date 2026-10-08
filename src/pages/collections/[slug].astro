@@ -23,7 +23,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   description={metaDescription}
   image={ogImage || portada}
 >
-  <article class="coleccion anim-fade-in">
+  <article class="coleccion anim-fade-in anim-soft">
     <a class="coleccion__close" id="coleccion-close" href="/work" aria-label="Cerrar">
       <span></span>
       <span></span>
@@ -33,9 +33,9 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
       {imagenes.map((img: string, i: number) => (
         <button
           type="button"
-          class:list={["coleccion__foto", "anim-fade-up", creditosPorFoto.has(img) && "coleccion__foto--con-credito"]}
+          class:list={["coleccion__foto", "anim-fade-up", "anim-soft", creditosPorFoto.has(img) && "coleccion__foto--con-credito"]}
           data-index={i}
-          style={`animation-delay: ${Math.min(i * 60, 360)}ms`}
+          style={`animation-delay: ${Math.min(i * 81, 486)}ms`}
         >
           <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
           {creditosPorFoto.has(img) && (
@@ -93,12 +93,13 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     </button>
     <div class="lightbox__stage">
       <img id="lightbox-img" src="" alt={titulo} />
-      <!-- Sin flechas visibles (como el carrusel del home): la foto se parte
-           en dos mitades clickeables, izquierda = anterior, derecha =
-           siguiente; en desktop el cursor se vuelve una flecha ←/→. -->
-      <button type="button" class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="Foto anterior"></button>
-      <button type="button" class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="Foto siguiente"></button>
     </div>
+    <span class="lightbox__counter" id="lightbox-counter" aria-live="polite"></span>
+    <!-- La pantalla entera se parte en dos mitades clickeables (izquierda =
+         anterior, derecha = siguiente); en desktop el cursor se vuelve una
+         flecha ←/→. Para cerrar: la X o Escape. -->
+    <button type="button" class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="Foto anterior"></button>
+    <button type="button" class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="Foto siguiente"></button>
   </div>
 </Base>
 
@@ -120,6 +121,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   const lightboxClose = document.getElementById("lightbox-close");
   const lightboxPrev = document.getElementById("lightbox-prev");
   const lightboxNext = document.getElementById("lightbox-next");
+  const lightboxCounter = document.getElementById("lightbox-counter");
   const sources = photos.map((btn) => btn.querySelector("img")?.getAttribute("src") ?? "");
   let lightboxIndex = 0;
 
@@ -127,6 +129,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     if (!lightbox || !lightboxImg || sources.length === 0) return;
     lightboxIndex = (index + sources.length) % sources.length;
     lightboxImg.src = sources[lightboxIndex];
+    if (lightboxCounter) lightboxCounter.textContent = sources.length > 1 ? `${lightboxIndex + 1} / ${sources.length}` : "";
     // Precarga las vecinas para que al pasar de foto no se vea la anterior
     // mientras carga la nueva.
     [lightboxIndex + 1, lightboxIndex - 1].forEach((i) => {
@@ -250,7 +253,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   const coleccionInquireLink = document.querySelector<HTMLElement>(".coleccion .inquire");
   // Debe coincidir con --cols / aspect-ratio de .item-card__frame en ItemCard.astro.
   const FIRST_PHOTO_ASPECT = 333 / 401;
-  const COLECCION_MIN_COL = 24; // ver comentario equivalente en pieces/[slug].astro
+  const COLECCION_MIN_COL = 36; // antes 24 — ver comentario equivalente en pieces/[slug].astro
 
   const fitFirstColeccionPhoto = () => {
     if (!coleccion || !coleccionGaleria || !coleccionInfoSticky || !coleccionInquireLink) return;
@@ -659,6 +662,10 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Franja reservada abajo (64px) para el contador "1 / N": la foto vive
+       en el espacio que queda, sin encimarse con él. */
+    box-sizing: border-box;
+    padding: 24px 0 64px;
     background: rgba(160, 160, 160, 0.2);
     opacity: 0;
     pointer-events: none;
@@ -672,13 +679,15 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     /* Ver el comentario equivalente en pieces/[slug].astro. */
     position: relative;
     max-width: min(88vw, 1300px);
-    max-height: 96vh;
+    max-height: calc(100vh - 88px);
+    max-height: calc(100dvh - 88px);
   }
   .lightbox__stage img {
     display: block;
     width: 100%;
     height: 100%;
-    max-height: 96vh;
+    max-height: calc(100vh - 88px);
+    max-height: calc(100dvh - 88px);
     object-fit: contain;
   }
   .lightbox__close {
@@ -689,6 +698,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     right: calc(var(--gutter) - 18px);
     width: 56px;
     height: 56px;
+    z-index: 2;
     background: none;
     border: none;
     cursor: pointer;
@@ -714,10 +724,10 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   .lightbox__close span:last-child {
     transform: rotate(-45deg);
   }
-  /* Mitades clickeables invisibles sobre la foto (mismo patrón que
+  /* Mitades clickeables invisibles sobre TODA la pantalla (mismo patrón que
      .carousel__nav del home): izquierda = anterior, derecha = siguiente.
      El ícono lo da el cursor personalizado (ver Base.astro); en mobile
-     también se navega con swipe (ver el script). */
+     también se navega con swipe (ver el script). La X queda por encima. */
   .lightbox__nav {
     position: absolute;
     top: 0;
@@ -737,6 +747,20 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   }
   .lightbox__nav--next {
     right: 0;
+  }
+
+  /* Contador "1 / 5": en la franja de abajo de la pantalla, debajo de la
+     foto (no encima). */
+  .lightbox__counter {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    font-size: var(--fs-meta);
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    white-space: nowrap;
   }
 
   /* Modal de Inquire — mismo componente y valores que en pieces/[slug].astro. */

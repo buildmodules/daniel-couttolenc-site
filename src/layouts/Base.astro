@@ -173,6 +173,30 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 </script>
 
 <script>
+  // --- Animaciones de entrada: al terminar, el elemento queda "limpio" (ver
+  // .anim-done en el CSS). animationend burbujea, basta un solo listener.
+  document.addEventListener("animationend", (e) => {
+    const el = e.target as HTMLElement;
+    if (el.matches?.(".anim-fade-in, .anim-fade-up, .anim-zoom-blur-in")) el.classList.add("anim-done");
+  });
+
+  // --- Al volver a una pestaña que estuvo en segundo plano, Safari puede
+  // redibujar las fotos deformadas/rayadas (memoria gráfica reciclada).
+  // Se fuerza a re-decodificarlas y se provoca un repintado del contenido.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    document.querySelectorAll<HTMLImageElement>("main img").forEach((img) => {
+      if (img.complete && img.naturalWidth > 0) img.decode().catch(() => {});
+    });
+    const main = document.querySelector<HTMLElement>("main");
+    if (main) {
+      main.style.opacity = "0.999";
+      requestAnimationFrame(() => {
+        main.style.opacity = "";
+      });
+    }
+  });
+
   // --- Hamburger menu (solo mobile) — el mismo <nav> del header se abre
   // como overlay de pantalla completa (ver CSS); bloquea el scroll de la
   // página mientras está abierto.
@@ -564,9 +588,47 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
     animation: anim-zoom-blur-in 0.85s ease-out both;
   }
 
+  /* Variante más sutil y lenta (pedido de Daniel: se sentían abruptas) para
+     /work y las piezas/colecciones: 35% más larga (0.65s -> 0.88s, 0.6s ->
+     0.81s) y con la mitad de recorrido (8px en vez de 12px). Se combina
+     con .anim-fade-in / .anim-fade-up. */
+  @keyframes anim-fade-up-soft {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .anim-soft.anim-fade-in {
+    animation-duration: 0.88s;
+  }
+  .anim-soft.anim-fade-up {
+    transform: translateY(8px);
+    animation-name: anim-fade-up-soft;
+    animation-duration: 0.81s;
+  }
+
+  /* Al terminar la animación de entrada se marca el elemento con .anim-done
+     (ver el script de abajo) y se le quita la animación: con fill-mode:both
+     el elemento se quedaba para siempre con una capa de composición propia
+     (cada foto de la galería, cada tarjeta), y en Safari esas capas, al volver
+     a una pestaña que estuvo en segundo plano, se redibujaban deformadas y
+     rayadas. El estado final (opacity 1, sin transform) es el mismo. */
+  .anim-done {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .anim-fade-in,
     .anim-fade-up,
+    .anim-soft.anim-fade-in,
+    .anim-soft.anim-fade-up,
     .anim-zoom-blur-in {
       opacity: 1;
       transform: none;

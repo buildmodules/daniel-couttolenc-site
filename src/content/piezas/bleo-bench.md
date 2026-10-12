@@ -10,6 +10,7 @@ galeria:
   - /images/Bleo bench/4.jpg
   - /images/Bleo bench/5.jpg
   - /images/Bleo bench/6.jpg
+  - /images/Bleo bench/8.jpg
 creditosFotos:
   - imagen: /images/Bleo bench/2.jpg
     texto: photo courtesy of DIFANE
@@ -18,6 +19,8 @@ creditosFotos:
   - imagen: /images/Bleo bench/4.jpg
     texto: photo courtesy of DIFANE
   - imagen: /images/Bleo bench/5.jpg
+    texto: photo courtesy of DIFANE
+  - imagen: /images/Bleo bench/8.jpg
     texto: photo courtesy of DIFANE
 dimensiones: 163 x 49 x 47cm
 variantes:

@@ -5,7 +5,6 @@ portada: /images/Ixia desk/portada.jpg
 portadaHover: /images/Ixia desk/portada-hover.jpg
 galeria:
   - /images/Ixia desk/portada.jpg
-  - /images/Ixia desk/2.jpg
   - /images/Ixia desk/4.jpg
 dimensiones: 152 x 76 x 76cm
 variantes:

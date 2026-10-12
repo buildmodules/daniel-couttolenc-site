@@ -9,7 +9,6 @@ galeria:
   - /images/Bleo bench/3.jpg
   - /images/Bleo bench/4.jpg
   - /images/Bleo bench/5.jpg
-  - /images/Bleo bench/6.jpg
   - /images/Bleo bench/8.jpg
 creditosFotos:
   - imagen: /images/Bleo bench/2.jpg

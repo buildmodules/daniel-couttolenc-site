@@ -23,7 +23,7 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
   description={metaDescription}
   image={ogImage || portada}
 >
-  <article class="coleccion anim-fade-in anim-soft">
+  <article class="coleccion">
     <a class="coleccion__close" id="coleccion-close" href="/work" aria-label="Cerrar">
       <span></span>
       <span></span>
@@ -33,9 +33,8 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
       {imagenes.map((img: string, i: number) => (
         <button
           type="button"
-          class:list={["coleccion__foto", "anim-fade-up", "anim-soft", creditosPorFoto.has(img) && "coleccion__foto--con-credito"]}
+          class:list={["coleccion__foto", creditosPorFoto.has(img) && "coleccion__foto--con-credito"]}
           data-index={i}
-          style={`animation-delay: ${Math.min(i * 81, 486)}ms`}
         >
           <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
           {creditosPorFoto.has(img) && (

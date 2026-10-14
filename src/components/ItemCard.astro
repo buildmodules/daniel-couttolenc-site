@@ -5,19 +5,14 @@ interface Props {
   portada?: string;
   portadaHover?: string;
   type: "pieces" | "collections";
-  // Cascada de entrada del grid (ver WorkGrid.astro) — calculado en el
-  // servidor según el índice de la tarjeta, sin JS: así no hay riesgo de
-  // que la animación arranque sin stagger un instante antes de que un
-  // script la corrija.
-  animationDelay?: number;
   // Fotos de la primera pantalla: carga eager + alta prioridad (el resto
-  // sigue lazy). WorkGrid espera a que decodifiquen antes de animar.
+  // sigue lazy).
   priority?: boolean;
 }
-const { titulo, slug, portada, portadaHover, type, animationDelay = 0, priority = false } = Astro.props;
+const { titulo, slug, portada, portadaHover, type, priority = false } = Astro.props;
 const href = `/${type}/${slug}`;
 ---
-<a class="item-card anim-fade-up anim-soft" href={href} style={`animation-delay: ${animationDelay}ms`}>
+<a class="item-card" href={href}>
   <span class="item-card__media">
     <span class="item-card__frame">
       {portada && <img class="item-card__img item-card__img--base" src={portada} alt={titulo} loading={priority ? "eager" : "lazy"} decoding="async" fetchpriority={priority ? "high" : "auto"} />}

@@ -106,8 +106,15 @@ const items = slides
      el borde del nav y el TEXTO del footer. Debe coincidir con el
      padding-top de .site-footer en Base.astro. */
   :global(.home-stage .carousel) {
-    /* scale(1.08): el slider crece 8% desde su centro (pedido de Daniel);
-       como escala parejo, el centrado arriba/abajo se mantiene. */
-    transform: translateY(1.5rem) scale(1.08);
+    /* Escritorio: scale(0.864) = el tamaño de antes (1.08) menos otro 20%
+       (pedido de Daniel: no percibió el cambio anterior). Escala desde el
+       centro, así el centrado arriba/abajo se mantiene. */
+    transform: translateY(1.5rem) scale(0.864);
+  }
+  /* Celular y tablet: se queda en el 8% de más que ya tenía. */
+  @media (max-width: 900px) {
+    :global(.home-stage .carousel) {
+      transform: translateY(1.5rem) scale(1.08);
+    }
   }
 </style>

@@ -61,7 +61,7 @@ async function optimize(file) {
   const buffer =
     ext === ".png"
       ? await pipeline.png({ quality: PNG_QUALITY, compressionLevel: 9 }).toBuffer()
-      : await pipeline.jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toBuffer();
+      : await pipeline.jpeg({ quality: JPEG_QUALITY, progressive: false }).toBuffer();
 
   // Only overwrite if we actually saved space — re-encoding a well-compressed
   // file can occasionally come out larger.

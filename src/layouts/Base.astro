@@ -39,7 +39,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
          invisible en la pestaña — pedido de Daniel. -->
     <link rel="icon" type="image/png" href="/site/favicon-isotipo.png" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-    <script is:inline>document.documentElement.classList.add("js");</script>
 
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:type" content={type} />
@@ -173,13 +172,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
 </script>
 
 <script>
-  // --- Animaciones de entrada: al terminar, el elemento queda "limpio" (ver
-  // .anim-done en el CSS). animationend burbujea, basta un solo listener.
-  document.addEventListener("animationend", (e) => {
-    const el = e.target as HTMLElement;
-    if (el.matches?.(".anim-fade-in, .anim-fade-up, .anim-zoom-blur-in")) el.classList.add("anim-done");
-  });
-
   // --- Al volver a una pestaña que estuvo en segundo plano, Safari puede
   // redibujar las fotos deformadas/rayadas (memoria gráfica reciclada).
   // Se fuerza a re-decodificarlas y se provoca un repintado del contenido.
@@ -529,112 +521,6 @@ const absoluteImage = new URL(image, Astro.site ?? Astro.url.origin).toString();
   body.modal-open .pieza > *,
   body.modal-open .coleccion > * {
     filter: blur(24px);
-  }
-
-  /* --- Animaciones de entrada (pedido de los diseñadores, referencias:
-     ROA, Zara, cosmos.so) — tres variantes compartidas por el sitio.
-     "both" como fill-mode: el elemento arranca en el estado "from" desde
-     antes de que la animación corra (sin flash del estado final) y se
-     queda en "to" al terminar. Además de "both", cada clase declara
-     opacity/transform/filter directo (no solo dentro del @keyframes) —
-     así el estado inicial (oculto) no depende de que el navegador ya
-     haya resuelto la animación a tiempo para el primer paint; es la
-     causa típica del parpadeo "aparece visible y luego se esconde".
-     Todas respetan prefers-reduced-motion. */
-  @keyframes anim-fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  @keyframes anim-fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  @keyframes anim-zoom-blur-in {
-    from {
-      opacity: 0;
-      transform: scale(1.03);
-      filter: blur(5px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-      filter: blur(0);
-    }
-  }
-
-  .anim-fade-in {
-    opacity: 0;
-    animation: anim-fade-in 0.65s ease-out both;
-  }
-  .anim-fade-up {
-    opacity: 0;
-    transform: translateY(12px);
-    animation: anim-fade-up 0.6s ease-out both;
-  }
-  .anim-zoom-blur-in {
-    opacity: 0;
-    transform: scale(1.03);
-    filter: blur(5px);
-    animation: anim-zoom-blur-in 0.85s ease-out both;
-  }
-
-  /* Variante más sutil y lenta (pedido de Daniel: se sentían abruptas) para
-     /work y las piezas/colecciones: 35% más larga (0.65s -> 0.88s, 0.6s ->
-     0.81s) y con la mitad de recorrido (8px en vez de 12px). Se combina
-     con .anim-fade-in / .anim-fade-up. */
-  @keyframes anim-fade-up-soft {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .anim-soft.anim-fade-in {
-    animation-duration: 0.88s;
-  }
-  .anim-soft.anim-fade-up {
-    transform: translateY(8px);
-    animation-name: anim-fade-up-soft;
-    animation-duration: 0.81s;
-  }
-
-  /* Al terminar la animación de entrada se marca el elemento con .anim-done
-     (ver el script de abajo) y se le quita la animación: con fill-mode:both
-     el elemento se quedaba para siempre con una capa de composición propia
-     (cada foto de la galería, cada tarjeta), y en Safari esas capas, al volver
-     a una pestaña que estuvo en segundo plano, se redibujaban deformadas y
-     rayadas. El estado final (opacity 1, sin transform) es el mismo. */
-  .anim-done {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    animation: none !important;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .anim-fade-in,
-    .anim-fade-up,
-    .anim-soft.anim-fade-in,
-    .anim-soft.anim-fade-up,
-    .anim-zoom-blur-in {
-      opacity: 1;
-      transform: none;
-      filter: none;
-      animation: none !important;
-    }
   }
 </style>
 

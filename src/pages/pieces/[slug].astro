@@ -56,7 +56,7 @@ const materialNote =
   description={metaDescription}
   image={ogImage || portada}
 >
-  <article class="pieza anim-fade-in anim-soft">
+  <article class="pieza">
     <a class="pieza__close" id="pieza-close" href="/work" aria-label="Cerrar">
       <span></span>
       <span></span>
@@ -66,9 +66,8 @@ const materialNote =
       {imagenes.map((img: string, i: number) => (
         <button
           type="button"
-          class:list={["pieza__foto", "anim-fade-up", "anim-soft", creditosPorFoto.has(img) && "pieza__foto--con-credito"]}
+          class:list={["pieza__foto", creditosPorFoto.has(img) && "pieza__foto--con-credito"]}
           data-index={i}
-          style={`animation-delay: ${Math.min(i * 81, 486)}ms`}
         >
           <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
           {creditosPorFoto.has(img) && (

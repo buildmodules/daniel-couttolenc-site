@@ -54,7 +54,6 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
         portada={item.portada}
         portadaHover={item.portadaHover}
         type={item.type}
-        animationDelay={Math.min(i * 54, 540)}
         priority={i < 8}
       />
     ))}
@@ -67,18 +66,6 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
   // even if the user changed it, navigated away, and came back to /work.
   const slider = document.getElementById("grid-cols-slider") as HTMLInputElement | null;
   const grid = document.getElementById("grid");
-
-  // La animación de entrada de las tarjetas espera (máx. 1.5s) a que las
-  // fotos de la primera pantalla estén decodificadas; así no se ve una foto
-  // "entrando" a medias ni un salto de una a otra (Safari). Ver .js .grid
-  // en el CSS: sin JS las tarjetas animan de inmediato como siempre.
-  if (grid) {
-    const firstImgs = Array.from(grid.querySelectorAll<HTMLImageElement>(".item-card__img--base")).slice(0, 8);
-    Promise.race([
-      Promise.all(firstImgs.map((img) => img.decode().catch(() => {}))),
-      new Promise((resolve) => setTimeout(resolve, 1500)),
-    ]).then(() => grid.classList.add("is-ready"));
-  }
 
   if (slider && grid) {
     const sizesDesktop = (slider.dataset.sizes ?? "8,4,2").split(",").map(Number);
@@ -293,10 +280,6 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     /* Más aire pedido por el cliente — solo desktop, ver el media query de
        abajo para el padding lateral de mobile (se queda en --gutter). */
     padding: 40px 100px;
-  }
-
-  :global(.js) .grid:not(.is-ready) :global(.item-card) {
-    animation-play-state: paused;
   }
 
   .grid :global(.item-card) {

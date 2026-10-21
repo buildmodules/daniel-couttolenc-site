@@ -28,6 +28,11 @@ const {
   ogImage,
 } = pieza.data;
 const imagenes: string[] = galeria ?? (portada ? [portada] : []);
+// Una entrada de la galería que termina en .mp4/.webm es un video corto en
+// loop (en vez de un GIF, que pesa 10-30 veces más). Convención: junto a
+// "5.mp4" existen "5.webm" (más ligero) y "5-poster.jpg" (primer cuadro).
+const esVideo = (src: string) => /\.(mp4|webm)$/i.test(src);
+const baseVideo = (src: string) => src.replace(/\.(mp4|webm)$/i, "");
 // Créditos de foto: dispersos y opcionales — solo la foto puntual que lo
 // necesita (ver content.config.ts). Match por igualdad de string contra la ruta.
 const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen, c.texto]));
@@ -68,8 +73,16 @@ const materialNote =
           type="button"
           class:list={["pieza__foto", creditosPorFoto.has(img) && "pieza__foto--con-credito"]}
           data-index={i}
+          data-video={esVideo(img) ? baseVideo(img) : undefined}
         >
-          <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
+          {esVideo(img) ? (
+            <video autoplay loop muted playsinline preload="auto" poster={`${baseVideo(img)}-poster.jpg`} aria-label={titulo}>
+              <source src={`${baseVideo(img)}.mp4`} type="video/mp4" />
+              <source src={`${baseVideo(img)}.webm`} type="video/webm" />
+            </video>
+          ) : (
+            <img src={img} alt={titulo} loading={i === 0 ? "eager" : "lazy"} />
+          )}
           {creditosPorFoto.has(img) && (
             <span class="pieza__foto-credito">{creditosPorFoto.get(img)}</span>
           )}
@@ -154,6 +167,7 @@ const materialNote =
     </button>
     <div class="lightbox__stage">
       <img id="lightbox-img" src="" alt={titulo} />
+      <video id="lightbox-video" loop muted playsinline hidden></video>
     </div>
     <span class="lightbox__counter" id="lightbox-counter" aria-live="polite"></span>
     <!-- La pantalla entera se parte en dos mitades clickeables (izquierda =
@@ -209,13 +223,35 @@ const materialNote =
   const lightboxPrev = document.getElementById("lightbox-prev");
   const lightboxNext = document.getElementById("lightbox-next");
   const lightboxCounter = document.getElementById("lightbox-counter");
-  const sources = photos.map((btn) => btn.querySelector("img")?.getAttribute("src") ?? "");
+  const lightboxVideo = document.getElementById("lightbox-video") as HTMLVideoElement | null;
+  // Para los videos, la "fuente" es su poster (sirve para precargar vecinas).
+  const sources = photos.map((btn) =>
+    btn.dataset.video ? `${btn.dataset.video}-poster.jpg` : (btn.querySelector("img")?.getAttribute("src") ?? ""),
+  );
   let lightboxIndex = 0;
 
   const openLightbox = (index: number) => {
     if (!lightbox || !lightboxImg || sources.length === 0) return;
     lightboxIndex = (index + sources.length) % sources.length;
-    lightboxImg.src = sources[lightboxIndex];
+    const videoBase = photos[lightboxIndex].dataset.video;
+    if (videoBase && lightboxVideo) {
+      lightboxImg.hidden = true;
+      lightboxVideo.hidden = false;
+      if (lightboxVideo.dataset.base !== videoBase) {
+        lightboxVideo.dataset.base = videoBase;
+        lightboxVideo.poster = `${videoBase}-poster.jpg`;
+        lightboxVideo.innerHTML = `<source src="${videoBase}.mp4" type="video/mp4"><source src="${videoBase}.webm" type="video/webm">`;
+        lightboxVideo.load();
+      }
+      lightboxVideo.play().catch(() => {});
+    } else {
+      if (lightboxVideo) {
+        lightboxVideo.pause();
+        lightboxVideo.hidden = true;
+      }
+      lightboxImg.hidden = false;
+      lightboxImg.src = sources[lightboxIndex];
+    }
     if (lightboxCounter) lightboxCounter.textContent = sources.length > 1 ? `${lightboxIndex + 1} / ${sources.length}` : "";
     // Precarga las vecinas para que al pasar de foto no se vea la anterior
     // mientras carga la nueva.
@@ -233,6 +269,7 @@ const materialNote =
     lightbox.classList.remove("is-visible");
     lightbox.setAttribute("aria-hidden", "true");
     document.body.classList.remove("no-scroll", "modal-open");
+    lightboxVideo?.pause();
   };
 
   const showLightbox = (delta: number) => openLightbox(lightboxIndex + delta);
@@ -646,7 +683,8 @@ const materialNote =
   .pieza__foto:last-child {
     margin-bottom: 0;
   }
-  .pieza__foto img {
+  .pieza__foto img,
+  .pieza__foto video {
     width: 100%;
     display: block;
   }
@@ -958,7 +996,8 @@ const materialNote =
       width: 100%;
       margin-bottom: 0;
     }
-    .pieza__foto img {
+    .pieza__foto img,
+    .pieza__foto video {
       width: 100%;
       height: auto;
     }
@@ -1052,7 +1091,11 @@ const materialNote =
     max-height: calc(100vh - 88px);
     max-height: calc(100dvh - 88px);
   }
-  .lightbox__stage img {
+  .lightbox__stage [hidden] {
+    display: none !important;
+  }
+  .lightbox__stage img,
+  .lightbox__stage video {
     display: block;
     width: 100%;
     height: 100%;

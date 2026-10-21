@@ -28,11 +28,12 @@ const {
   ogImage,
 } = pieza.data;
 const imagenes: string[] = galeria ?? (portada ? [portada] : []);
-// Una entrada de la galería que termina en .mp4/.webm es un video corto en
-// loop (en vez de un GIF, que pesa 10-30 veces más). Convención: junto a
-// "5.mp4" existen "5.webm" (más ligero) y "5-poster.jpg" (primer cuadro).
-const esVideo = (src: string) => /\.(mp4|webm)$/i.test(src);
-const baseVideo = (src: string) => src.replace(/\.(mp4|webm)$/i, "");
+// Una entrada de la galería que termina en .webm es un video corto en loop
+// (en vez de un GIF, que pesa 10-30 veces más). Convención: junto a
+// "5.webm" existe "5-poster.jpg" (primer cuadro), que se ve mientras carga o
+// en un navegador que no reproduzca WebM.
+const esVideo = (src: string) => /\.webm$/i.test(src);
+const baseVideo = (src: string) => src.replace(/\.webm$/i, "");
 // Créditos de foto: dispersos y opcionales — solo la foto puntual que lo
 // necesita (ver content.config.ts). Match por igualdad de string contra la ruta.
 const creditosPorFoto = new Map((creditosFotos ?? []).map((c: any) => [c.imagen, c.texto]));
@@ -77,7 +78,6 @@ const materialNote =
         >
           {esVideo(img) ? (
             <video autoplay loop muted playsinline preload="auto" poster={`${baseVideo(img)}-poster.jpg`} aria-label={titulo}>
-              <source src={`${baseVideo(img)}.mp4`} type="video/mp4" />
               <source src={`${baseVideo(img)}.webm`} type="video/webm" />
             </video>
           ) : (
@@ -240,7 +240,7 @@ const materialNote =
       if (lightboxVideo.dataset.base !== videoBase) {
         lightboxVideo.dataset.base = videoBase;
         lightboxVideo.poster = `${videoBase}-poster.jpg`;
-        lightboxVideo.innerHTML = `<source src="${videoBase}.mp4" type="video/mp4"><source src="${videoBase}.webm" type="video/webm">`;
+        lightboxVideo.innerHTML = `<source src="${videoBase}.webm" type="video/webm">`;
         lightboxVideo.load();
       }
       lightboxVideo.play().catch(() => {});

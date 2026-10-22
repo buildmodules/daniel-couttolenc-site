@@ -90,6 +90,12 @@ const materialNote =
       ))}
     </div>
 
+    {imagenes.length > 1 && (
+      <div class="pieza__dots" aria-hidden="true">
+        {imagenes.map(() => <span class="pieza__dot"></span>)}
+      </div>
+    )}
+
     <div class="pieza__info-sticky">
       <div class="pieza__info">
         <div class="pieza__title-row">
@@ -294,6 +300,42 @@ const materialNote =
     const delta = e.changedTouches[0].clientX - lightboxTouchStartX;
     if (Math.abs(delta) > 40) showLightbox(delta > 0 ? -1 : 1);
   }, { passive: true });
+
+  // --- Puntos "inteligentes" de la galería (solo se ven en mobile, ver
+  // .pieza__dots en el CSS): marcan con data-d la distancia de cada punto a
+  // la foto actual — la que tiene su centro más cerca del centro del área
+  // visible del carrete. ---
+  const dotEls = Array.from(document.querySelectorAll<HTMLElement>(".pieza__dot"));
+  const galeriaEl = document.querySelector<HTMLElement>(".pieza__galeria");
+  if (galeriaEl && dotEls.length > 1 && dotEls.length === photos.length) {
+    let pendingDots = false;
+    const updateDots = () => {
+      pendingDots = false;
+      const box = galeriaEl.getBoundingClientRect();
+      const visibleH = galeriaEl.clientHeight - (parseFloat(getComputedStyle(galeriaEl).paddingBottom) || 0);
+      const centerY = box.top + visibleH / 2;
+      let active = 0;
+      let best = Infinity;
+      photos.forEach((photo, i) => {
+        const r = photo.getBoundingClientRect();
+        const d = Math.abs(r.top + r.height / 2 - centerY);
+        if (d < best) {
+          best = d;
+          active = i;
+        }
+      });
+      dotEls.forEach((dot, i) => dot.setAttribute("data-d", String(Math.abs(i - active))));
+    };
+    const scheduleDots = () => {
+      if (pendingDots) return;
+      pendingDots = true;
+      requestAnimationFrame(updateDots);
+    };
+    galeriaEl.addEventListener("scroll", scheduleDots, { passive: true });
+    window.addEventListener("resize", scheduleDots);
+    photos.forEach((photo) => photo.querySelector("img")?.addEventListener("load", scheduleDots));
+    updateDots();
+  }
 
   // --- Modal de Inquire ---
   const inquireOpenBtn = document.getElementById("inquire-open");
@@ -722,6 +764,12 @@ const materialNote =
     object-fit: cover;
   }
 
+  /* Puntos de posición de la galería: solo existen en mobile (ver el media
+     query de abajo). */
+  .pieza__dots {
+    display: none;
+  }
+
   .pieza__info-sticky {
     position: sticky;
     top: var(--header-h);
@@ -1001,6 +1049,50 @@ const materialNote =
       width: 100%;
       height: auto;
     }
+    /* Puntos "inteligentes" (como los dynamic bullets de Swiper): en vez de
+       un punto por foto, una ventana de hasta 5 que sigue a la foto actual
+       — el actual más grande y oscuro, los vecinos más chicos y claros, el
+       resto oculto (los pone JS vía data-d, ver el script). Van centrados
+       en el margen derecho de las fotos, para que se note que hay más y que
+       se puede deslizar. */
+    .pieza__dots {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: var(--gutter);
+      height: calc((100vw - 2 * var(--gutter)) * 401 / 333);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .pieza__dot {
+      display: none;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+    }
+    .pieza__dot[data-d="0"] {
+      display: block;
+      width: 7px;
+      height: 7px;
+      background: rgba(0, 0, 0, 0.75);
+    }
+    .pieza__dot[data-d="1"] {
+      display: block;
+      width: 5px;
+      height: 5px;
+    }
+    .pieza__dot[data-d="2"] {
+      display: block;
+      width: 3px;
+      height: 3px;
+      background: rgba(0, 0, 0, 0.14);
+    }
+
 
     /* Título + Inquire en la misma línea, arriba de la columna de info —
        el botón de Inquire de abajo (al fondo, con el resto del contenido)

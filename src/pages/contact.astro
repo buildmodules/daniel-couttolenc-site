@@ -128,8 +128,9 @@ import Base from "../layouts/Base.astro";
     margin-top: -1.75rem;
   }
   .contacto__emails a {
-    /* +2px sobre el body (var(--fs-body), 13px) — pedido nuevo. */
-    font-size: 15px;
+    /* Mismo tamaño que el resto del texto de la página (pedido de Daniel;
+       antes 15px, +2px sobre el body). */
+    font-size: var(--fs-body);
     color: #6e6e6e;
     text-decoration: none;
     transition: color 0.2s ease;

@@ -329,8 +329,10 @@ const DEFAULT_INDEX = SIZES.includes(defaultCols) ? SIZES.indexOf(defaultCols) :
     /* El track "Vista" 30% más grande en mobile (pedido del diseño):
        88→114px de ancho, dot 7.5→9.75px. Label: 1px menos que antes
        (17px), igual que el resto de la escala. */
+    /* "View" al mismo tamaño que las descripciones de las tarjetas (12px,
+       ver .item-card__title) — pedido de Daniel, por consistencia visual. */
     .work-grid__toolbar-label {
-      font-size: 17px;
+      font-size: 12px;
     }
     .work-grid__slider {
       width: 114px;

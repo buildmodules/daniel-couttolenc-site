@@ -44,6 +44,12 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
       ))}
     </div>
 
+    {imagenes.length > 1 && (
+      <div class="coleccion__dots" aria-hidden="true">
+        {imagenes.map(() => <span class="coleccion__dot"></span>)}
+      </div>
+    )}
+
     <div class="coleccion__info-sticky">
       <div class="coleccion__info">
         <div class="coleccion__title-row">
@@ -169,6 +175,40 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     const delta = e.changedTouches[0].clientX - lightboxTouchStartX;
     if (Math.abs(delta) > 40) showLightbox(delta > 0 ? -1 : 1);
   }, { passive: true });
+
+  // --- Puntos "inteligentes" de la galería (solo mobile) — ver el
+  // comentario equivalente en pieces/[slug].astro. ---
+  const dotEls = Array.from(document.querySelectorAll<HTMLElement>(".coleccion__dot"));
+  const galeriaEl = document.querySelector<HTMLElement>(".coleccion__galeria");
+  if (galeriaEl && dotEls.length > 1 && dotEls.length === photos.length) {
+    let pendingDots = false;
+    const updateDots = () => {
+      pendingDots = false;
+      const box = galeriaEl.getBoundingClientRect();
+      const visibleH = galeriaEl.clientHeight - (parseFloat(getComputedStyle(galeriaEl).paddingBottom) || 0);
+      const centerY = box.top + visibleH / 2;
+      let active = 0;
+      let best = Infinity;
+      photos.forEach((photo, i) => {
+        const r = photo.getBoundingClientRect();
+        const d = Math.abs(r.top + r.height / 2 - centerY);
+        if (d < best) {
+          best = d;
+          active = i;
+        }
+      });
+      dotEls.forEach((dot, i) => dot.setAttribute("data-d", String(Math.abs(i - active))));
+    };
+    const scheduleDots = () => {
+      if (pendingDots) return;
+      pendingDots = true;
+      requestAnimationFrame(updateDots);
+    };
+    galeriaEl.addEventListener("scroll", scheduleDots, { passive: true });
+    window.addEventListener("resize", scheduleDots);
+    photos.forEach((photo) => photo.querySelector("img")?.addEventListener("load", scheduleDots));
+    updateDots();
+  }
 
   // --- Modal de Inquire — mismo comportamiento que en pieces/[slug].astro. ---
   const inquireModal = document.getElementById("inquire-modal");
@@ -486,6 +526,12 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     object-fit: cover;
   }
 
+  /* Puntos de posición de la galería: solo existen en mobile (ver el media
+     query de abajo). */
+  .coleccion__dots {
+    display: none;
+  }
+
   .coleccion__info-sticky {
     position: sticky;
     top: var(--header-h);
@@ -592,6 +638,46 @@ const mensajeInquire = `I'd like to know more about ${titulo}.`;
     }
     .coleccion__galeria::-webkit-scrollbar {
       display: none;
+    }
+
+    /* Puntos "inteligentes" — ver el comentario equivalente en
+       pieces/[slug].astro. Aquí el carrete mide el ancho completo. */
+    .coleccion__dots {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: var(--gutter);
+      height: calc(100vw * 401 / 333);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .coleccion__dot {
+      display: none;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+    }
+    .coleccion__dot[data-d="0"] {
+      display: block;
+      width: 7px;
+      height: 7px;
+      background: rgba(0, 0, 0, 0.75);
+    }
+    .coleccion__dot[data-d="1"] {
+      display: block;
+      width: 5px;
+      height: 5px;
+    }
+    .coleccion__dot[data-d="2"] {
+      display: block;
+      width: 3px;
+      height: 3px;
+      background: rgba(0, 0, 0, 0.14);
     }
     .coleccion__foto {
       scroll-snap-align: start;

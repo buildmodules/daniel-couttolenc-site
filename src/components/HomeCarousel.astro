@@ -1,10 +1,7 @@
 ---
 interface Item {
-  titulo: string;
-  slug: string;
   portada?: string;
   portadaMobile?: string;
-  type: "pieces" | "collections";
 }
 
 interface Props {
@@ -17,22 +14,22 @@ const { items } = Astro.props;
   <div class="carousel" id="home-carousel">
     <div class="carousel__viewport">
       <div class="carousel__track" id="carousel-track">
-        {items.map((item) => (
-          <a class="carousel__slide" href={`/${item.type}/${item.slug}`}>
+        {items.map((item, i) => (
+          <div class="carousel__slide">
             <span class="carousel__frame">
               {item.portada && (
-                <img class="carousel__img carousel__img--desktop" src={item.portada} alt={item.titulo} loading="lazy" />
+                <img class="carousel__img carousel__img--desktop" src={item.portada} alt={`Daniel Couttolenc, ${i + 1}`} loading="lazy" />
               )}
               {(item.portadaMobile || item.portada) && (
                 <img
                   class="carousel__img carousel__img--mobile"
                   src={item.portadaMobile || item.portada}
-                  alt={item.titulo}
+                  alt={`Daniel Couttolenc, ${i + 1}`}
                   loading="lazy"
                 />
               )}
             </span>
-          </a>
+          </div>
         ))}
       </div>
 
@@ -42,12 +39,12 @@ const { items } = Astro.props;
                izquierda va a la anterior, la derecha a la siguiente. En
                desktop el cursor personalizado cambia a una flecha ←/→
                según la mitad (ver Base.astro). -->
-          <button type="button" class="carousel__nav carousel__nav--prev" id="carousel-prev" aria-label="Pieza anterior"></button>
-          <button type="button" class="carousel__nav carousel__nav--next" id="carousel-next" aria-label="Siguiente pieza"></button>
+          <button type="button" class="carousel__nav carousel__nav--prev" id="carousel-prev" aria-label="Anterior"></button>
+          <button type="button" class="carousel__nav carousel__nav--next" id="carousel-next" aria-label="Siguiente"></button>
 
           <div class="carousel__dots" id="carousel-dots">
             {items.map((_, i) => (
-              <button type="button" class="carousel__dot" data-index={i} aria-label={`Ir a la pieza ${i + 1}`}></button>
+              <button type="button" class="carousel__dot" data-index={i} aria-label={`Ir a la foto ${i + 1}`}></button>
             ))}
           </div>
         </>

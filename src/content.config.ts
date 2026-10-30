@@ -77,8 +77,6 @@ const homeSlider = defineCollection({
     // horizontal para el hero de escritorio), sino otra toma con su propio
     // aspect ratio. Si falta, mobile cae de vuelta a `imagen`.
     imagenMobile: z.string().optional(),
-    piezaRelacionada: z.string().optional(),
-    coleccionRelacionada: z.string().optional(),
     orden: z.number(),
   }),
 });

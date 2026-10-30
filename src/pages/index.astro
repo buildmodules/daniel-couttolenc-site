@@ -4,35 +4,16 @@ import HomeCarousel from "../components/HomeCarousel.astro";
 import { getCollection } from "astro:content";
 
 // El home slider es su propia colección en Tina (src/content/home-slider):
-// cada slide trae su propia foto + una referencia a una pieza o colección
-// existente (para saber a dónde enlaza) + un orden manual. Independiente del
-// catálogo completo que se muestra en /work.
-const slugFromRef = (ref?: string) => ref?.split("/").pop()?.replace(/\.md$/, "");
-
-const [piezas, colecciones, slides] = await Promise.all([
-  getCollection("piezas"),
-  getCollection("colecciones"),
-  getCollection("homeSlider"),
-]);
+// cada slide es solo una foto de escritorio, una foto vertical para mobile y
+// un orden manual. Ya no enlaza a ninguna pieza ni colección.
+const slides = await getCollection("homeSlider");
 
 const items = slides
-  .map((slide) => {
-    const piezaSlug = slugFromRef(slide.data.piezaRelacionada);
-    const coleccionSlug = slugFromRef(slide.data.coleccionRelacionada);
-    const pieza = piezaSlug ? piezas.find((p) => p.data.slug === piezaSlug) : undefined;
-    const coleccion = coleccionSlug ? colecciones.find((c) => c.data.slug === coleccionSlug) : undefined;
-    const related = pieza ?? coleccion;
-    if (!related) return null;
-    return {
-      titulo: related.data.titulo,
-      slug: related.data.slug,
-      portada: slide.data.imagen,
-      portadaMobile: slide.data.imagenMobile,
-      type: (pieza ? "pieces" : "collections") as const,
-      _order: slide.data.orden,
-    };
-  })
-  .filter((item): item is NonNullable<typeof item> => item !== null)
+  .map((slide) => ({
+    portada: slide.data.imagen,
+    portadaMobile: slide.data.imagenMobile,
+    _order: slide.data.orden,
+  }))
   .sort((a, b) => a._order - b._order);
 ---
 <Base

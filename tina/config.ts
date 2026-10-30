@@ -302,15 +302,7 @@ export default defineConfig({
         path: "src/content/home-slider",
         format: "md",
         ui: {
-          itemProps: (item) => ({
-            label:
-              `#${item?.orden ?? "?"} — ` +
-              (item?.piezaRelacionada
-                ? item.piezaRelacionada.split("/").pop()?.replace(/\.md$/, "")
-                : item?.coleccionRelacionada
-                  ? item.coleccionRelacionada.split("/").pop()?.replace(/\.md$/, "")
-                  : "Sin relación"),
-          }),
+          itemProps: (item) => ({ label: `Slide #${item?.orden ?? "?"}` }),
           defaultItem: () => ({ orden: 1 }),
         },
         fields: [
@@ -325,18 +317,6 @@ export default defineConfig({
             name: "imagenMobile",
             label: "Foto del slide (vertical, mobile)",
             description: "Toma vertical propia, no un recorte de la de escritorio — mantiene su propio aspect ratio en mobile.",
-          },
-          {
-            type: "reference",
-            name: "piezaRelacionada",
-            label: "Pieza relacionada",
-            collections: ["piezas"],
-          },
-          {
-            type: "reference",
-            name: "coleccionRelacionada",
-            label: "Colección relacionada",
-            collections: ["colecciones"],
           },
           {
             type: "number",

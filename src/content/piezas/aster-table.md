@@ -14,6 +14,7 @@ creditosFotos:
   - imagen: /images/Aster table/7.jpg
     texto: photo courtesy of Hiperlocalidad
 dimensiones: 39.5 x 39.5 x 56cm (assembled)
+materialTipo: Solid Wood
 variantes:
   - nombre: Red Oak|Cream wash finish
     imagen: /images/Materials/Red-Oak_-Cream-Wash.png
@@ -25,6 +26,8 @@ variantes:
     imagen: /images/Materials/Tzalam.png
   - nombre: Rosamorada
     imagen: /images/Materials/Rosamorada.png
+  - nombre: Maderita
+    imagen: /images/Materials/American-Walnut.png
 leadTime: 8-10 weeks
 orden: 25
 metaTitle: ASTER table | Daniel Couttolenc
@@ -32,4 +35,4 @@ metaDescription: 'ASTER is based on the geometry of the hexagram, a symbol of ba
 ogImage: /images/Aster table/1.jpg
 ---
 
-ASTER is based on the geometry of the hexagram, a symbol of balance. Designed as a single object, it can be separated into two smaller tables and a tray, allowing one geometry to unfold into multiple configurations. 
+ASTER is based on the geometry of the hexagram, a symbol of balance. Designed as a single object, it can be separated into two smaller tables and a tray, allowing one geometry to unfold into multiple configurations.
